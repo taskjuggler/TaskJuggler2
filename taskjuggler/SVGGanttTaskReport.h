@@ -30,9 +30,6 @@ public:
 
     virtual const char* getType() const { return "SVGGanttTaskReport"; }
 
-    void setCaption(const QString& s) { caption = s; }
-    const QString& getCaption() const { return caption; }
-
     void setHideLinks(int i) { hideLinks = i; }
     int getHideLinks() { return hideLinks; }
 
@@ -42,9 +39,9 @@ public:
     void setTaskBarPostfix(const QString& t) { taskBarPostfix = t; }
     const QString getTaskBarPostfix() const { return taskBarPostfix; }
 
-private:
-    QString caption;
+    virtual void inheritValues();
 
+private:
     int hideLinks;
 
     QString taskBarPrefix;

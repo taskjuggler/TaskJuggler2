@@ -36,8 +36,40 @@
 #define KDE_IS_VERSION(a,b,c) 0
 #endif
 
+#define DATE_TO_X(A) margex + ((long)((((double)(A)-(double)datemin)*width)/((double)datemax-(double)datemin)))
+#define DUR_TO_W(A) ((long)((double)(A)*width/(datemax-datemin)))
 // The following macro assumes that b <= c
-#define setInLimits(a,b,c) ((a) < (b) ? (b) : (a) > (c) ? (c) : (a))
+#define SETINLIMITS(a,b,c) ((a) < (b) ? (b) : (a) > (c) ? (c) : (a))
+#define CALCULATEXCOORDINATES(x,w,x2) calculateXCoordinatesInt(x,w,x2,task,scenario,datemin,datemax,margex,width)
+
+void calculateXCoordinatesInt(unsigned int *px, unsigned int *pw, unsigned int *pw2,
+    const Task* task, const int scenario,
+    const time_t datemin, const time_t datemax, const unsigned int margex, const unsigned int width)
+{
+    unsigned int w = 0;
+    unsigned int w2 = 0;
+    unsigned int ex = 0;
+    unsigned int ex2 = 0;
+    unsigned int dur = 0;
+
+    ex = DATE_TO_X(SETINLIMITS(task->getStart(scenario),datemin,datemax));
+    ex2 = DATE_TO_X(SETINLIMITS(task->getEnd(scenario),datemin,datemax));
+
+    w = ex2 - ex;
+
+    if (px) *px = ex;
+    if (pw) *pw = w;
+    if (pw2) {
+        dur = (unsigned int)((task->getEnd(scenario)- task->getStart(scenario)) * (task->getCompletionDegree(scenario) / 100.0));
+        if (task->getStart(scenario) < datemin)
+            dur -= datemin - task->getStart(scenario);
+        if (task->getEnd(scenario) > datemax)
+            dur -= task->getEnd(scenario) - datemax;
+        w2 = DUR_TO_W(dur);
+        *pw2 = w2;
+    }
+
+}
 
 SVGGanttTaskReport::SVGGanttTaskReport(Project* p, const QString& file, const QString& defFile,
                        int dl) :
@@ -54,13 +86,11 @@ bool
 SVGGanttTaskReport::generate()
 {
 
-#define DATE_TO_X(A) margex + ((long)((((double)(A)-(double)datemin)*width)/((double)datemax-(double)datemin)))
-#define DUR_TO_W(A) ((long)((double)(A)*width/(datemax-datemin)))
 
     const unsigned int fontHeight = 6;
     const unsigned int lh = (unsigned int)(fontHeight * 1.6);  // Line height
-    const int margex = 120;
-    const int margey = 10 * fontHeight;
+    const unsigned int margex = 120;
+    const unsigned int margey = 10 * fontHeight;
     time_t datemin = 0, datemax = 0, date = 0;
     unsigned int nbMilestonesToDisplay = 0;
     QValueList<int>::const_iterator it;
@@ -146,7 +176,7 @@ SVGGanttTaskReport::generate()
     // Add stavdart svg attributes
     svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
     svg.setAttribute("version", "1.1");
-    svg.setAttribute("width", QString::number(DATE_TO_X(datemax) + gap));
+    svg.setAttribute("width", QString::number(DATE_TO_X(datemax) + gap + margex));
     svg.setAttribute("height", QString::number(margey + 2 * gap + filteredTaskList.count() * scenarios.count() * lh));
 
     // Create and add title node
@@ -287,7 +317,7 @@ SVGGanttTaskReport::generate()
         {
             scenario = *it;
 
-            // Store index foruse below.
+            // Store index for use below.
             task->setSvgGanttReportIndex(scenario, i);
 
             /* We only handle properly scheduled tasks. */
@@ -297,7 +327,9 @@ SVGGanttTaskReport::generate()
             // Add comment, scenario name
             svg.appendChild(doc.createComment("Scenario : " + getProject()->getScenario(*it)->getName()));
 
-            x = setInLimits((unsigned int)DATE_TO_X(task->getStart(scenario)), mindatex, maxdatex);
+//             x = SETINLIMITS((unsigned int)DATE_TO_X(task->getStart(scenario)), mindatex, maxdatex);
+//             x = DATE_TO_X(SETINLIMITS(task->getStart(scenario),datemin,datemax));
+//             CALCULATEXCOORDINATES(&x,&w,0);
             y = (unsigned int)(margey + (i + 1) * lh);
 
             bool hasError = false;
@@ -311,9 +343,10 @@ SVGGanttTaskReport::generate()
 
             if (task->isMilestone())
             {
-                if (task->getStart(scenario) < datemin || task->getStart(scenario) > datemax)
-                    continue;
+//                 if (task->getStart(scenario) < datemin || task->getStart(scenario) > datemax)
+//                     continue;
 
+                CALCULATEXCOORDINATES(&x,0,0);
                 w = lh / 3;
                 h = y + lh / 6;
 
@@ -334,8 +367,9 @@ SVGGanttTaskReport::generate()
             }
             else if (task->isLeaf())
             {
-                w = DUR_TO_W(task->getEnd(scenario)- task->getStart(scenario));
-                if (x + w > maxdatex) w = maxdatex - x;
+//                 w = DUR_TO_W(task->getEnd(scenario)- task->getStart(scenario));
+//                 if (x + w > maxdatex) w = maxdatex - x;
+                CALCULATEXCOORDINATES(&x,&w,&w2);
                 h = lh * 3 / 4;
 
                 rect = doc.createElement("rect");
@@ -348,8 +382,8 @@ SVGGanttTaskReport::generate()
                 rect.setAttribute("fill", hasError? "Red" : "lightblue");
                 rect.setAttribute("stroke-width", 1);
 
-                w2 = DUR_TO_W((task->getEnd(scenario)- task->getStart(scenario)) * (task->getCompletionDegree(scenario) / 100.0));
-                if (x + w2 > maxdatex) w2 = maxdatex - x;
+/*                !!w2 = DUR_TO_W((task->getEnd(scenario)- task->getStart(scenario)) * (task->getCompletionDegree(scenario) / 100.0));
+                !!if (x + w2 > maxdatex) w2 = maxdatex - x;*/
                 h = lh / 4;
 
                 rect = doc.createElement("rect");
@@ -365,8 +399,9 @@ SVGGanttTaskReport::generate()
             else
             {
                 h = lh / 4;
-                w = DUR_TO_W(task->getEnd(scenario)- task->getStart(scenario));
-                if (x + w > maxdatex) w = maxdatex - x;
+//                 w = DUR_TO_W(task->getEnd(scenario)- task->getStart(scenario));
+//                 if (x + w > maxdatex) w = maxdatex - x;
+                CALCULATEXCOORDINATES(&x,&w,0);
 
                 polyline = doc.createElement("polyline");
                 svg.appendChild(polyline);
@@ -429,9 +464,10 @@ SVGGanttTaskReport::generate()
                 if (task->getStart(scenario) == 0 || task->getEnd(scenario) == 0 || task->getSvgGanttReportIndex(scenario) < 0)
                     continue;
 
-                x = setInLimits((unsigned int)DATE_TO_X(task->getStart(scenario)), mindatex, maxdatex);
+/*                x = SETINLIMITS((unsigned int)DATE_TO_X(task->getStart(scenario)), mindatex, maxdatex);
+                w = DUR_TO_W(task->getEnd(scenario)- task->getStart(scenario));*/
                 y = (unsigned int)(margey + (i + 1) * lh);
-                w = DUR_TO_W(task->getEnd(scenario)- task->getStart(scenario));
+                CALCULATEXCOORDINATES(&x,&w,0);
                 if (x + w > maxdatex) w = maxdatex - x;
 
                 for (TaskListIterator tli2(task->getFollowersIterator()); *tli2; ++tli2)
@@ -447,7 +483,7 @@ SVGGanttTaskReport::generate()
                     if (task2->getParent() && task2->getParent()->hasPrevious(task))
                         continue;
 
-                    x2 = setInLimits((unsigned int)DATE_TO_X(task2->getStart(*it)), mindatex, maxdatex);
+                    x2 = SETINLIMITS((unsigned int)DATE_TO_X(task2->getStart(*it)), mindatex, maxdatex);
                     y2 = (unsigned int)(margey + (task2->getSvgGanttReportIndex(scenario) + 1) * lh);
 
                     h = ((int)y2 - (int)y) < 0 ? y - y2 : y2 - y;
@@ -477,6 +513,20 @@ SVGGanttTaskReport::generate()
 
     // Close file
     return close();
+}
+
+void SVGGanttTaskReport::inheritValues()
+{
+    SVGReport::inheritValues();
+
+    SVGGanttTaskReport* parent = dynamic_cast<SVGGanttTaskReport*>(getParentReport());
+
+    if (parent)
+    {
+        setHideLinks(parent->getHideLinks());
+        setTaskBarPrefix(parent->getTaskBarPrefix());
+        setTaskBarPostfix(parent->getTaskBarPostfix());
+    }
 }
 
 #endif

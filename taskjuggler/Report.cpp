@@ -554,6 +554,7 @@ Report::inheritValues()
 {
     if (parentReport)
     {
+        clearScenarios();
         for (unsigned int sc = 0; sc < parentReport->getScenarioCount(); ++sc)
         {
             addScenario(parentReport->getScenario(sc));
@@ -566,9 +567,9 @@ Report::inheritValues()
         setEnd(parentReport->getEnd());
         setHeadline(parentReport->getHeadline());
         setCaption(parentReport->getCaption());
-        setHideTask(parentReport->getHideTask());
-        setHideResource(parentReport->getHideResource());
-        setHideAccount(parentReport->getHideAccount());
+        if (parentReport->getHideTask()) setHideTask(new ExpressionTree(*parentReport->getHideTask()));
+        if (parentReport->getHideResource()) setHideResource(new ExpressionTree(*parentReport->getHideResource()));
+        if (parentReport->getHideAccount()) setHideAccount(new ExpressionTree(*parentReport->getHideAccount()));
         setRollUpTask(parentReport->getRollUpTask());
         setRollUpResource(parentReport->getRollUpResource());
         setRollUpAccount(parentReport->getRollUpAccount());

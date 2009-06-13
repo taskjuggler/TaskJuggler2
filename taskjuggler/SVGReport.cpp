@@ -44,4 +44,16 @@ SVGReport::SVGReport(Project* p, const QString& file, const QString& defFile,
     taskSortCriteria[0] = CoreAttributesList::NameUp;
 }
 
+void SVGReport::inheritValues()
+{
+    Report::inheritValues();
+
+    SVGReport* parent = dynamic_cast<SVGReport*>(getParentReport());
+
+    if (parent)
+    {
+        setCaption(parent->getCaption());
+    }
+}
+
 #endif

@@ -29,6 +29,7 @@ public:
     void setCaption(const QString& s) { caption = s; }
     const QString& getCaption() const { return caption; }
 
+    virtual void inheritValues();
 protected:
 
 

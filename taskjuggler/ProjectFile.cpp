@@ -3651,7 +3651,7 @@ ProjectFile::checkReportInterval(HTMLReport* report)
 }
 
 bool
-ProjectFile::readReport(const QString& reportType, QtReport* parentReport)
+ProjectFile::readReport(const QString& reportType, Report* parentReport)
 {
     QString token;
     if (nextToken(token) != STRING)
@@ -4914,7 +4914,7 @@ error:
 }
 
 bool
-ProjectFile::readSVGGanttTaskReport(const QString& reportType)
+ProjectFile::readSVGGanttTaskReport(const QString& reportType, Report* parentReport)
 {
     QString token;
     if (nextToken(token) != STRING)
@@ -4934,6 +4934,16 @@ ProjectFile::readSVGGanttTaskReport(const QString& reportType)
         return false;   // Just to please the compiler.
     }
 
+    // Set link to parent report if any
+    report->setParentReport(parentReport);
+    if (parentReport) parentReport->addChildrenReport(report);
+
+    // If report is inherited, retrieve parent values
+    if (parentReport)
+    {
+        report->inheritValues();
+    }
+
     TokenType tt;
     if ((tt = nextToken(token)) == LBRACE)
     {
@@ -4946,7 +4956,11 @@ ProjectFile::readSVGGanttTaskReport(const QString& reportType)
                 errorMessage(i18n("Attribute ID or '}' expected"));
                 goto error;
             }
-            if (token == KW("start"))
+            if (token == reportType)
+            {
+                readSVGGanttTaskReport(reportType, report);
+            }
+            else if (token == KW("start"))
             {
                 time_t start;
                 if (!readDate(start, 0))
