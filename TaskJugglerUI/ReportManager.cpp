@@ -172,16 +172,6 @@ ReportManager::updateReportBrowser()
         Report* r = (*mri)->getProjectReport();
 
         addReportItem(r, currentReport);
-
-//         // Then add all children reports
-//         if (r->getChildrenReportListIterator())
-//         {
-//             for (QPtrListIterator<Report> rc = r->getChildrenReportListIterator();
-//                 *rc; ++rc)
-//             {
-//                 addReportItem(*rc);
-//             }
-//         }
     }
 
     // Make sure that we have a current report. If the current report is a
@@ -261,6 +251,10 @@ ReportManager::addReportItem (Report* r, QString currentReport)
         subTypeIcon =
             KGlobal::iconLoader()->loadIcon("tj_account_group",
                                             KIcon::Small);
+    else if (strncmp(subType, "Index", strlen("Index")) == 0)
+        subTypeIcon =
+            KGlobal::iconLoader()->loadIcon("tj_report",
+                                            KIcon::Small);
     else if (strncmp(subType, "WeeklyCalendar",
                         strlen("WeeklyCalendar")) == 0)
         subTypeIcon =
@@ -306,6 +300,8 @@ ReportManager::addReportItem (Report* r, QString currentReport)
 
     // Save the pointer to the list view item for future references.
     setBrowserEntry(item, r);
+
+    item->setOpen(true);
 }
 
 ManagedReportInfo*
@@ -529,6 +525,35 @@ ReportManager::showReport(QListViewItem* lvi, bool& showReportTab)
     return result;
 }
 
+void ReportManager::expandLVI(QListViewItem *lvi, bool opn)
+{
+    lvi->setOpen(opn);
+    for (QListViewItem *lvi2 = lvi->firstChild(); lvi2; lvi2 = lvi2->nextSibling())
+    {
+        expandLVI(lvi2, opn);
+    }
+}
+
+bool ReportManager::generateReports(QListViewItem *lvi)
+{
+    bool errors = 0;
+
+    changeStatusBar(i18n("Generating report: '%1'")
+                            .arg(lvi->text(0)));
+
+    if (!(errors = !generateReport(lvi)))
+    {
+        for (QListViewItem *lvi2 = lvi->firstChild(); lvi2; lvi2 = lvi2->nextSibling())
+        {
+            errors += generateReports(lvi2);
+        }
+    }
+
+    changeStatusBar(i18n("The reports have been generated"));
+
+    return errors;
+}
+
 void
 ReportManager::showRMBMenu(QListViewItem* lvi, const QPoint& pos, int,
                            bool& errors, bool& showReportTab)
@@ -539,22 +564,39 @@ ReportManager::showRMBMenu(QListViewItem* lvi, const QPoint& pos, int,
         if ((*mri)->getBrowserEntry() == lvi)
             mr = *mri;
 
-    if (!mr)
-        return;
-
     // Generate a context popup menu.
     QPopupMenu menu;
-    menu.insertItem(i18n("&Show Report"), 1);
-    menu.insertItem(i18n("&Generate Report"), 2);
-    menu.insertItem(i18n("&Edit Report Definition"), 3);
+    if (mr)
+    {
+        menu.insertItem(i18n("&Show Report"), 1);
+        menu.insertItem(i18n("&Generate Report"), 2);
+        menu.insertItem(i18n("&Edit Report Definition"), 3);
 
-    // The XML reports cannot be be viewed, so we disable the entry.
-    if (strncmp(mr->getProjectReport()->getType(), "XML", 3) == 0)
-        menu.setItemEnabled(1, false);
+        // The XML reports cannot be be viewed, so we disable the entry.
+        if (strncmp(mr->getProjectReport()->getType(), "XML", 3) == 0)
+            menu.setItemEnabled(1, false);
 
-    // The interactive reports can not be generated, so we disable the entry.
-    if (strncmp(mr->getProjectReport()->getType(), "Qt", 2) == 0)
-        menu.setItemEnabled(2, false);
+        // The interactive reports can not be generated, so we disable the entry.
+        if (strncmp(mr->getProjectReport()->getType(), "Qt", 2) == 0)
+            menu.setItemEnabled(2, false);
+
+    }
+
+    menu.insertItem(i18n("E&xpand All"), 4);
+    menu.insertItem(i18n("S&hrink All"), 5);
+    menu.insertItem(i18n("&Generate Sub-Reports"), 6);
+
+    if (!lvi->firstChild())
+    {
+        menu.setItemEnabled(4, false);
+        menu.setItemEnabled(5, false);
+    }
+
+    if (lvi == qtReports || !lvi->firstChild()
+        || (mr && strncmp(mr->getProjectReport()->getType(), "Qt", 2) == 0))
+    {
+        menu.setItemEnabled(6, false);
+    }
 
     switch (menu.exec(pos))
     {
@@ -571,6 +613,15 @@ ReportManager::showRMBMenu(QListViewItem* lvi, const QPoint& pos, int,
         case 3:
             editReport(mr->getProjectReport());
             showReportTab = false;
+            break;
+        case 4:
+            expandLVI(lvi, true);
+            break;
+        case 5:
+            expandLVI(lvi, false);
+            break;
+        case 6:
+            errors = generateReports(lvi);
             break;
         default:
             break;

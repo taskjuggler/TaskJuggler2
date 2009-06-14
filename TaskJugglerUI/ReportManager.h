@@ -90,6 +90,8 @@ public slots:
 
 private:
     void updateReportBrowser();
+    void expandLVI(QListViewItem *lvi, bool opn);
+    bool generateReports(QListViewItem *lvi);
 
     KMainWindow* mainWindow;
     KSelectAction* zoomSelector;
