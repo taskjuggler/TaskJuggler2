@@ -82,76 +82,80 @@
  <line stroke="red" y1="70" stroke-width="1" y2="250" x1="476" x2="476" />
 <!--My Project--><!--Scenario : Plan--> <polyline fill="black" points="120,75 118,73 118,71 1257,71 1257,73 1255,75 1253,73 122,73 120,75" stroke="none" />
  <text x="110" y="75" fill="black" text-anchor="end" font-family="Courrier" font-size="6" >My Project</text>
+ <text x="1265" y="75" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >-1</text>
 <!--Scenario : Delayed--> <polyline fill="black" points="120,84 118,82 118,80 1322,80 1322,82 1320,84 1318,82 122,82 120,84" stroke="none" />
  <text x="110" y="84" fill="black" text-anchor="end" font-family="Courrier" font-size="6" >My Project</text>
+ <text x="1330" y="84" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >-1</text>
 <!--Planning Phase--><!--Scenario : Plan--> <polyline fill="black" points="120,93 118,91 118,89 1257,89 1257,91 1255,93 1253,91 122,91 120,93" stroke="none" />
  <text x="110" y="93" fill="black" text-anchor="end" font-family="Courrier" font-size="6" >Planning Phase</text>
+ <text x="1265" y="93" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >-1</text>
 <!--Scenario : Delayed--> <polyline fill="black" points="120,102 118,100 118,98 1322,98 1322,100 1320,102 1318,100 122,100 120,102" stroke="none" />
  <text x="110" y="102" fill="black" text-anchor="end" font-family="Courrier" font-size="6" >Planning Phase</text>
+ <text x="1330" y="102" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >-1</text>
 <!--Conception--><!--Scenario : Plan--> <rect width="162" x="120" y="106" fill="lightblue" height="6" stroke="black" stroke-width="1" />
  <rect width="162" x="120" y="108" fill="black" height="2" stroke="none" />
  <text x="110" y="111" fill="black" text-anchor="end" font-family="Courrier" font-size="6" >Conception</text>
- <text x="292" y="111" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >100%</text>
+ <text x="292" y="111" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >100</text>
 <!--Scenario : Delayed--> <rect width="162" x="120" y="115" fill="lightblue" height="6" stroke="black" stroke-width="1" />
  <rect width="162" x="120" y="117" fill="black" height="2" stroke="none" />
  <text x="110" y="120" fill="black" text-anchor="end" font-family="Courrier" font-size="6" >Conception</text>
- <text x="292" y="120" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >100%</text>
+ <text x="292" y="120" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >100</text>
 <!--Interfaces definition--><!--Scenario : Plan--> <rect width="162" x="282" y="124" fill="lightblue" height="6" stroke="black" stroke-width="1" />
  <rect width="162" x="282" y="126" fill="black" height="2" stroke="none" />
  <text x="272" y="129" fill="black" text-anchor="end" font-family="Courrier" font-size="6" >Interfaces definition</text>
- <text x="454" y="129" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >100%</text>
+ <text x="454" y="129" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >100</text>
 <!--Scenario : Delayed--> <rect width="162" x="282" y="133" fill="lightblue" height="6" stroke="black" stroke-width="1" />
  <rect width="162" x="282" y="135" fill="black" height="2" stroke="none" />
  <text x="272" y="138" fill="black" text-anchor="end" font-family="Courrier" font-size="6" >Interfaces definition</text>
- <text x="454" y="138" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >100%</text>
+ <text x="454" y="138" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >100</text>
 <!--Dev part1--><!--Scenario : Plan--> <rect width="162" x="282" y="142" fill="lightblue" height="6" stroke="black" stroke-width="1" />
  <rect width="145" x="282" y="144" fill="black" height="2" stroke="none" />
  <text x="272" y="147" fill="black" text-anchor="end" font-family="Courrier" font-size="6" >Dev part1</text>
- <text x="454" y="147" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >90%</text>
+ <text x="454" y="147" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >90</text>
 <!--Scenario : Delayed--> <rect width="162" x="282" y="151" fill="lightblue" height="6" stroke="black" stroke-width="1" />
  <rect width="145" x="282" y="153" fill="black" height="2" stroke="none" />
  <text x="272" y="156" fill="black" text-anchor="end" font-family="Courrier" font-size="6" >Dev part1</text>
- <text x="454" y="156" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >90%</text>
+ <text x="454" y="156" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >90</text>
 <!--Dev part2--><!--Scenario : Plan--> <rect width="162" x="444" y="160" fill="lightblue" height="6" stroke="black" stroke-width="1" />
  <rect width="32" x="444" y="162" fill="black" height="2" stroke="none" />
  <text x="434" y="165" fill="black" text-anchor="end" font-family="Courrier" font-size="6" >Dev part2</text>
- <text x="616" y="165" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >20%</text>
+ <text x="616" y="165" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >20</text>
 <!--Scenario : Delayed--> <rect width="227" x="444" y="169" fill="lightblue" height="6" stroke="black" stroke-width="1" />
  <rect width="45" x="444" y="171" fill="black" height="2" stroke="none" />
  <text x="434" y="174" fill="black" text-anchor="end" font-family="Courrier" font-size="6" >Dev part2</text>
- <text x="681" y="174" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >20%</text>
+ <text x="681" y="174" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >20</text>
 <!--Dev part3--><!--Scenario : Plan--> <rect width="162" x="606" y="178" fill="lightblue" height="6" stroke="black" stroke-width="1" />
  <rect width="0" x="606" y="180" fill="black" height="2" stroke="none" />
  <text x="596" y="183" fill="black" text-anchor="end" font-family="Courrier" font-size="6" >Dev part3</text>
- <text x="778" y="183" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >0%</text>
+ <text x="778" y="183" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >0</text>
 <!--Scenario : Delayed--> <rect width="162" x="671" y="187" fill="lightblue" height="6" stroke="black" stroke-width="1" />
  <rect width="0" x="671" y="189" fill="black" height="2" stroke="none" />
  <text x="661" y="192" fill="black" text-anchor="end" font-family="Courrier" font-size="6" >Dev part3</text>
- <text x="843" y="192" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >0%</text>
+ <text x="843" y="192" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >0</text>
 <!--Pre-tests--><!--Scenario : Plan--> <rect width="162" x="768" y="196" fill="lightblue" height="6" stroke="black" stroke-width="1" />
  <rect width="0" x="768" y="198" fill="black" height="2" stroke="none" />
  <text x="758" y="201" fill="black" text-anchor="end" font-family="Courrier" font-size="6" >Pre-tests</text>
- <text x="940" y="201" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >0%</text>
+ <text x="940" y="201" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >0</text>
 <!--Scenario : Delayed--> <rect width="162" x="833" y="205" fill="lightblue" height="6" stroke="black" stroke-width="1" />
  <rect width="0" x="833" y="207" fill="black" height="2" stroke="none" />
  <text x="823" y="210" fill="black" text-anchor="end" font-family="Courrier" font-size="6" >Pre-tests</text>
- <text x="1005" y="210" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >0%</text>
+ <text x="1005" y="210" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >0</text>
 <!--Auqlification--><!--Scenario : Plan--> <rect width="162" x="930" y="214" fill="lightblue" height="6" stroke="black" stroke-width="1" />
  <rect width="0" x="930" y="216" fill="black" height="2" stroke="none" />
  <text x="920" y="219" fill="black" text-anchor="end" font-family="Courrier" font-size="6" >Auqlification</text>
- <text x="1102" y="219" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >0%</text>
+ <text x="1102" y="219" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >0</text>
 <!--Scenario : Delayed--> <rect width="162" x="995" y="223" fill="lightblue" height="6" stroke="black" stroke-width="1" />
  <rect width="0" x="995" y="225" fill="black" height="2" stroke="none" />
  <text x="985" y="228" fill="black" text-anchor="end" font-family="Courrier" font-size="6" >Auqlification</text>
- <text x="1167" y="228" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >0%</text>
+ <text x="1167" y="228" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >0</text>
 <!--Acceptation--><!--Scenario : Plan--> <rect width="163" x="1092" y="232" fill="lightblue" height="6" stroke="black" stroke-width="1" />
  <rect width="0" x="1092" y="234" fill="black" height="2" stroke="none" />
  <text x="1082" y="237" fill="black" text-anchor="end" font-family="Courrier" font-size="6" >Acceptation</text>
- <text x="1265" y="237" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >0%</text>
+ <text x="1265" y="237" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >0</text>
 <!--Scenario : Delayed--> <rect width="163" x="1157" y="241" fill="lightblue" height="6" stroke="black" stroke-width="1" />
  <rect width="0" x="1157" y="243" fill="black" height="2" stroke="none" />
  <text x="1147" y="246" fill="black" text-anchor="end" font-family="Courrier" font-size="6" >Acceptation</text>
- <text x="1330" y="246" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >0%</text>
+ <text x="1330" y="246" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >0</text>
 <!--My Project--><!--Planning Phase--><!--Conception--> <path fill="none" stroke="darkorange" d="M282 109C300 109,264 127,282 127" />
  <path fill="none" stroke="darkorange" d="M282 109C318 109,246 145,282 145" />
  <path fill="none" stroke="darkorange" d="M282 118C300 118,264 136,282 136" />

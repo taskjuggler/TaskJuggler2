@@ -113,6 +113,7 @@ taskreport "taskreport " {
 svggantttaskreport "ganttreport_2.svg" {
     headline "Gantt report."
     scenarios plan
-
+    taskbarprefix "$${name}"
+    taskbarpostfix "$${completed}"
 }
 

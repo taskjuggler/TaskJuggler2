@@ -14,11 +14,12 @@
 #define _SVGGanttTaskReport_h_
 
 #include "SVGReport.h"
+#include <ReportElementBase.h>
 
 /**
  * @short Stores all information about an SVG task report.
  */
-class SVGGanttTaskReport : public SVGReport
+class SVGGanttTaskReport : public SVGReport, private ReportElementBase
 {
 public:
     SVGGanttTaskReport(Project* p, const QString& f, const QString& df, int dl);
@@ -46,6 +47,8 @@ private:
 
     QString taskBarPrefix;
     QString taskBarPostfix;
+
+
 };
 
 #endif

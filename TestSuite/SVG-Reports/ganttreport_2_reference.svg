@@ -78,40 +78,42 @@
  <line stroke="red" y1="70" stroke-width="1" y2="160" x1="497" x2="497" />
 <!--My Project--><!--Scenario : Plan--> <polyline fill="black" points="120,75 118,73 118,71 1322,71 1322,73 1320,75 1318,73 122,73 120,75" stroke="none" />
  <text x="110" y="75" fill="black" text-anchor="end" font-family="Courrier" font-size="6" >My Project</text>
+ <text x="1330" y="75" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >-1</text>
 <!--Planning Phase--><!--Scenario : Plan--> <polyline fill="black" points="120,84 118,82 118,80 1322,80 1322,82 1320,84 1318,82 122,82 120,84" stroke="none" />
  <text x="110" y="84" fill="black" text-anchor="end" font-family="Courrier" font-size="6" >Planning Phase</text>
+ <text x="1330" y="84" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >-1</text>
 <!--Conception--><!--Scenario : Plan--> <rect width="171" x="120" y="88" fill="lightblue" height="6" stroke="black" stroke-width="1" />
  <rect width="171" x="120" y="90" fill="black" height="2" stroke="none" />
  <text x="110" y="93" fill="black" text-anchor="end" font-family="Courrier" font-size="6" >Conception</text>
- <text x="301" y="93" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >100%</text>
+ <text x="301" y="93" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >100</text>
 <!--Interfaces definition--><!--Scenario : Plan--> <rect width="171" x="291" y="97" fill="lightblue" height="6" stroke="black" stroke-width="1" />
  <rect width="171" x="291" y="99" fill="black" height="2" stroke="none" />
  <text x="281" y="102" fill="black" text-anchor="end" font-family="Courrier" font-size="6" >Interfaces definition</text>
- <text x="472" y="102" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >100%</text>
+ <text x="472" y="102" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >100</text>
 <!--Dev part1--><!--Scenario : Plan--> <rect width="171" x="291" y="106" fill="lightblue" height="6" stroke="black" stroke-width="1" />
  <rect width="154" x="291" y="108" fill="black" height="2" stroke="none" />
  <text x="281" y="111" fill="black" text-anchor="end" font-family="Courrier" font-size="6" >Dev part1</text>
- <text x="472" y="111" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >90%</text>
+ <text x="472" y="111" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >90</text>
 <!--Dev part2--><!--Scenario : Plan--> <rect width="172" x="462" y="115" fill="lightblue" height="6" stroke="black" stroke-width="1" />
  <rect width="34" x="462" y="117" fill="black" height="2" stroke="none" />
  <text x="452" y="120" fill="black" text-anchor="end" font-family="Courrier" font-size="6" >Dev part2</text>
- <text x="644" y="120" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >20%</text>
+ <text x="644" y="120" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >20</text>
 <!--Dev part3--><!--Scenario : Plan--> <rect width="171" x="634" y="124" fill="lightblue" height="6" stroke="black" stroke-width="1" />
  <rect width="0" x="634" y="126" fill="black" height="2" stroke="none" />
  <text x="624" y="129" fill="black" text-anchor="end" font-family="Courrier" font-size="6" >Dev part3</text>
- <text x="815" y="129" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >0%</text>
+ <text x="815" y="129" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >0</text>
 <!--Pre-tests--><!--Scenario : Plan--> <rect width="172" x="805" y="133" fill="lightblue" height="6" stroke="black" stroke-width="1" />
  <rect width="0" x="805" y="135" fill="black" height="2" stroke="none" />
  <text x="795" y="138" fill="black" text-anchor="end" font-family="Courrier" font-size="6" >Pre-tests</text>
- <text x="987" y="138" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >0%</text>
+ <text x="987" y="138" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >0</text>
 <!--Auqlification--><!--Scenario : Plan--> <rect width="171" x="977" y="142" fill="lightblue" height="6" stroke="black" stroke-width="1" />
  <rect width="0" x="977" y="144" fill="black" height="2" stroke="none" />
  <text x="967" y="147" fill="black" text-anchor="end" font-family="Courrier" font-size="6" >Auqlification</text>
- <text x="1158" y="147" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >0%</text>
+ <text x="1158" y="147" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >0</text>
 <!--Acceptation--><!--Scenario : Plan--> <rect width="172" x="1148" y="151" fill="lightblue" height="6" stroke="black" stroke-width="1" />
  <rect width="0" x="1148" y="153" fill="black" height="2" stroke="none" />
  <text x="1138" y="156" fill="black" text-anchor="end" font-family="Courrier" font-size="6" >Acceptation</text>
- <text x="1330" y="156" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >0%</text>
+ <text x="1330" y="156" fill="black" text-anchor="start" font-family="Courrier" font-size="6" >0</text>
 <!--My Project--><!--Planning Phase--><!--Conception--> <path fill="none" stroke="darkorange" d="M291 91C300 91,282 100,291 100" />
  <path fill="none" stroke="darkorange" d="M291 91C309 91,273 109,291 109" />
 <!--Interfaces definition--><!--Dev part1--> <path fill="none" stroke="darkorange" d="M462 109C471 109,453 118,462 118" />

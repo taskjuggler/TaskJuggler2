@@ -30,6 +30,7 @@
 #include "Resource.h"
 #include "Operation.h"
 #include "Scenario.h"
+#include "TableLineInfo.h"
 
 // Older versions of KDE do not have this macro
 #ifndef KDE_IS_VERSION
@@ -74,6 +75,7 @@ void calculateXCoordinatesInt(unsigned int *px, unsigned int *pw, unsigned int *
 SVGGanttTaskReport::SVGGanttTaskReport(Project* p, const QString& file, const QString& defFile,
                        int dl) :
     SVGReport(p, file, defFile, dl),
+    ReportElementBase(this),
     hideLinks(0)
 {
     // default headline
@@ -101,6 +103,7 @@ SVGGanttTaskReport::generate()
     Task* task = 0;
     Task* task2 = 0;
     int scenario;
+    QString label;
 
     if( !open())
     {
@@ -420,20 +423,30 @@ SVGGanttTaskReport::generate()
                 polyline.setAttribute("stroke", "none");
             }
 
-            svgText = doc.createElement("text");
-            svgText.appendChild(doc.createTextNode(task->getName()));
-            svg.appendChild(svgText);
-            svgText.setAttribute("x", x - gap);
-            svgText.setAttribute("y", y + fontHeight);
-            svgText.setAttribute("text-anchor", "end");
-            svgText.setAttribute("fill", "black");
-            svgText.setAttribute("font-family", "Courrier");
-            svgText.setAttribute("font-size", fontHeight);
-
-            if (!task->isMilestone() && task->isLeaf())
+            if (taskBarPrefix != "" || taskBarPostfix != "")
+            {
+                TableLineInfo tli;
+                tli.sc = scenario;
+                tli.ca1 = task;
+                tli.task = task;
+                setMacros(&tli);
+            }
+            if ((label = expandReportVariable(taskBarPrefix)) != "")
             {
                 svgText = doc.createElement("text");
-                svgText.appendChild(doc.createTextNode(QString::number(task->getCompletionDegree(scenario)) + "%"));
+                svgText.appendChild(doc.createTextNode(label));
+                svg.appendChild(svgText);
+                svgText.setAttribute("x", x - gap);
+                svgText.setAttribute("y", y + fontHeight);
+                svgText.setAttribute("text-anchor", "end");
+                svgText.setAttribute("fill", "black");
+                svgText.setAttribute("font-family", "Courrier");
+                svgText.setAttribute("font-size", fontHeight);
+            }
+            if ((label = expandReportVariable(taskBarPostfix)) != "")
+            {
+                svgText = doc.createElement("text");
+                svgText.appendChild(doc.createTextNode(label));
                 svg.appendChild(svgText);
                 svgText.setAttribute("x", x + w + gap);
                 svgText.setAttribute("y", y + fontHeight);
