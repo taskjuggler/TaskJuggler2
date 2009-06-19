@@ -27,6 +27,7 @@ HTMLResourceReportElement.cpp \
 HTMLWeeklyCalendarElement.cpp \
 HTMLMonthlyCalendar.cpp HTMLMonthlyCalendarElement.cpp \
 HTMLAccountReportElement.cpp \
+HTMLIndexReportElement.cpp \
 HTMLStatusReport.cpp \
 CSVPrimitives.cpp CSVReportElement.cpp \
 CSVTaskReport.cpp CSVTaskReportElement.cpp \

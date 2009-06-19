@@ -36,6 +36,7 @@
 #include "HTMLWeeklyCalendar.h"
 #include "HTMLMonthlyCalendar.h"
 #include "HTMLStatusReport.h"
+#include "HTMLIndexReport.h"
 #include "QtTaskReport.h"
 #include "QtResourceReport.h"
 #include "CSVTaskReport.h"
@@ -451,7 +452,8 @@ ProjectFile::parse()
                      token == KW("htmlresourcereport") ||
                      token == KW("htmlweeklycalendar") ||
                      token == KW("htmlmonthlycalendar") ||
-                     token == KW("htmlaccountreport"))
+                     token == KW("htmlaccountreport") ||
+                     token == KW("htmlindexreport"))
             {
                if (!readHTMLReport(token))
                    return false;
@@ -3994,6 +3996,11 @@ ProjectFile::readHTMLReport(const QString& reportType)
         report = new HTMLAccountReport(proj, token, getFile(), getLine());
         tab = report->getTable();
     }
+    else if (reportType == KW("htmlindexreport"))
+    {
+        report = new HTMLIndexReport(proj, token, getFile(), getLine());
+        tab = report->getTable();
+    }
     else
     {
         qFatal("readHTMLReport: bad report type");
@@ -4012,7 +4019,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
                 errorMessage(i18n("Attribute ID or '}' expected"));
                 goto exit_error;
             }
-            if (token == KW("columns"))
+            if (token == KW("columns") && reportType != KW("htmlindexreport"))
             {
                 tab->clearColumns();
                 for ( ; ; )

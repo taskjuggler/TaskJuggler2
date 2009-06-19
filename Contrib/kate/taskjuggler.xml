@@ -73,6 +73,7 @@
         <item> hierarchlevel </item>
         <item> hierarchno </item>
         <item> htmlaccountreport </item>
+        <item> htmlindexreport </item>
         <item> htmlmonthlycalendar </item>
         <item> htmlresourcereport </item>
         <item> htmlstatusreport </item>
