@@ -1087,7 +1087,7 @@ TjReport::doPopupMenu(QListViewItem* lvi, const QPoint& pos, int)
             case 3:
                 break;
             case 4:
-                QApplication::clipboard()->setText("t->getId() <" + t->getId() +">" );
+                QApplication::clipboard()->setText(t->getId());
                 break;
             default:
                 break;
