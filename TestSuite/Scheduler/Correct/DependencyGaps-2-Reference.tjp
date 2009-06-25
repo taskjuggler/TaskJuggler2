@@ -10,17 +10,18 @@ project dg2 "Dependency Gaps 2" "1.0" 2006-12-01-00:00:00-+0000 - 2007-02-01-00:
   shorttimeformat "%H:%M"
   currencyformat "(" ")" "," "." 0
   weekstartsmonday
-    workinghours sun off
-    workinghours mon 9:00 - 12:00, 13:00 - 18:00
-    workinghours tue 9:00 - 12:00, 13:00 - 18:00
-    workinghours wed 9:00 - 12:00, 13:00 - 18:00
-    workinghours thu 9:00 - 12:00, 13:00 - 18:00
-    workinghours fri 9:00 - 12:00, 13:00 - 18:00
-    workinghours sat off
+  workinghours sun off
+  workinghours mon 9:00 - 12:00, 13:00 - 18:00
+  workinghours tue 9:00 - 12:00, 13:00 - 18:00
+  workinghours wed 9:00 - 12:00, 13:00 - 18:00
+  workinghours thu 9:00 - 12:00, 13:00 - 18:00
+  workinghours fri 9:00 - 12:00, 13:00 - 18:00
+  workinghours sat off
   scenario plan "Plan" {
     enabled
   }
 }
+vacation "Day off" 2006-12-18-00:00:00-+0000 - 2006-12-19-00:00:00-+0000
 projectids dg2
 task t1 "task 1" {
   projectid dg2

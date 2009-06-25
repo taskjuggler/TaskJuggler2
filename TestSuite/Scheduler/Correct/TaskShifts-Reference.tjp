@@ -10,28 +10,28 @@ project test "Test" "$Id" 2000-01-01-00:00:00-+0000 - 2000-03-02-00:00:00-+0000 
   shorttimeformat "%H:%M"
   currencyformat "(" ")" "," "." 0
   weekstartsmonday
-    workinghours sun off
-    workinghours mon 8:00 - 12:00, 13:00 - 17:00
-    workinghours tue 8:00 - 12:00, 13:00 - 17:00
-    workinghours wed 8:00 - 12:00, 13:00 - 17:00
-    workinghours thu 8:00 - 12:00, 13:00 - 17:00
-    workinghours fri 8:00 - 12:00, 13:00 - 17:00
-    workinghours sat off
+  workinghours sun off
+  workinghours mon 8:00 - 12:00, 13:00 - 17:00
+  workinghours tue 8:00 - 12:00, 13:00 - 17:00
+  workinghours wed 8:00 - 12:00, 13:00 - 17:00
+  workinghours thu 8:00 - 12:00, 13:00 - 17:00
+  workinghours fri 8:00 - 12:00, 13:00 - 17:00
+  workinghours sat off
   scenario plan "Plan" {
     enabled
   }
 }
 shift s1 "Shift1" {
-    workinghours tue off
-    workinghours wed off
-    workinghours thu off
-    workinghours fri off
+  workinghours tue off
+  workinghours wed off
+  workinghours thu off
+  workinghours fri off
 }
 shift s2 "Shift2" {
-    workinghours mon off
-    workinghours wed off
-    workinghours thu off
-    workinghours fri off
+  workinghours mon off
+  workinghours wed off
+  workinghours thu off
+  workinghours fri off
 }
 resource r1 "Resource1" {
 }

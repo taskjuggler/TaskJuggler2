@@ -10,45 +10,47 @@ project simple "Simple Project" "$Id" 2002-06-01-00:00:00-+0000 - 2002-07-31-00:
   shorttimeformat "%H:%M"
   currencyformat "(" ")" "," "." 0
   weekstartsmonday
-    workinghours sun off
-    workinghours mon 9:00 - 12:00, 13:00 - 18:00
-    workinghours tue 9:00 - 12:00, 13:00 - 18:00
-    workinghours wed 9:00 - 12:00, 13:00 - 18:00
-    workinghours thu 9:00 - 12:00, 13:00 - 18:00
-    workinghours fri 9:00 - 12:00, 13:00 - 18:00
-    workinghours sat off
+  workinghours sun off
+  workinghours mon 9:00 - 12:00, 13:00 - 18:00
+  workinghours tue 9:00 - 12:00, 13:00 - 18:00
+  workinghours wed 9:00 - 12:00, 13:00 - 18:00
+  workinghours thu 9:00 - 12:00, 13:00 - 18:00
+  workinghours fri 9:00 - 12:00, 13:00 - 18:00
+  workinghours sat off
   scenario plan "Plan" {
     enabled
   }
 }
 shift phonesupport "Telephone support" {
-    workinghours mon 9:00 - 12:00
-    workinghours tue 9:00 - 12:00
-    workinghours wed off
-    workinghours thu 14:00 - 17:00
-    workinghours fri 9:00 - 12:00
+  workinghours mon 9:00 - 12:00
+  workinghours tue 9:00 - 12:00
+  workinghours wed off
+  workinghours thu 14:00 - 17:00
+  workinghours fri 9:00 - 12:00
 }
 shift early "Early Shift" {
-    workinghours mon 7:00 - 12:00, 12:30 - 15:30
-    workinghours tue 7:00 - 12:00, 12:30 - 15:30
-    workinghours wed 7:00 - 12:00, 12:30 - 15:30
-    workinghours thu 7:00 - 12:00, 12:30 - 15:30
-    workinghours fri 7:00 - 12:00, 12:30 - 15:30
+  workinghours mon 7:00 - 12:00, 12:30 - 15:30
+  workinghours tue 7:00 - 12:00, 12:30 - 15:30
+  workinghours wed 7:00 - 12:00, 12:30 - 15:30
+  workinghours thu 7:00 - 12:00, 12:30 - 15:30
+  workinghours fri 7:00 - 12:00, 12:30 - 15:30
 }
 shift late "Late Shift" {
-    workinghours mon 11:00 - 14:00, 14:30 - 19:30
-    workinghours tue 11:00 - 14:00, 14:30 - 19:30
-    workinghours wed 11:00 - 14:00, 14:30 - 19:30
-    workinghours thu 11:00 - 14:00, 14:30 - 19:30
-    workinghours fri 11:00 - 14:00, 14:30 - 19:30
+  workinghours mon 11:00 - 14:00, 14:30 - 19:30
+  workinghours tue 11:00 - 14:00, 14:30 - 19:30
+  workinghours wed 11:00 - 14:00, 14:30 - 19:30
+  workinghours thu 11:00 - 14:00, 14:30 - 19:30
+  workinghours fri 11:00 - 14:00, 14:30 - 19:30
 }
 resource s1 "Joe Supporter" {
+  vacation 2002-06-10-00:00:00-+0000 - 2002-06-13-00:00:00-+0000
   shift late 2002-06-14-00:00:00-+0000 - 2002-07-02-00:00:00-+0000
   shift early 2002-07-03-00:00:00-+0000 - 2002-07-15-00:00:00-+0000
 }
 resource s2 "Jim Supporter" {
 }
 resource s3 "Sally Supporter" {
+  vacation 2002-06-17-00:00:00-+0000 - 2002-06-20-00:00:00-+0000
   shift early 2002-06-03-00:00:00-+0000 - 2002-07-02-00:00:00-+0000
   shift late 2002-07-05-00:00:00-+0000 - 2002-07-15-00:00:00-+0000
 }

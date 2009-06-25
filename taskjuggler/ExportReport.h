@@ -48,6 +48,8 @@ private:
     bool generateScenario(const Scenario* scenario, int indent);
     bool generateShiftList();
     bool generateShift(const Shift*, int indent);
+    void generateResourceVacations(const Resource* resource, int indent);
+    void generateVacations();
     bool generateWorkingHours(const QPtrList<Interval>* const* wh,
                               const QPtrList<Interval>* const* ref,
                               int indent);

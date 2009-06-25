@@ -1351,6 +1351,8 @@ characters are used.</para></listitem>
 
 <listitem><para>Added taskbarprefix and taskbarpostfix properties in taskreport.</para></listitem>
 
+<listitem><para>Export reports now contain vacation dates.</para></listitem>
+
 </itemizedlist></para>
 
 </sect2>

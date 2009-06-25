@@ -10,13 +10,13 @@ project passive "Passive Resource" "1.0" 2004-11-21-00:00:00-+0000 - 2004-12-31-
   shorttimeformat "%H:%M"
   currencyformat "(" ")" "," "." 0
   weekstartsmonday
-    workinghours sun off
-    workinghours mon 9:00 - 12:00, 13:00 - 18:00
-    workinghours tue 9:00 - 12:00, 13:00 - 18:00
-    workinghours wed 9:00 - 12:00, 13:00 - 18:00
-    workinghours thu 9:00 - 12:00, 13:00 - 18:00
-    workinghours fri 9:00 - 12:00, 13:00 - 18:00
-    workinghours sat off
+  workinghours sun off
+  workinghours mon 9:00 - 12:00, 13:00 - 18:00
+  workinghours tue 9:00 - 12:00, 13:00 - 18:00
+  workinghours wed 9:00 - 12:00, 13:00 - 18:00
+  workinghours thu 9:00 - 12:00, 13:00 - 18:00
+  workinghours fri 9:00 - 12:00, 13:00 - 18:00
+  workinghours sat off
   scenario plan "Plan" {
     enabled
   }
@@ -26,11 +26,11 @@ resource arch1 "Architect 1" {
 resource arch2 "Architect 2" {
 }
 resource room "Meeting room" {
-    workinghours mon 8:00 - 12:00, 13:00 - 15:00
-    workinghours tue 8:00 - 12:00, 13:00 - 15:00
-    workinghours wed off
-    workinghours thu 8:00 - 12:00, 13:00 - 15:00
-    workinghours fri 8:00 - 12:00
+  workinghours mon 8:00 - 12:00, 13:00 - 15:00
+  workinghours tue 8:00 - 12:00, 13:00 - 15:00
+  workinghours wed off
+  workinghours thu 8:00 - 12:00, 13:00 - 15:00
+  workinghours fri 8:00 - 12:00
 }
 projectids passive
 task spec "Make Spec" {

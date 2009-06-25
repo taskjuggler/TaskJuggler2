@@ -10,35 +10,35 @@ project test "Test" "1.0" 2000-01-01-00:00:00-+0000 - 2000-01-31-00:00:00-+0000 
   shorttimeformat "%H:%M"
   currencyformat "(" ")" "," "." 0
   weekstartsmonday
-    workinghours sun off
-    workinghours mon 9:00 - 12:00, 13:00 - 18:00
-    workinghours tue 9:00 - 12:00, 13:00 - 18:00
-    workinghours wed 9:00 - 12:00, 13:00 - 18:00
-    workinghours thu 9:00 - 12:00, 13:00 - 18:00
-    workinghours fri 9:00 - 12:00, 13:00 - 18:00
-    workinghours sat off
+  workinghours sun off
+  workinghours mon 9:00 - 12:00, 13:00 - 18:00
+  workinghours tue 9:00 - 12:00, 13:00 - 18:00
+  workinghours wed 9:00 - 12:00, 13:00 - 18:00
+  workinghours thu 9:00 - 12:00, 13:00 - 18:00
+  workinghours fri 9:00 - 12:00, 13:00 - 18:00
+  workinghours sat off
   scenario plan "Plan" {
     enabled
   }
 }
 shift s1 "Shift1" {
-    workinghours mon 10:00 - 12:00, 13:00 - 15:00
-    workinghours tue 9:00 - 17:00
-    workinghours wed off
-    workinghours thu off
-    workinghours fri off
+  workinghours mon 10:00 - 12:00, 13:00 - 15:00
+  workinghours tue 9:00 - 17:00
+  workinghours wed off
+  workinghours thu off
+  workinghours fri off
   shift s2 "Shift2" {
-      workinghours wed 10:00 - 14:00
-      workinghours thu 10:00 - 18:00
-      workinghours fri 9:00 - 13:00
+    workinghours wed 10:00 - 14:00
+    workinghours thu 10:00 - 18:00
+    workinghours fri 9:00 - 13:00
   }
 }
 shift s3 "Shift3" {
-    workinghours mon off
-    workinghours tue off
-    workinghours wed off
-    workinghours thu off
-    workinghours fri off
+  workinghours mon off
+  workinghours tue off
+  workinghours wed off
+  workinghours thu off
+  workinghours fri off
 }
 resource r1 "Resource1" {
   shift s1 2000-01-01-00:00:00-+0000 - 2000-01-04-00:00:00-+0000

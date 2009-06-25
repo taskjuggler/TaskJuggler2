@@ -95,8 +95,11 @@ ExportReport::generate()
     sortResourceList(filteredResourceList);
 
     if (masterFile)
+    {
         if (!generateProjectProperty())
             return false;
+        generateVacations();
+    }
 
     if (listShifts)
         if (!generateShiftList())
@@ -287,6 +290,32 @@ ExportReport::generateShift(const Shift* shift, int indent)
     return true;
 }
 
+void
+ExportReport::generateResourceVacations(const Resource* resource, int indent)
+{
+    for (QPtrListIterator<Interval> it = resource->getVacationListIterator();
+         *it; ++it)
+    {
+        s << QString().fill(' ', indent) << "vacation ";
+        s << time2tjp((*it)->getStart()) << " - "
+          << time2tjp((*it)->getEnd() + 1)
+          << "\n";
+    }
+}
+
+void
+ExportReport::generateVacations()
+{
+    for (VacationList::Iterator it = project->getVacationListIterator();
+         *it; ++it)
+    {
+        s << "vacation \"" << (*it)->getName() << "\" "
+          << time2tjp((*it)->getStart()) << " - "
+          << time2tjp((*it)->getEnd() + 1)
+          << "\n";
+    }
+}
+
 bool
 ExportReport::generateWorkingHours(const QPtrList<Interval>* const* wh,
                                    const QPtrList<Interval>* const* ref,
@@ -332,7 +361,7 @@ ExportReport::generateWorkingHours(const QPtrList<Interval>* const* wh,
 
         bool first = true;
         s << QString().fill(' ', indent) <<
-            "  workinghours " << days[i] << " ";
+            "workinghours " << days[i] << " ";
         QPtrListIterator<Interval> it(*wh[i]);
         if (*it == 0)
         {
@@ -420,6 +449,7 @@ ExportReport::generateResource(ResourceList& filteredResourceList,
                          resource->getParent() ?
                          resource->getParent()->getWorkingHours() :
                          project->getWorkingHours(), 2);
+    generateResourceVacations(resource, indent + 2);
 
     for (ShiftSelectionList::Iterator sli(*resource->getShiftList()); *sli;
          ++sli)

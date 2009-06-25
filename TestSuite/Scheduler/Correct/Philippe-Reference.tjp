@@ -10,20 +10,22 @@ project arc "Passage  sous Control-M" "1.0" 2002-07-15-00:00:00-+0000 - 2002-10-
   shorttimeformat "%H:%M"
   currencyformat "(" ")" "," "." 0
   weekstartsmonday
-    workinghours sun off
-    workinghours mon 9:00 - 12:00, 13:00 - 18:00
-    workinghours tue 9:00 - 12:00, 13:00 - 18:00
-    workinghours wed 9:00 - 12:00, 13:00 - 18:00
-    workinghours thu 9:00 - 12:00, 13:00 - 18:00
-    workinghours fri 9:00 - 12:00, 13:00 - 18:00
-    workinghours sat off
+  workinghours sun off
+  workinghours mon 9:00 - 12:00, 13:00 - 18:00
+  workinghours tue 9:00 - 12:00, 13:00 - 18:00
+  workinghours wed 9:00 - 12:00, 13:00 - 18:00
+  workinghours thu 9:00 - 12:00, 13:00 - 18:00
+  workinghours fri 9:00 - 12:00, 13:00 - 18:00
+  workinghours sat off
   scenario plan "Plan" {
     enabled
   }
 }
 resource Ekow "Exxx Byyyy" {
+  vacation 2002-08-10-00:00:00-+0000 - 2002-08-26-00:00:00-+0000
 }
 resource pmm "PMM" {
+  vacation 2002-08-15-00:00:00-+0000 - 2002-09-02-00:00:00-+0000
 }
 projectids arc
 task start "Start" {
