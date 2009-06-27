@@ -232,9 +232,10 @@ ReportManager::addReportItem (Report* r, QString currentReport)
         kdError() << "ReportManager::updateReportBrowser(): "
             << "Unsupported report type " << r->getType() << endl;
 
-    if (r->getParentReport() && getMRI(r->getParentReport())->getBrowserEntry())
+    if (r->getParentReport())
     {
-        parent = getMRI(r->getParentReport())->getBrowserEntry();
+        ManagedReportInfo* mri = getMRI(r->getParentReport());
+        if (mri) parent = mri->getBrowserEntry();
     }
 
     QPixmap subTypeIcon;

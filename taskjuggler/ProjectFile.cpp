@@ -3689,7 +3689,6 @@ ProjectFile::readReport(const QString& reportType, Report* parentReport)
 
     // Set link to parent report if any
     report->setParentReport(parentReport);
-    if (parentReport) parentReport->addChildrenReport(report);
 
     // If report is inherited, retrieve parent values
     if (parentReport)
@@ -3951,6 +3950,7 @@ ProjectFile::readReport(const QString& reportType, Report* parentReport)
         goto error;
 
     proj->addReport(report);
+    if (parentReport) parentReport->addChildrenReport(report);
 
     return true;
 
@@ -4771,7 +4771,6 @@ ProjectFile::readSVGTimeTimeReport(const QString& reportType, Report* parentRepo
 
     // Set link to parent report if any
     report->setParentReport(parentReport);
-    if (parentReport) parentReport->addChildrenReport(report);
 
     // If report is inherited, retrieve parent values
     if (parentReport)
@@ -4859,7 +4858,7 @@ ProjectFile::readSVGTimeTimeReport(const QString& reportType, Report* parentRepo
                 if (nextToken(token) != STRING)
                 {
                     errorMessage(i18n("String expected"));
-                    return false;
+                    goto error;
                 }
                 report->setHeadline(token);
             }
@@ -4868,14 +4867,14 @@ ProjectFile::readSVGTimeTimeReport(const QString& reportType, Report* parentRepo
                 if (nextToken(token) != STRING)
                 {
                     errorMessage(i18n("String expected"));
-                    return false;
+                    goto error;
                 }
                 report->setCaption(getMacros().expandReportVariable(token, 0));
             }
             else if (token == KW("sorttasks"))
             {
                 if (!readSorting(report, 0))
-                    return false;
+                    goto error;
             }
             else if (token == KW("scenarios"))
             {
@@ -4926,6 +4925,7 @@ ProjectFile::readSVGTimeTimeReport(const QString& reportType, Report* parentRepo
         returnToken(tt, token);
 
     proj->addReport(report);
+    if (parentReport) parentReport->addChildrenReport(report);
 
     return true;
 
@@ -4951,13 +4951,12 @@ ProjectFile::readSVGGanttTaskReport(const QString& reportType, Report* parentRep
     }
     else
     {
-        qFatal("readSVGTimeTimeReport: bad report type");
+        qFatal("readSVGGanttTaskReport: bad report type");
         return false;   // Just to please the compiler.
     }
 
     // Set link to parent report if any
     report->setParentReport(parentReport);
-    if (parentReport) parentReport->addChildrenReport(report);
 
     // If report is inherited, retrieve parent values
     if (parentReport)
@@ -4979,7 +4978,8 @@ ProjectFile::readSVGGanttTaskReport(const QString& reportType, Report* parentRep
             }
             if (token == reportType)
             {
-                readSVGGanttTaskReport(reportType, report);
+                if (!readSVGGanttTaskReport(reportType, report))
+                    goto error;
             }
             else if (token == KW("start"))
             {
@@ -5145,6 +5145,7 @@ ProjectFile::readSVGGanttTaskReport(const QString& reportType, Report* parentRep
         returnToken(tt, token);
 
     proj->addReport(report);
+    if (parentReport) parentReport->addChildrenReport(report);
 
     return true;
 
