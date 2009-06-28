@@ -1,0 +1,31 @@
+project yourID "SVG Test Project" "1.0" 2009-01-01 - 2010-12-31 {
+    timeformat "%Y-%m-%d"
+    currency "EUR"
+
+    now 2009-02-01
+
+    scenario initial "Initial" {
+        scenario delayed "Delayed" {
+            date 2009-02-15
+        }
+    }
+}
+
+task task1 "Main Task" {
+    start 2009-01-15
+#     delayed:start 2009-07-10
+
+    task task2 "Task 2" {
+        start 2009-02-15
+        delayed:start 2009-03-10
+        duration 30d
+        delayed:duration 40d
+    }
+    task task3 "Task 3" { duration 30d depends !task2 }
+    task task4 "Task 4" { duration 10d depends !task2 }
+}
+
+svgtimetimereport "project_b_histo2.svg" {
+    headline "project_b_histo2"
+    scenarios *
+}

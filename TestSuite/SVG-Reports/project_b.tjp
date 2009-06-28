@@ -1,0 +1,57 @@
+#
+project yourID "SVG Test Project" "1.0" 2009-01-01 - 2010-12-31 {
+    timeformat "%Y-%m-%d"
+    currency "EUR"
+
+    now 2009-03-01
+
+    scenario initial "Initial" {
+        scenario delayed "Delayed" {
+            date 2009-03-15
+        }
+    }
+}
+
+task task1 "Main Task" {
+    start 2009-01-15
+
+    task task2 "Task 2" {
+        start 2009-04-01
+        delayed:start 2009-05-10
+        duration 30d
+        delayed:duration 40d
+    }
+    task task3 "Task 3" { duration 30d depends !task2 }
+    task task4 "Task 4" { duration 10d depends !task2 }
+}
+
+svgtimetimereport "project_b_1.svg" {
+    headline "project_b_1.tjp"
+    scenarios *
+}
+
+svgtimetimereport "project_b_2.svg" {
+    headline "project_b_2"
+    scenarios "project_b_histo1.tjp", "project_b_histo2.tjp"
+}
+
+svgtimetimereport "project_b_3.svg" {
+    headline "project_b_3"
+    scenarios "project_b_*.tjp:*", *
+}
+
+svgtimetimereport "project_b_4.svg" {
+    headline "project_b_4"
+    scenarios "project_b_*.tjp:initial", initial
+}
+
+svgtimetimereport "project_b_5.svg" {
+    headline "project_b_5"
+    scenarios "project_b_histo2.tjp:initial", initial
+}
+
+svgtimetimereport "project_b_6.svg" {
+    headline "project_b_6"
+    scenarios "project_b_histo1.tjp:initial", initial
+}
+
