@@ -42,7 +42,7 @@
 #include "CSVResourceReport.h"
 #include "CSVAccountReport.h"
 #include "XMLReport.h"
-#ifdef HAVE_KDE
+#ifdef HAVE_ICAL_SUPPORT
 #include "ICalReport.h"
 #endif
 #include "ExportReport.h"
@@ -3213,8 +3213,8 @@ ProjectFile::readPriority(int& priority)
 bool
 ProjectFile::readICalTaskReport()
 {
-#ifndef HAVE_KDE
-    warningMessage(i18n("The program was compiled without KDE support. "
+#ifndef HAVE_ICAL_SUPPORT
+    warningMessage(i18n("The program was compiled without iCal (KDEPIM3) support. "
                         "Therefore ICal support has been disabled."));
     return false;
 #else

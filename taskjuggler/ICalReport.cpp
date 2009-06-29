@@ -13,7 +13,7 @@
 
 #include <config.h>
 
-#ifdef HAVE_KDE
+#ifdef HAVE_ICAL_SUPPORT
 
 #include "ICalReport.h"
 

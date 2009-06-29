@@ -1301,7 +1301,7 @@ characters are used.</para></listitem>
 </itemizedlist></para>
 
 </sect2>
-<sect2 id="Changelog_2_4_2"><title>Version 2.4.2 (Some day)</title>
+<sect2 id="Changelog_2_4_2"><title>Version 2.4.2 (2009-06-30)</title>
 <para>
 <itemizedlist mark='opencircle'>
 
@@ -1352,6 +1352,10 @@ characters are used.</para></listitem>
 <listitem><para>Added taskbarprefix and taskbarpostfix properties in taskreport.</para></listitem>
 
 <listitem><para>Export reports now contain vacation dates.</para></listitem>
+
+<listitem><para>iCal support can now be disabled by configuring with
+		--with-ical-support=no for distros that no longer ship
+		with KDEPIM3 packages.</para></listitem>
 
 </itemizedlist></para>
 

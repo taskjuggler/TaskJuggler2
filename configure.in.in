@@ -53,6 +53,17 @@ if test "$cv_option_kdesupport" = yes ;then
 fi  
 KDE_CHECK_LIB64
 
+AC_MSG_CHECKING([for iCal support])
+AC_ARG_WITH(ical-support,
+        [  --with-ical-support[={yes|no}] Enable iCal support [default=yes]],
+        [
+                case "${withval}" in
+                        yes|no) cv_option_icalsupport=$withval;;
+                        *)  AC_MSG_ERROR(bad value ${withval} for --with-ical-support) ;;
+                esac
+        ], [cv_option_icalsupport=yes])
+AC_MSG_RESULT([$cv_option_icalsupport])
+
 dnl generate the config header
 AM_CONFIG_HEADER(config.h) dnl at the distribution this done
 
@@ -93,6 +104,13 @@ if test "$cv_option_kdesupport" = yes ;then
     AC_PATH_KDE 
 
     AC_SUBST(KDE_LIBS)
+    DO_NOT_COMPILE=""
+else
+    kde_htmldir=${datadir}/taskjuggler
+    DO_NOT_COMPILE="TaskJugglerUI Contrib"
+fi
+
+if test "$cv_option_icalsupport" = yes ; then
     dnl These libs are part of KDEPIM
     LIBKCAL="-lkcal"
     dnl Some distros split off a KDEPIM devel package most people
@@ -104,13 +122,12 @@ if test "$cv_option_kdesupport" = yes ;then
 you have KDEPIM and the corresponding development packages
 installed!])
     fi
-    DO_NOT_COMPILE=""
+    AC_DEFINE(HAVE_ICAL_SUPPORT,1,[Define if you have iCal (KDEPIM3) support])
 else
-    kde_htmldir=${datadir}/taskjuggler
     echo "ICalReport.tjp" > TestSuite/Syntax/Correct/ignorelist
     LIBKCAL=""
-    DO_NOT_COMPILE="TaskJugglerUI Contrib"
-fi
+fi  
+
 AC_SUBST(LIBKCAL)
 
 AC_CHECK_PROG(PERL, perl, perl, no)
