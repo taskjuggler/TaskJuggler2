@@ -1,0 +1,61 @@
+project test_max "Tests for projectmax and yearlymax" "1.0" 2009-11-01 - 2010-2-28 {
+  timeformat "%Y-%m-%d"
+  scenario plan "Planned"
+}
+
+resource team "The whole team" {
+  resource one "Mister One" {
+    limits { projectmax 10d }
+  }
+  resource two "Miss Two" {
+    limits { yearlymax 20d }
+  }
+  resource three "Mister Three" {
+  }
+}
+
+task myProject "Tests for projectmax and yearlymax" {
+  start 2009-11-01
+  task a "Task A" {
+    effort 2m
+    allocate team
+  }
+  task b "Task B" {
+    effort 2m
+    allocate team
+  }
+  task c "Task C" {
+    depends !a,!b
+    effort 2m
+    allocate team
+  }
+}
+
+# A traditional Gantt Chart for the TaskJugglerUI
+taskreport "Gantt Chart" {
+  headline "Project Gantt Chart"
+  columns hierarchindex, name, start, end, effort, duration, chart
+  # For this report we like to have the abbreviated weekday in front
+  # of the date. %a is the tag for this.
+  timeformat "%a %Y-%m-%d"
+  loadunit days
+  hideresource 1
+}
+
+# A graph showing resource allocation. It identifies whether each
+# resource is under- or over-allocated for.
+resourcereport "Resource Graph" {
+  headline "Resource Allocation Graph"
+  columns no, name, rate, utilization, freeload, chart
+  loadunit days
+  hidetask 1
+}
+
+# A list of all project resources, both human and material resources,
+# together with the costs for each.
+resourcereport "Resource Sheet" {
+  headline "Resource Sheet"
+  columns no, name, efficiency, id, maxeffort, rate
+  loadunit days
+  hidetask 1
+}

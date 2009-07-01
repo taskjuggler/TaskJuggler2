@@ -123,6 +123,7 @@
         <item> projectids </item>
         <item> projection </item>
         <item> project </item>
+        <item> projectmax </item>
         <item> rate </item>
         <item> rawhead </item>
         <item> rawstylesheet </item>
@@ -189,6 +190,7 @@
         <item> workinghours </item>
         <item> xml </item>
         <item> xmlreport </item>
+        <item> yearlymax </item>
         <item> yearlyworkingdays </item>
     </list>
     <list name="types">

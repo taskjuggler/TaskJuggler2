@@ -724,6 +724,36 @@ Task::bookResources(int sc, time_t date, time_t slotDuration)
                 else if (slotsToLimit < 0 || slotsToLimit > freeSlots)
                     slotsToLimit = freeSlots;
             }
+            if (limits->getYearlyMax() > 0)
+            {
+                uint slotCount = 0;
+                for (QPtrListIterator<Resource> rli(resources); *rli; ++rli)
+                    slotCount += (*rli)->getCurrentYearSlots(date, this);
+                int freeSlots = limits->getYearlyMax() - slotCount;
+                if (freeSlots <= 0)
+                {
+                    if (DEBUGRS(6))
+                        qDebug("  Resource(s) %soverloaded", resStr.latin1());
+                    continue;
+                }
+                else if (slotsToLimit < 0 || slotsToLimit > freeSlots)
+                    slotsToLimit = freeSlots;
+            }
+            if (limits->getProjectMax() > 0)
+            {
+                uint slotCount = 0;
+                for (QPtrListIterator<Resource> rli(resources); *rli; ++rli)
+                    slotCount += (*rli)->getProjectSlots(this);
+                int freeSlots = limits->getProjectMax() - slotCount;
+                if (freeSlots <= 0)
+                {
+                    if (DEBUGRS(6))
+                        qDebug("  Resource(s) %soverloaded", resStr.latin1());
+                    continue;
+                }
+                else if (slotsToLimit < 0 || slotsToLimit > freeSlots)
+                    slotsToLimit = freeSlots;
+            }
         }
 
         /* If the allocation has be marked persistent and a resource

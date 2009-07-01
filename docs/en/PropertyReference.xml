@@ -797,6 +797,8 @@ allocation to a task.</para></descr>
   <seealso>
    <also>monthlymax</also>
    <also>weeklymax</also>
+   <also>yearlymax</also>
+   <also>projectmax</also>
   </seealso>
   <example>&example_limits;</example>
  </property>
@@ -1495,6 +1497,8 @@ has been fixed with version 2.1.</para></descr>
    <optattr>dailymax</optattr>
    <optattr>weeklymax</optattr>
    <optattr>monthlymax</optattr>
+   <optattr>yearlymax</optattr>
+   <optattr>projectmax</optattr>
   </optattributes>
   <example>&example_limits;</example>
  </property>
@@ -1765,6 +1769,38 @@ allocation to a task.</para></descr>
   <seealso>
    <also>dailymax</also>
    <also>weeklymax</also>
+   <also>yearlymax</also>
+   <also>projectmax</also>
+  </seealso>
+  <example>&example_limits;</example>
+ </property>
+ <property name="yearlymax" id="yearlymax" inheritable="Yes">
+  <descr><para>Sets the yearly limit of a resource usage or a resource
+allocation to a task.</para></descr>
+  <attributes>
+   <attr name="value" type="REAL"/>
+   <attr name="unit" type="UNIT"/>
+  </attributes>
+  <seealso>
+   <also>dailymax</also>
+   <also>weeklymax</also>
+   <also>monthlymax</also>
+   <also>projectmax</also>
+  </seealso>
+  <example>&example_limits;</example>
+ </property>
+ <property name="projectmax" id="projectmax" inheritable="Yes">
+  <descr><para>Sets the global project limit of a resource usage or a
+resource allocation to a task.</para></descr>
+  <attributes>
+   <attr name="value" type="REAL"/>
+   <attr name="unit" type="UNIT"/>
+  </attributes>
+  <seealso>
+   <also>dailymax</also>
+   <also>weeklymax</also>
+   <also>monthlymax</also>
+   <also>yearlymax</also>
   </seealso>
   <example>&example_limits;</example>
  </property>
@@ -3134,6 +3170,8 @@ allocation to a task.</para></descr>
   <seealso>
    <also>dailymax</also>
    <also>monthlymax</also>
+   <also>yearlymax</also>
+   <also>projectmax</also>
   </seealso>
   <example>&example_limits;</example>
  </property>

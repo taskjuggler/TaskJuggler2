@@ -122,6 +122,7 @@ Used for font-lock.")
     "projectid"
     "projectids"
     "projection"
+    "projectmax"
     "purge"
     "rate"
     "reference"
@@ -149,6 +150,7 @@ Used for font-lock.")
     "weekstartsmonday"
     "weekstartssunday"
     "workinghours"
+    "yearlymax"
     "yearlyworkingdays")
   "Attributes in taskjuggler.
 Used for font-lock.")

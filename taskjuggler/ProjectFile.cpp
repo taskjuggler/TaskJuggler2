@@ -2853,6 +2853,10 @@ ProjectFile::readLimits()
             limits->setWeeklyMax(uval);
         else if (token == KW("monthlymax"))
             limits->setMonthlyMax(uval);
+        else if (token == KW("yearlymax"))
+            limits->setYearlyMax(uval);
+        else if (token == KW("projectmax"))
+            limits->setProjectMax(uval);
         else
         {
             errorMessage(i18n("Unknown limit type '%1'").arg(token));

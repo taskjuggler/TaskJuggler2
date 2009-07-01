@@ -8,7 +8,7 @@ limits {
 resource r1 "R1" { 
   # Limit the usage of this resource to a maximum of 2 hours per day,
   # 6 hours per week and 2.5 days per month.
-  limits { dailymax 2h weeklymax 6h monthlymax 2.5d }
+  limits { dailymax 2h weeklymax 6h monthlymax 2.5d yearlymax 217d }
 }
 
 resource r2 "R2"
@@ -25,6 +25,6 @@ task t2 "Task 2" {
   duration 60d
   # limits can also be specified per allocation
   allocate r2 {
-    limits { dailymax 4h weeklymax 3d monthlymax 2w }
+    limits { dailymax 4h weeklymax 3d monthlymax 2w projectmax 20d }
   }
 }

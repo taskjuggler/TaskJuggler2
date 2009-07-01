@@ -221,6 +221,7 @@ syn keyword tjspkeyword prioritydown
 syn keyword tjspkeyword priorityup
 syn keyword tjspkeyword profit
 syn keyword tjspkeyword project
+syn keyword tjspkeyword projectmax
 syn keyword tjspkeyword projectid
 syn keyword tjspkeyword projectids
 syn keyword tjspkeyword projection
@@ -323,6 +324,7 @@ syn keyword tjspkeyword xmlreport
 syn keyword tjspkeyword y
 syn keyword tjspkeyword year
 syn keyword tjspkeyword yearly
+syn keyword tjspkeyword yearlymax
 syn keyword tjspkeyword yearlyworkingdays
 syn keyword tjspkeyword years
 syn region  tjpstring	start=+"+ skip=+\\"+ end=+"+ contains=tjparch 

@@ -655,6 +655,7 @@ TjReport::generateResourceListLine(const QtReportElement* reportElement,
                 cellText = i18n("no Limits");
             else
             {
+                const int dwh = report->getProject()->getDailyWorkingHours();
                 int sg = report->getProject()->getScheduleGranularity();
                 if (limits->getDailyMax() > 0)
                     cellText = i18n("D: %1h").arg(limits->getDailyMax() *
@@ -671,7 +672,21 @@ TjReport::generateResourceListLine(const QtReportElement* reportElement,
                     if (!cellText.isEmpty())
                         cellText += ", ";
                     cellText += i18n("M: %1d").arg(limits->getMonthlyMax() *
-                                                      sg / (60 * 60 * 24));
+                                                      sg / (60 * 60 * dwh));
+                }
+                if (limits->getYearlyMax() > 0)
+                {
+                    if (!cellText.isEmpty())
+                        cellText += ", ";
+                    cellText += i18n("Y: %1d").arg(limits->getYearlyMax() *
+                                                      sg / (60 * 60 * dwh));
+                }
+                if (limits->getProjectMax() > 0)
+                {
+                    if (!cellText.isEmpty())
+                        cellText += ", ";
+                    cellText += i18n("P: %1d").arg(limits->getProjectMax() *
+                                                      sg / (60 * 60 * dwh));
                 }
             }
         }

@@ -111,6 +111,8 @@ public:
     uint getCurrentDaySlots(time_t date, const Task* t);
     uint getCurrentWeekSlots(time_t date, const Task* t);
     uint getCurrentMonthSlots(time_t date, const Task* t);
+    uint getCurrentYearSlots(time_t date, const Task* t);
+    uint getProjectSlots(const Task *t);
 
     /***
      * Return the load of the resource (and its children) weighted by their

@@ -29,14 +29,16 @@
 /*
  * Calls to sbIndex are fairly expensive due to the floating point
  * division. We therefor use buffers that stores the index of the
- * first/last slot of a day/week/month for each slot.
+ * first/last slot of a day/week/month/year for each slot.
  */
 static uint* DayStartIndex = 0;
 static uint* WeekStartIndex = 0;
 static uint* MonthStartIndex = 0;
+static uint* YearStartIndex = 0;
 static uint* DayEndIndex = 0;
 static uint* WeekEndIndex = 0;
 static uint* MonthEndIndex = 0;
+static uint* YearEndIndex = 0;
 
 
 Resource::Resource(Project* p, const QString& i, const QString& n,
@@ -76,10 +78,12 @@ Resource::Resource(Project* p, const QString& i, const QString& n,
         DayStartIndex = new uint[sbSize];
         WeekStartIndex = new uint[sbSize];
         MonthStartIndex = new uint[sbSize];
+        YearStartIndex = new uint[sbSize];
         long i = 0;
         uint dayStart = 0;
         uint weekStart = 0;
         uint monthStart = 0;
+        uint yearStart = 0;
         bool weekStartsMonday = project->getWeekStartsMonday();
         for (time_t ts = p->getStart(); i < (long) sbSize; ts +=
              p->getScheduleGranularity(), i++)
@@ -95,15 +99,21 @@ Resource::Resource(Project* p, const QString& i, const QString& n,
             if (ts == beginOfMonth(ts))
                 monthStart = i;
             MonthStartIndex[i] = monthStart;
+
+            if (ts == beginOfYear(ts))
+                yearStart = i;
+            YearStartIndex[i] = yearStart;
         }
 
         DayEndIndex = new uint[sbSize];
         WeekEndIndex = new uint[sbSize];
         MonthEndIndex = new uint[sbSize];
+        YearEndIndex = new uint[sbSize];
         i = sbSize - 1;
         uint dayEnd = i;
         uint weekEnd = i;
         uint monthEnd = i;
+        uint yearEnd = i;
         // WTF does p->getEnd not return the 1st sec after the time frame!!!
         for (time_t ts = p->getEnd() + 1; i >= 0;
              ts -= p->getScheduleGranularity(), i--)
@@ -120,6 +130,10 @@ Resource::Resource(Project* p, const QString& i, const QString& n,
             MonthEndIndex[i] = monthEnd;
             if (ts - beginOfMonth(ts) < (int) p->getScheduleGranularity())
                 monthEnd = i > 0 ? i - 1 : 0;
+
+            YearEndIndex[i] = yearEnd;
+            if (ts - beginOfYear(ts) < (int) p->getScheduleGranularity())
+                yearEnd = i > 0 ? i - 1 : 0;
         }
     }
 
@@ -448,6 +462,52 @@ Resource::isAvailable(time_t date)
             return 2;
         }
     }
+    if ((limits && limits->getYearlyMax() > 0))
+    {
+        // Now check that the resource is not overloaded on this year.
+        uint bookedSlots = 1;
+
+        for (uint i = YearStartIndex[sbIdx]; i <= YearEndIndex[sbIdx]; i++)
+        {
+            SbBooking* b = scoreboard[i];
+            if (b < (SbBooking*) 4)
+                continue;
+
+            bookedSlots++;
+        }
+
+        if (limits && limits->getYearlyMax() > 0 &&
+            bookedSlots > limits->getYearlyMax())
+        {
+            if (DEBUGRS(6))
+                qDebug("  Resource %s overloaded this year (%d)", id.latin1(),
+                       bookedSlots);
+            return 2;
+        }
+    }
+    if ((limits && limits->getProjectMax() > 0))
+    {
+        // Now check that the resource is not overloaded on the whole project.
+        uint bookedSlots = 1;
+
+        for (uint i = 0; i < sbSize; i++)
+        {
+            SbBooking* b = scoreboard[i];
+            if (b < (SbBooking*) 4)
+                continue;
+
+            bookedSlots++;
+        }
+
+        if (limits && limits->getProjectMax() > 0 &&
+            bookedSlots > limits->getProjectMax())
+        {
+            if (DEBUGRS(6))
+                qDebug("  Resource %s overloaded this project (%d)",
+                       id.latin1(), bookedSlots);
+            return 2;
+        }
+    }
 
     return 0;
 }
@@ -743,6 +803,74 @@ Resource::getCurrentMonthSlots(time_t date, const Task* t)
     uint bookedSlots = 0;
 
     for (uint i = MonthStartIndex[sbIdx]; i <= MonthEndIndex[sbIdx]; i++)
+    {
+        SbBooking* b = scoreboard[i];
+        if (b < (SbBooking*) 4)
+            continue;
+
+        if (!t || b->getTask() == t || b->getTask()->isDescendantOf(t))
+            bookedSlots++;
+    }
+
+    return bookedSlots;
+}
+
+uint
+Resource::getCurrentYearSlots(time_t date, const Task* t)
+{
+    /* Return the number of slots this resource is allocated to in the current
+     * scenario. If a task is given, only the slots allocated to this task
+     * will be counted. */
+
+    if (hasSubs())
+    {
+        uint timeSlots = 0;
+        for (ResourceListIterator rli(getSubListIterator()); *rli; ++rli)
+            timeSlots += (*rli)->getCurrentYearSlots(date, t);
+        return timeSlots;
+    }
+
+    if (!scoreboard)
+        return 0;
+
+    uint sbIdx = sbIndex(date);
+
+    uint bookedSlots = 0;
+
+    for (uint i = YearStartIndex[sbIdx]; i <= YearEndIndex[sbIdx]; i++)
+    {
+        SbBooking* b = scoreboard[i];
+        if (b < (SbBooking*) 4)
+            continue;
+
+        if (!t || b->getTask() == t || b->getTask()->isDescendantOf(t))
+            bookedSlots++;
+    }
+
+    return bookedSlots;
+}
+
+uint
+Resource::getProjectSlots(const Task* t)
+{
+    /* Return the number of slots this resource is allocated to in the current
+     * scenario. If a task is given, only the slots allocated to this task
+     * will be counted. */
+
+    if (hasSubs())
+    {
+        uint timeSlots = 0;
+        for (ResourceListIterator rli(getSubListIterator()); *rli; ++rli)
+            timeSlots += (*rli)->getProjectSlots(t);
+        return timeSlots;
+    }
+
+    if (!scoreboard)
+        return 0;
+
+    uint bookedSlots = 0;
+
+    for (uint i = 0; i < sbSize; i++)
     {
         SbBooking* b = scoreboard[i];
         if (b < (SbBooking*) 4)
