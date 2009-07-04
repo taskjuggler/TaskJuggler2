@@ -159,7 +159,7 @@ private:
     bool readWorkingHours(int& dayOfWeek, QPtrList<Interval>* l);
     bool readPriority(int& priority);
     bool readReport(const QString& reportType, Report* parentReport = 0);
-    bool readHTMLReport(const QString& reportType);
+    bool readHTMLReport(const QString& reportType, Report* parentReport = 0);
     bool readHTMLStatusReport();
     bool readCSVReport(const QString& reportType);
     bool readSVGTimeTimeReport(const QString& reportType, Report* parentReport = 0);

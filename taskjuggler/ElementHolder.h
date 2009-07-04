@@ -39,6 +39,13 @@ public:
         return m_element.get();
     }
 
+    virtual void inheritValues(ElementHolder* parent)
+    {
+        if (parent)
+        {
+            this->getTable()->inheritValues(parent->getTable());
+        }
+    }
 private:
     std::auto_ptr<ReportElement> m_element;
 } ;

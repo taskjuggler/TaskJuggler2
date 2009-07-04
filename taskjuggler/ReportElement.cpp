@@ -1011,3 +1011,61 @@ ReportElement::getColumnFormat(const QString& key) const
     return columnFormat[key];
 }
 
+void ReportElement::inheritValues(ReportElement* parent)
+{
+    if (parent)
+    {
+        scenarios = parent->scenarios;
+        clearColumns();
+        for (QPtrListIterator<TableColumnInfo> tli(parent->columns); *tli; ++tli) {
+            TableColumnInfo* ltli = *tli;
+            columns.append(new TableColumnInfo(getScenarioCount(), ltli->getName()));
+        }
+
+        start = parent->start;
+        end = parent->end;
+
+        barLabels = parent->barLabels;
+
+        rawHead = parent->rawHead;
+        rawTail = parent->rawTail;
+
+        timeFormat = parent->timeFormat;
+        shortTimeFormat = parent->shortTimeFormat;
+
+        colors = parent->colors;
+
+        headline = parent->headline;
+        caption = parent->caption;
+
+        for (int i = 0; i < CoreAttributesList::maxSortingLevel; i++) {
+            taskSortCriteria[i] = parent->taskSortCriteria[i];
+            resourceSortCriteria[i] = parent->resourceSortCriteria[i];
+            accountSortCriteria[i] = parent->accountSortCriteria[i];
+        }
+
+        if (parent->hideTask) hideTask = new ExpressionTree(*parent->hideTask ) ;
+        if (parent->hideResource) hideResource = new ExpressionTree(*parent->hideResource ) ;
+        if (parent->hideAccount) hideAccount = new ExpressionTree(*parent->hideAccount ) ;
+        if (parent->rollUpTask) rollUpTask = new ExpressionTree(*parent->rollUpTask ) ;
+        if (parent->rollUpResource) rollUpResource = new ExpressionTree(*parent->rollUpResource ) ;
+        if (parent->rollUpAccount) rollUpAccount = new ExpressionTree(*parent->rollUpAccount ) ;
+
+        /* A report can be limited to the sub-tasks of a certain task. The
+        * taskRoot specifies this task. If set it always ends with a '.'. */
+        taskRoot = parent->taskRoot;
+
+        showPIDs = parent->showPIDs;
+
+        accumulate = parent->accumulate;
+
+        /* The maximum depth of the tree that we have to report in tree-sorting
+        * mode. */
+        maxDepthTaskList = parent->maxDepthTaskList;
+        maxDepthResourceList = parent->maxDepthResourceList;
+        maxDepthAccountList = parent->maxDepthAccountList;
+
+        taskBarPrefix = parent->taskBarPrefix;
+        taskBarPostfix = parent->taskBarPostfix;
+    }
+}

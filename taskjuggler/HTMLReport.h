@@ -51,6 +51,8 @@ public:
         rawTail = tail;
     }
 
+    virtual void inheritValues();
+
 protected:
     QString rawStyleSheet;
     QString rawHead;

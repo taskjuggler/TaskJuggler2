@@ -259,6 +259,7 @@ public:
     virtual void genCellTotal(TableCellInfo*) = 0;
     virtual void genCellSummary(TableCellInfo*) = 0;
 
+    virtual void inheritValues(ReportElement* parent);
 protected:
     void addCustomAttributeColumns
         (const QDict<CustomAttributeDefinition>& cad);

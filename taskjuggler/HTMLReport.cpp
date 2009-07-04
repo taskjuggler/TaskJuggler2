@@ -11,8 +11,8 @@
  */
 
 #include "HTMLReport.h"
-
 #include "Project.h"
+#include "debug.h"
 
 HTMLReport::HTMLReport(Project* p, const QString& f, const QString& df,
                        int dl) :
@@ -108,3 +108,16 @@ HTMLReport::generateFooter()
     }
 }
 
+void HTMLReport::inheritValues()
+{
+    Report::inheritValues();
+
+    HTMLReport* parent = dynamic_cast<HTMLReport*>(getParentReport());
+
+    if (parent)
+    {
+        rawStyleSheet = parent->rawStyleSheet;
+        rawHead = parent->rawHead;
+        rawTail = parent->rawTail;
+    }
+}

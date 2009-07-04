@@ -32,7 +32,7 @@ public:
     AllScenario(Project* pr, Scenario* scnr):project(pr),sc(scnr) { }
     Project* project;
     Scenario* sc;
-    AllScenario operator=(const AllScenario& op) { project = op.project; sc = op.sc; }
+    AllScenario operator=(const AllScenario& op) { project = op.project; sc = op.sc; return *this; }
 };
 
 /**
