@@ -1133,6 +1133,9 @@ bool
 ProjectFile::readInclude()
 {
     QString fileName;
+    QDict<Macro> localmacros;
+    Macro* parameter = 0;
+    localmacros.setAutoDelete(true);
 
     if (nextToken(fileName) != STRING)
     {
@@ -1147,7 +1150,7 @@ ProjectFile::readInclude()
         return false;
     }
 
-    QString token;
+    QString token, value;
     TokenType tt;
 
     QString taskPrefix = getTaskPrefix();
@@ -1174,6 +1177,36 @@ ProjectFile::readInclude()
                 }
                 taskPrefix = getTaskPrefix() + token + ".";
             }
+            else if (token == KW("macro"))
+            {
+                QString id;
+                if (nextToken(id) != ID)
+                {
+                    errorMessage(i18n("Macro ID expected"));
+                    return false;
+                }
+                if (localmacros[id])
+                {
+                    errorMessage(i18n("Parameter value \'%1\' is defined twice.")
+                            .arg(token));
+                    return false;
+                }
+                QString file = openFiles.last()->getFile();
+                uint line = openFiles.last()->getLine();
+                if (nextToken(token) != MacroBody)
+                {
+                    errorMessage(i18n("Macro body expected"));
+                    return false;
+                }
+                Macro* macro = new Macro(id, token, file, line);
+                localmacros.insert(token, macro);
+
+                // Note that we may insert a macro which is already existing. This is not a problem
+                // because QDict will access the last inserted macro. In other words,
+                // there is a precedence rule.
+                // The macro inserted here will be deleted in FileInfo::close().
+                macros.insertMacro(macro);
+            }
             else
             {
                 errorMessage(i18n("Invalid optional attribute \'%1\'")
@@ -1187,6 +1220,9 @@ ProjectFile::readInclude()
 
     if (!open(fileName, parentPath, taskPrefix))
         return false;
+
+    localmacros.setAutoDelete(false);
+    openFiles.getLast()->setLocalMacros(localmacros);
 
     return true;
 }

@@ -1,0 +1,16 @@
+project myProjectId "My Project" "1.0" 2009-07-12 - 2010-01-08
+
+task task1 "Task1" {
+    start 2009-07-12
+
+    task task2 "Task2" {
+        duration 10d
+    }
+    task task3 "Task3" {
+        duration 5d
+    }
+}
+
+include "IncludeParametersReports.tji" { macro reporttype [taskreport]         macro reportname [Task Report] macro reportextension [ ] }
+include "IncludeParametersReports.tji" { macro reporttype [htmltaskreport]     macro reportname [Task Report] macro reportextension [.html] }
+include "IncludeParametersReports.tji" { macro reporttype [svggantttaskreport] macro reportname [Task Report] macro reportextension [.svg] }
