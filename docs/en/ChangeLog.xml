@@ -1301,14 +1301,9 @@ characters are used.</para></listitem>
 </itemizedlist></para>
 
 </sect2>
-<sect2 id="Changelog_2_4_2"><title>Version 2.4.2 (2009-06-30)</title>
+<sect2 id="Changelog_2_4_2"><title>Version 2.4.2 (2009-07-11)</title>
 <para>
 <itemizedlist mark='opencircle'>
-
-<listitem><para>Added 'accounts' column to reports.</para></listitem>
-
-<listitem><para>Added 'isDependencyOf()' function for logical
-		expressions.</para></listitem>
 
 <listitem><para>Fixed crash when existing template dialog with
 		unchanged selection. This only happened on systems
@@ -1328,9 +1323,6 @@ characters are used.</para></listitem>
 
 <listitem><para>Fixed crash when the UI was started with a project without reports.</para></listitem>
 
-<listitem><para>Added support for timezones where the difference to
-		UTC is not a multiple of 60 minutes.</para></listitem>
-
 <listitem><para>Corrected a bug that caused tasks with no end date
 		when the specified bookings matched exactly the
 		specified effort but the daily working hours were not
@@ -1345,6 +1337,14 @@ characters are used.</para></listitem>
 
 <listitem><para>The end date of duration tasks with bookings was not
 		properly calculated. Fixed.</para></listitem>
+
+<listitem><para>Added support for timezones where the difference to
+		UTC is not a multiple of 60 minutes.</para></listitem>
+
+<listitem><para>Added 'accounts' column to reports.</para></listitem>
+
+<listitem><para>Added 'isDependencyOf()' function for logical
+		expressions.</para></listitem>
 
 <listitem><para>Added double and middle click facility in interactive 
 		report.</para></listitem>
