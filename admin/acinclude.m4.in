@@ -325,7 +325,7 @@ AC_DEFUN([AC_PATH_QT_MOC_UIC],
          KDE_CHECK_UIC_FLAG(nounload,,ac_uic_supports_nounload=yes,ac_uic_supports_nounload=no)
 
          if test x$ac_uic_supports_libpath = xyes; then
-             UIC="$UIC -L \$(kde_widgetdir)"
+             UIC="$UIC -L \$(kde_widgetdir) -L . "
          fi
          if test x$ac_uic_supports_nounload = xyes; then
              UIC="$UIC -nounload"

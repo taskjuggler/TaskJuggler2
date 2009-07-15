@@ -31,7 +31,6 @@
 
 #include "Project.h"
 #include "HTMLReport.h"
-#include "ICalReport.h"
 #include "CSVReport.h"
 #include "XMLReport.h"
 #include "ExportReport.h"
