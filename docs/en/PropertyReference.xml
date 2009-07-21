@@ -1776,7 +1776,11 @@ allocation to a task.</para></descr>
  </property>
  <property name="yearlymax" id="yearlymax" inheritable="Yes">
   <descr><para>Sets the yearly limit of a resource usage or a resource
-allocation to a task.</para></descr>
+allocation to a task. The properties "projectmax" and "yearlymax" should
+be avoided on projects with hundreds or thousands of tasks or with low
+timingresolution, otherwise computing time may become humanly
+unbearable. Using yearlymax on projects with only tens of tasks and the
+default timingresolution is okay on a 2009 low cost computer.</para></descr>
   <attributes>
    <attr name="value" type="REAL"/>
    <attr name="unit" type="UNIT"/>
@@ -1791,7 +1795,11 @@ allocation to a task.</para></descr>
  </property>
  <property name="projectmax" id="projectmax" inheritable="Yes">
   <descr><para>Sets the global project limit of a resource usage or a
-resource allocation to a task.</para></descr>
+resource allocation to a task. The properties "projectmax" and "yearlymax"
+should be avoided on projects with hundreds or thousands of tasks or with low
+timingresolution, otherwise computing time may become humanly
+unbearable. Using projectmax on projects with only tens of tasks and the
+default timingresolution is okay on a 2009 low cost computer.</para></descr>
   <attributes>
    <attr name="value" type="REAL"/>
    <attr name="unit" type="UNIT"/>
