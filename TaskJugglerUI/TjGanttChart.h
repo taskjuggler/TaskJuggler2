@@ -107,11 +107,12 @@ private:
     void drawTask(const Task* t, const Resource* r);
     void drawTaskShape(int start, int end, int centerY, int height,
                        int barWidth, bool critical, bool outlineOnly,
-                       QCanvas* canvas);
+                       QCanvas* canvas, bool error = false);
     void drawMilestoneShape(int centerX, int centerY, int height,
-                            bool critical, bool outlineOnly, QCanvas* canvas);
+                            bool critical, bool outlineOnly, QCanvas* canvas, bool error = false);
     void drawContainterShape(int start, int end, int centerY, int height,
                              bool critical, bool outlineOnly, QCanvas* canvas);
+    void drawTaskLimit(int cx, int cy, int height, bool start, QCanvas* canvas, bool error = false);
     void drawDependencies(const Task* t1, TjLineAccounter* collisionDetector);
     void drawTaskResource(Resource* r, const Task* t);
     void drawResource(Resource* r);

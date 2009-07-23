@@ -23,6 +23,7 @@
 #include <qtimer.h>
 #include <qpopupmenu.h>
 #include <qpaintdevicemetrics.h>
+#include <qclipboard.h>
 
 #include <klistview.h>
 #include <klocale.h>
@@ -1062,6 +1063,7 @@ TjReport::doPopupMenu(QListViewItem* lvi, const QPoint& pos, int)
         menu.insertItem(i18n("&Edit Task"), 1);
         menu.insertItem(i18n("Show Task &Details"), 2);
         //menu.insertItem(i18n("&Zoom to fit Task"), 3);
+        menu.insertItem(i18n("&Task Id in Clipboard"), 4);
         switch (menu.exec(pos))
         {
             case 1:
@@ -1071,6 +1073,9 @@ TjReport::doPopupMenu(QListViewItem* lvi, const QPoint& pos, int)
                 showTaskDetails(t);
                 break;
             case 3:
+                break;
+            case 4:
+                QApplication::clipboard()->setText("t->getId() <" + t->getId() +">" );
                 break;
             default:
                 break;

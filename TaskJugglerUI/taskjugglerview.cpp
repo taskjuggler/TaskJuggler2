@@ -741,7 +741,7 @@ TaskJugglerView::loadProject(const KURL& url)
     setLoadingProject(false);
 
     // Show message list when errors have occured
-    if (TJMH.getErrors() > 0 || TJMH.getWarnings() > 0)
+    if (TJMH.getErrors() > 0)
         showErrorMessages();
     else
     {
@@ -751,7 +751,8 @@ TaskJugglerView::loadProject(const KURL& url)
         vl.append(int(h));
         vl.append(int(0));
         mw->editorSplitter->setSizes(vl);
-        changeStatusBar(i18n("The project has been scheduled "
+        if (TJMH.getWarnings() == 0)
+            changeStatusBar(i18n("The project has been scheduled "
                              "without problems."));
 
         KMainWindow* mainWindow = dynamic_cast<KMainWindow*>(parent());
@@ -769,7 +770,11 @@ TaskJugglerView::loadProject(const KURL& url)
         }
         else
             showEditor();
+
+        if (TJMH.getWarnings() > 0)
+            showErrorMessages();
     }
+
 
     return true;
 }
@@ -1185,7 +1190,7 @@ TaskJugglerView::showErrorMessages()
     else
         vl = editorSplitterSizes;
     mw->editorSplitter->setSizes(vl);
-    changeStatusBar(i18n("The project contains problems!"));
+    changeStatusBar(i18n("The project contains problems!!"));
     showEditor();
     mw->messageListView->clearSelection();
     QListViewItem* lvi = mw->messageListView->firstChild();
