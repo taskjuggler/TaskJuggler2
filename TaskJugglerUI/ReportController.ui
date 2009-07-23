@@ -131,6 +131,8 @@
 <includehints>
     <includehint>klistviewsearchline.h</includehint>
     <includehint>kdateedit.h</includehint>
-    <includehint>kdateedit.h</includehint>
 </includehints>
+<includes>
+    <include location="global" impldecl="in declaration">kdateedit.h</include>
+</includes>
 </UI>
