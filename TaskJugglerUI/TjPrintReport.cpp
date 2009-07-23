@@ -491,7 +491,7 @@ TjPrintReport::generateResourceListRow(TjReportRow* row,
                 cellText = i18n("no Limits");
             else
             {
-                const int dwh = report->getProject()->getDailyWorkingHours();
+                const int dwh = reportDef->getProject()->getDailyWorkingHours();
                 int sg = reportDef->getProject()->getScheduleGranularity();
                 if (limits->getDailyMax() > 0)
                     cellText = i18n("D: %1h").arg(limits->getDailyMax() *
