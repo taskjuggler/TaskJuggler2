@@ -97,6 +97,7 @@ private:
     KListViewItem* qtReports;
     KListViewItem* htmlReports;
     KListViewItem* csvReports;
+    KListViewItem* svgReports;
     KListViewItem* xmlReports;
     KListViewItem* icalReports;
     KListViewItem* exportReports;

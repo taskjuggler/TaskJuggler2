@@ -41,6 +41,7 @@
 #include "CSVTaskReport.h"
 #include "CSVResourceReport.h"
 #include "CSVAccountReport.h"
+#include "SVGTimeTimeReport.h"
 #include "XMLReport.h"
 #ifdef HAVE_ICAL_SUPPORT
 #include "ICalReport.h"
@@ -236,7 +237,7 @@ ProjectFile::parse()
                 TokenType tt;
                 if ((tt = nextToken(token)) != REAL && tt != INTEGER)
                 {
-                    errorMessage(i18n("Real value exptected"));
+                    errorMessage(i18n("Real value expected"));
                     return false;
                 }
                 proj->setMinEffort(token.toDouble());
@@ -247,7 +248,7 @@ ProjectFile::parse()
                 TokenType tt;
                 if ((tt = nextToken(token)) != REAL && tt != INTEGER)
                 {
-                    errorMessage(i18n("Real value exptected"));
+                    errorMessage(i18n("Real value expected"));
                     return false;
                 }
                 UsageLimits* limits = new UsageLimits;
@@ -271,7 +272,7 @@ ProjectFile::parse()
                 TokenType tt;
                 if ((tt = nextToken(token)) != REAL && tt != INTEGER)
                 {
-                    errorMessage(i18n("Real value exptected"));
+                    errorMessage(i18n("Real value expected"));
                     return false;
                 }
                 proj->setRate(token.toDouble());
@@ -474,6 +475,12 @@ ProjectFile::parse()
                      token == KW("csvaccountreport"))
             {
                 if (!readCSVReport(token))
+                    return false;
+                break;
+            }
+            else if (token == KW("svgtimetimereport"))
+            {
+                if (!readSVGTimeTimeReport(token))
                     return false;
                 break;
             }
@@ -961,6 +968,16 @@ ProjectFile::readScenario(Scenario* parent)
                     return -1;
                 }
                 scenario->setMaxPaths(token.toLong());
+            }
+            else if (token == KW("date"))
+            {
+                time_t date;
+                if (!readDate(date, 0))
+                {
+                    errorMessage(i18n("Date expected"));
+                    return -1;
+                }
+                scenario->setDate(date);
             }
             else
             {
@@ -2182,7 +2199,7 @@ ProjectFile::readResourceBody(Resource* r)
             TokenType tt;
             if ((tt = nextToken(token)) != REAL && tt != INTEGER)
             {
-                errorMessage(i18n("Real value exptected"));
+                errorMessage(i18n("Real value expected"));
                 return false;
             }
             r->setMinEffort(token.toDouble());
@@ -2192,7 +2209,7 @@ ProjectFile::readResourceBody(Resource* r)
             TokenType tt;
             if ((tt = nextToken(token)) != REAL && tt != INTEGER)
             {
-                errorMessage(i18n("Real value exptected"));
+                errorMessage(i18n("Real value expected"));
                 return false;
             }
             UsageLimits* limits = new UsageLimits;
@@ -2224,7 +2241,7 @@ ProjectFile::readResourceBody(Resource* r)
             TokenType tt;
             if ((tt = nextToken(token)) != REAL && tt != INTEGER)
             {
-                errorMessage(i18n("Real value exptected"));
+                errorMessage(i18n("Real value expected"));
                 return false;
             }
             r->setRate(token.toDouble());
@@ -3450,27 +3467,38 @@ ProjectFile::readXMLReport()
             else if (token == KW("scenarios"))
             {
                 report->clearScenarios();
-                for ( ; ; )
+                QString scId;
+                tt = nextToken(scId);
+                if (tt == STAR)
                 {
-                    QString scId;
-                    if ((tt = nextToken(scId)) != ID)
+                    for (ScenarioListIterator sli(proj->getScenarioIterator()); *sli ; ++sli)
+                        if ((*sli)->getEnabled())
+                            report->addScenario(proj->getScenarioIndex((*sli)->getId()) - 1);
+                }
+                else
+                {
+                    for ( ; ; )
                     {
-                        errorMessage(i18n("Scenario ID expected"));
-                        goto error;
-                    }
-                    int scIdx;
-                    if ((scIdx = proj->getScenarioIndex(scId)) == -1)
-                    {
-                        errorMessage(i18n("Unknown scenario %1")
-                                     .arg(scId));
-                        goto error;
-                    }
-                    if (proj->getScenario(scIdx - 1)->getEnabled())
-                        report->addScenario(proj->getScenarioIndex(scId) - 1);
-                    if ((tt = nextToken(token)) != COMMA)
-                    {
-                        returnToken(tt, token);
-                        break;
+                        if (tt != ID)
+                        {
+                            errorMessage(i18n("Scenario ID or '*' expected"));
+                            goto error;
+                        }
+                        int scIdx;
+                        if ((scIdx = proj->getScenarioIndex(scId)) == -1)
+                        {
+                            errorMessage(i18n("Unknown scenario %1")
+                                        .arg(scId));
+                            goto error;
+                        }
+                        if (proj->getScenario(scIdx - 1)->getEnabled())
+                            report->addScenario(proj->getScenarioIndex(scId) - 1);
+                        if ((tt = nextToken(token)) != COMMA)
+                        {
+                            returnToken(tt, token);
+                            break;
+                        }
+                        tt = nextToken(scId);
                     }
                 }
             }
@@ -3666,7 +3694,7 @@ ProjectFile::readReport(const QString& reportType)
             {
                 if (nextToken(token) != STRING)
                 {
-                    errorMessage(i18n("String exptected"));
+                    errorMessage(i18n("String expected"));
                     goto error;
                 }
                 tab->setHeadline(token);
@@ -3675,7 +3703,7 @@ ProjectFile::readReport(const QString& reportType)
             {
                 if (nextToken(token) != STRING)
                 {
-                    errorMessage(i18n("String exptected"));
+                    errorMessage(i18n("String expected"));
                     goto error;
                 }
                 tab->setCaption(token);
@@ -3923,27 +3951,41 @@ ProjectFile::readHTMLReport(const QString& reportType)
             else if (token == KW("scenarios"))
             {
                 tab->clearScenarios();
-                for ( ; ; )
+                QString scId;
+                tt = nextToken(scId);
+                if (tt == STAR)
                 {
-                    QString scId;
-                    if ((tt = nextToken(scId)) != ID)
+                    for (ScenarioListIterator sli(proj->getScenarioIterator()); *sli ; ++sli)
+                        if ((*sli)->getEnabled())
+                            tab->addScenario(proj->getScenarioIndex((*sli)->getId()) - 1);
+                }
+                else
+                {
+                    for ( ; ; )
                     {
-                        errorMessage(i18n("Scenario ID expected"));
-                        goto exit_error;
-                    }
-                    int scIdx;
-                    if ((scIdx = proj->getScenarioIndex(scId)) == -1)
-                    {
-                        errorMessage(i18n("Unknown scenario '%1'")
-                                     .arg(scId));
-                        goto exit_error;
-                    }
-                    if (proj->getScenario(scIdx - 1)->getEnabled())
-                        tab->addScenario(proj->getScenarioIndex(scId) - 1);
-                    if ((tt = nextToken(token)) != COMMA)
-                    {
-                        returnToken(tt, token);
-                        break;
+                        if (tt != ID)
+                        {
+                            errorMessage(i18n("Scenario ID or '*' expected"));
+                            goto exit_error;
+                        }
+                        else
+                        {
+                            int scIdx;
+                            if ((scIdx = proj->getScenarioIndex(scId)) == -1)
+                            {
+                                errorMessage(i18n("Unknown scenario '%1'")
+                                            .arg(scId));
+                                goto exit_error;
+                            }
+                            if (proj->getScenario(scIdx - 1)->getEnabled())
+                                tab->addScenario(proj->getScenarioIndex(scId) - 1);
+                            if ((tt = nextToken(token)) != COMMA)
+                            {
+                                returnToken(tt, token);
+                                break;
+                            }
+                        }
+                        tt = nextToken(scId);
                     }
                 }
             }
@@ -3972,7 +4014,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
             {
                 if (nextToken(token) != STRING)
                 {
-                    errorMessage(i18n("String exptected"));
+                    errorMessage(i18n("String expected"));
                     goto exit_error;
                 }
                 report->setHeadline(token);
@@ -3984,7 +4026,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
             {
                 if (nextToken(token) != STRING)
                 {
-                    errorMessage(i18n("String exptected"));
+                    errorMessage(i18n("String expected"));
                     goto exit_error;
                 }
                 tab->setCaption(token);
@@ -4256,7 +4298,7 @@ ProjectFile::readHTMLStatusReport()
             {
                 if (nextToken(token) != STRING)
                 {
-                    errorMessage(i18n("String exptected"));
+                    errorMessage(i18n("String expected"));
                     goto error;
                 }
                 report->setHeadline(token);
@@ -4265,7 +4307,7 @@ ProjectFile::readHTMLStatusReport()
             {
                 if (nextToken(token) != STRING)
                 {
-                    errorMessage(i18n("String exptected"));
+                    errorMessage(i18n("String expected"));
                     goto error;
                 }
                 report->setCaption(token);
@@ -4620,6 +4662,178 @@ error:
 }
 
 bool
+ProjectFile::readSVGTimeTimeReport(const QString& reportType)
+{
+    QString token;
+    if (nextToken(token) != STRING)
+    {
+        errorMessage(i18n("File name expected"));
+        return false;
+    }
+
+    SVGTimeTimeReport* report = 0;
+    if (reportType == KW("svgtimetimereport"))
+    {
+        report = new SVGTimeTimeReport(proj, token, getFile(), getLine());
+    }
+    else
+    {
+        qFatal("readSVGTimeTimeReport: bad report type");
+        return false;   // Just to please the compiler.
+    }
+
+    TokenType tt;
+    if ((tt = nextToken(token)) == LBRACE)
+    {
+        for ( ; ; )
+        {
+            if ((tt = nextToken(token)) == RBRACE)
+                break;
+            else if (tt != ID)
+            {
+                errorMessage(i18n("Attribute ID or '}' expected"));
+                goto error;
+            }
+            if (token == KW("start"))
+            {
+                time_t start;
+                if (!readDate(start, 0))
+                    goto error;
+                report->setStart(start);
+            }
+            else if (token == KW("end"))
+            {
+                time_t end;
+                if (!readDate(end, 1))
+                    goto error;
+                report->setEnd(end);
+            }
+            else if (token == KW("period"))
+            {
+                Interval iv;
+                if (!readInterval(iv))
+                    goto error;
+                report->setPeriod(iv);
+            }
+            else if (token == KW("hidetask"))
+            {
+                Operation* op;
+                QString fileName = openFiles.last()->getFile();
+                int lineNo = openFiles.last()->getLine();
+                if ((op = readLogicalExpression()) == 0)
+                    goto error;
+                ExpressionTree* et = new ExpressionTree(op);
+                et->setDefLocation(fileName, lineNo);
+                report->setHideTask(et);
+            }
+            else if (token == KW("taskroot"))
+            {
+                if ((tt = nextToken(token)) == ID ||
+                    tt == ABSOLUTE_ID)
+                {
+                    if (!proj->getTask(token))
+                    {
+                        errorMessage(i18n("taskroot must be a known task"));
+                        goto error;
+                    }
+                    report->setTaskRoot(token + ".");
+                }
+                else
+                {
+                    errorMessage(i18n("Task ID expected"));
+                    goto error;
+                }
+            }
+            else if (token == KW("timeformat"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("Time format string expected"));
+                    goto error;
+                }
+                report->setTimeFormat(token);
+            }
+            else if (token == KW("headline"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("String expected"));
+                    return false;
+                }
+                report->setHeadline(token);
+            }
+            else if (token == KW("caption"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("String expected"));
+                    return false;
+                }
+                report->setCaption(getMacros().expandReportVariable(token, 0));
+            }
+            else if (token == KW("sorttasks"))
+            {
+                if (!readSorting(report, 0))
+                    return false;
+            }
+            else if (token == KW("scenarios"))
+            {
+                report->clearScenarios();
+                QString scId;
+                tt = nextToken(scId);
+                if (tt == STAR)
+                {
+                    for (ScenarioListIterator sli(proj->getScenarioIterator()); *sli ; ++sli)
+                        if ((*sli)->getEnabled())
+                            report->addScenario(proj->getScenarioIndex((*sli)->getId()) - 1);
+                }
+                else
+                {
+                    for ( ; ; )
+                    {
+                        if (tt != ID)
+                        {
+                            errorMessage(i18n("Scenario ID or '*' expected"));
+                            goto error;
+                        }
+                        int scIdx;
+                        if ((scIdx = proj->getScenarioIndex(scId)) == -1)
+                        {
+                            errorMessage(i18n("Unknown scenario %1")
+                                        .arg(scId));
+                            goto error;
+                        }
+                        if (proj->getScenario(scIdx - 1)->getEnabled())
+                            report->addScenario(proj->getScenarioIndex(scId) - 1);
+                        if ((tt = nextToken(token)) != COMMA)
+                        {
+                            returnToken(tt, token);
+                            break;
+                        }
+                        tt = nextToken(scId);
+                    }
+                }
+            }
+            else
+            {
+                errorMessage(i18n("Illegal attribute"));
+                goto error;
+            }
+        }
+    }
+    else
+        returnToken(tt, token);
+
+    proj->addReport(report);
+
+    return true;
+
+error:
+    delete report;
+    return false;
+}
+
+bool
 ProjectFile::readExportReport()
 {
     QString token;
@@ -4750,27 +4964,38 @@ ProjectFile::readExportReport()
             else if (token == KW("scenarios"))
             {
                 report->clearScenarios();
-                for ( ; ; )
+                QString scId;
+                tt = nextToken(scId);
+                if (tt == STAR)
                 {
-                    QString scId;
-                    if ((tt = nextToken(scId)) != ID)
+                    for (ScenarioListIterator sli(proj->getScenarioIterator()); *sli ; ++sli)
+                        if ((*sli)->getEnabled())
+                            report->addScenario(proj->getScenarioIndex((*sli)->getId()) - 1);
+                }
+                else
+                {
+                    for ( ; ; )
                     {
-                        errorMessage(i18n("Scenario ID expected"));
-                        goto error;
-                    }
-                    int scIdx;
-                    if ((scIdx = proj->getScenarioIndex(scId)) == -1)
-                    {
-                        errorMessage(i18n("Unknown scenario %1")
-                                     .arg(scId));
-                        goto error;
-                    }
-                    if (proj->getScenario(scIdx - 1)->getEnabled())
-                        report->addScenario(proj->getScenarioIndex(scId) - 1);
-                    if ((tt = nextToken(token)) != COMMA)
-                    {
-                        returnToken(tt, token);
-                        break;
+                        if (tt != ID)
+                        {
+                            errorMessage(i18n("Scenario ID or '*' expected"));
+                            goto error;
+                        }
+                        int scIdx;
+                        if ((scIdx = proj->getScenarioIndex(scId)) == -1)
+                        {
+                            errorMessage(i18n("Unknown scenario %1")
+                                        .arg(scId));
+                            goto error;
+                        }
+                        if (proj->getScenario(scIdx - 1)->getEnabled())
+                            report->addScenario(proj->getScenarioIndex(scId) - 1);
+                        if ((tt = nextToken(token)) != COMMA)
+                        {
+                            returnToken(tt, token);
+                            break;
+                        }
+                        tt = nextToken(scId);
                     }
                 }
             }
@@ -4895,27 +5120,38 @@ ProjectFile::readReportElement(ReportElement* el)
             else if (token == KW("scenarios"))
             {
                 el->clearScenarios();
-                for ( ; ; )
+                QString scId;
+                tt = nextToken(scId);
+                if (tt == STAR)
                 {
-                    QString scId;
-                    if ((tt = nextToken(scId)) != ID)
+                    for (ScenarioListIterator sli(proj->getScenarioIterator()); *sli ; ++sli)
+                        if ((*sli)->getEnabled())
+                            el->addScenario(proj->getScenarioIndex((*sli)->getId()) - 1);
+                }
+                else
+                {
+                    for ( ; ; )
                     {
-                        errorMessage(i18n("Scenario ID expected"));
-                        return false;
-                    }
-                    int scIdx;
-                    if ((scIdx = proj->getScenarioIndex(scId)) == -1)
-                    {
-                        errorMessage(i18n("Unknown scenario %1")
-                                     .arg(scId));
-                        return false;
-                    }
-                    if (proj->getScenario(scIdx - 1)->getEnabled())
-                        el->addScenario(proj->getScenarioIndex(scId) - 1);
-                    if ((tt = nextToken(token)) != COMMA)
-                    {
-                        returnToken(tt, token);
-                        break;
+                        if (tt != ID)
+                        {
+                            errorMessage(i18n("Scenario ID or '*' expected"));
+                            return false;
+                        }
+                        int scIdx;
+                        if ((scIdx = proj->getScenarioIndex(scId)) == -1)
+                        {
+                            errorMessage(i18n("Unknown scenario %1")
+                                        .arg(scId));
+                            return false;
+                        }
+                        if (proj->getScenario(scIdx - 1)->getEnabled())
+                            el->addScenario(proj->getScenarioIndex(scId) - 1);
+                        if ((tt = nextToken(token)) != COMMA)
+                        {
+                            returnToken(tt, token);
+                            break;
+                        }
+                        tt = nextToken(scId);
                     }
                 }
             }
@@ -4944,7 +5180,7 @@ ProjectFile::readReportElement(ReportElement* el)
             {
                 if (nextToken(token) != STRING)
                 {
-                    errorMessage(i18n("String exptected"));
+                    errorMessage(i18n("String expected"));
                     return false;
                 }
                 el->setHeadline(token);
@@ -4953,7 +5189,7 @@ ProjectFile::readReportElement(ReportElement* el)
             {
                 if (nextToken(token) != STRING)
                 {
-                    errorMessage(i18n("String exptected"));
+                    errorMessage(i18n("String expected"));
                     return false;
                 }
                 el->setCaption(token);

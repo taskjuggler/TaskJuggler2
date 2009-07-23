@@ -1,0 +1,16 @@
+# The svg reports include localized strings, so we must ensure that
+# we use the same LOCALE as the reference files have used.
+export LANG=en_US
+export LC_ALL=en_US
+export LC_COLLATE=POSIX
+
+../../taskjuggler/taskjuggler project_a.tjp || exit 1
+
+cmp project_a_1.svg projectReference_a_1.svg || exit 1
+cmp project_a_2.svg projectReference_a_2.svg || exit 1
+cmp project_a_3.svg projectReference_a_3.svg || exit 1
+cmp project_a_4.svg projectReference_a_4.svg || exit 1
+cmp project_a_5.svg projectReference_a_5.svg || exit 1
+
+rm project_*.svg
+

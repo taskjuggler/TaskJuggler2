@@ -34,23 +34,24 @@ CSVResourceReport.cpp CSVResourceReportElement.cpp \
 CSVAccountReportElement.cpp \
 ExportReport.cpp \
 XMLReport.cpp \
+SVGTimeTimeReport.cpp \
 Project.cpp ICalReport.cpp
 
 libtaskjuggler_la_LDFLAGS = $(all_libraries) $(QT_LDFLAGS) -version-info 3:3:0 -no-undefined
-libtaskjuggler_la_LIBADD = $(LIB_QT) $(KDE_LIBS) $(LIBKCAL) 
+libtaskjuggler_la_LIBADD = $(LIB_QT) $(KDE_LIBS) $(LIBKCAL)
 libtaskjuggler_la_METASOURCES = AUTO
 
 bin_PROGRAMS = taskjuggler
-taskjuggler_SOURCES = main.cpp 
+taskjuggler_SOURCES = main.cpp
 
-taskjuggler_LDADD = libtaskjuggler.la 
+taskjuggler_LDADD = libtaskjuggler.la
 
 # set the include path for X, qt and KDE
 INCLUDES = $(ICAL_INCLUDES) $(all_includes)
 
 KDE_OPTIONS = qtonly
 
-messages: 
+messages:
 	$(XGETTEXT) -ki18n -kI18N_NOOP --output=../i18n/taskjuggler/taskjuggler.pot *.cpp
 
 #include ../admin/Doxyfile.am

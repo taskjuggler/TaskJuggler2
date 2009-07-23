@@ -1351,14 +1351,14 @@ characters are used.</para></listitem>
 
 <listitem><para>Added taskbarprefix and taskbarpostfix properties in taskreport.</para></listitem>
 
-<listitem><para>Export reports now contain vacation dates.</para></listitem>
-
 </itemizedlist></para>
 
 </sect2>
 <sect2 id="Changelog_2_4_3"><title>Version 2.4.3 (2009-07-15)</title>
 <para>
 <itemizedlist mark='opencircle'>
+
+<listitem><para>Added SVG timetime report.</para></listitem>
 
 <listitem><para>iCal support can now be disabled by configuring with
 		--with-ical-support=no for distros that no longer ship

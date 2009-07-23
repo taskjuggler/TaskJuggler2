@@ -61,3 +61,11 @@ for f in *.tjp ; do
 done
 cd ..
 
+cd SVG-Reports
+../../taskjuggler/taskjuggler project_a.tjp
+cp project_a_1.svg projectReference_a_1.svg
+cp project_a_2.svg projectReference_a_2.svg
+cp project_a_3.svg projectReference_a_3.svg
+cp project_a_4.svg projectReference_a_4.svg
+cp project_a_5.svg projectReference_a_5.svg
+cd ..

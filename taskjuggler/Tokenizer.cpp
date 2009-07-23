@@ -294,6 +294,8 @@ Tokenizer::nextToken(QString& token)
                 return AND;
             case '|':
                 return OR;
+            case '*':
+                return STAR;
             case '>':
             {
                 if ((c = getC()) == '=')

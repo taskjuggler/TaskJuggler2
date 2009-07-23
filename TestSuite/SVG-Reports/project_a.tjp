@@ -1,0 +1,107 @@
+/*
+ * This file is a project template. It illustrates the basic features
+ * of TaskJuggler and can be used as a base for your first projects.
+ * You can put your own templates in
+ *
+ * ${KDEHOME}/share/apps/taskjuggler/Templates/${LANG}/
+ *
+ * Permission to read, modify and distribute this file without any
+ * restrictions is granted.
+ *
+ * Please see the TaskJuggler manual for a more detailed
+ * description of the various syntax elements. You can find more
+ * information about TaskJuggler at http://www.taskjuggler.org!
+ */
+project yourID "SVG Test Project" "1.0" 2009-06-01 - 2010-12-31 {
+    # Hide the clock time. Only show the date.
+    timeformat "%Y-%m-%d"
+    # The currency for all money values is EUR.
+    currency "EUR"
+
+    now 2009-07-01
+
+    # We want to compare the baseline scenario, to one with a slightly
+    # delayed start.
+    scenario initial "Initial" {
+        date 2009-06-01
+        scenario progress1 "Progress 1" {
+            date 2009-07-03
+            scenario progress2 "Progress 2" {
+                date 2009-08-04
+                scenario progress3 "Progress 3" {
+                    date 2009-08-31
+                    scenario progress4 "Progress 4" {
+                        date 2009-10-01
+                    }
+                }
+            }
+        }
+    }
+}
+
+flags hidden
+
+task mainTask "Main Task" {
+    start 2009-06-01
+    progress1:start 2009-07-10
+
+# All work related costs will be booked to this account unless the
+    # sub tasks specifies it differently.
+    task a "Task A" {
+        start 2009-06-01
+        progress1:start 2009-08-10
+        duration 30d
+    }
+    task b "Task B" { duration 30d depends !a flags hidden }
+    task b2 "Task B2" { duration 30d depends !a flags hidden }
+    task b3 "Task B3" { milestone depends !a flags hidden }
+    task b4 "Task B4" { duration 30d depends !a flags hidden }
+    task b5 "Task B5" { duration 30d depends !a flags hidden }
+    task c "Task C" { duration 30d start 2009-10-15 depends !b flags hidden }
+    task d "Task D" { duration 30d depends !b { gapduration 30d progress3:gapduration 60d } , !c }
+    task d2 "Task D2" { duration 30d depends !b { initial:gapduration 30d progress3:gapduration 60d } , !c }
+    task e "Task E" { milestone depends !d }
+    task f "Task F" { milestone depends !d { progress3:gapduration 30d } }
+    task g "Task G" { milestone depends !d }
+}
+
+taskreport "report scenario initial" {
+    taskbarprefix "$${name}"
+    scenario initial
+    sorttasks tree, nameup
+}
+
+taskreport "report scenario progress4" {
+    taskbarprefix "$${name}"
+    scenario progress4
+}
+
+svgtimetimereport "project_a_1.svg" {
+    headline "project_a_1"
+}
+
+svgtimetimereport "project_a_2.svg" {
+    headline "project_a_2"
+    sorttasks namedown
+}
+
+svgtimetimereport "project_a_3.svg" {
+    headline "project_a_3"
+    scenarios initial, progress3, progress4
+    period 2009-07-10 - 2010-12-31
+}
+
+svgtimetimereport "project_a_4.svg" {
+    headline "project_a_4"
+    hidetask hidden
+}
+
+svgtimetimereport "project_a_5.svg" {
+    headline "project_a_5"
+    hidetask ~hidden
+    sorttasks tree, namedown
+}
+
+htmltaskreport "htmltaskreport" {
+    scenarios initial, progress1, progress2, progress3, progress4
+}

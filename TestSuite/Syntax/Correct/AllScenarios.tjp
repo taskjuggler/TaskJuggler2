@@ -1,0 +1,82 @@
+project myProjectId "Project 1" "1.0" 2009-05-27 - 2009-11-23 {
+
+    scenario sc1 "scenario 1" {
+        scenario sc2 "scenario 2" {
+            scenario sc3 "scenario 3" {
+            }
+        }
+        scenario sc4 "scenario 4" {
+        }
+    }
+}
+
+resource r1 "r1" {
+    workinghours wed off
+}
+
+
+account project_cost "Project Costs" cost
+account payments "Customer Payments" revenue {
+  credit 2009-06-08 "Customer down payment" 500.0
+}
+
+
+task task1 "task 1" {
+    account project_cost
+
+    start 2009-05-27
+
+    task task11 "task 1.1" {
+        effort 20d
+        allocate r1 { limits { weeklymax 3d } }
+    }
+
+    task task12 "task 1.2" {
+        effort 20d
+        allocate r1 { limits { weeklymax 3d } }
+    }
+}
+
+export "export_prpb1.tji" {
+#   properties bookings
+    hideresource 0
+    scenarios *
+}
+
+htmlaccountreport "htmlaccountreport.html" {
+    columns index, name, scenario, weekly
+    scenarios *
+}
+
+htmlmonthlycalendar "htmlmonthlycalendar.html" {
+    columns index, name, scenario
+    scenarios *
+}
+
+htmlresourcereport "htmlresourcereport.html" {
+    columns index, name, scenario, effort
+    scenarios *
+}
+
+htmltaskreport "htmltaskreport.html" {
+    columns index, name, scenario, effort
+    scenarios *
+}
+
+htmltaskreport "htmltaskreport Scenario1.html" {
+    columns index, name, scenario, effort
+    scenarios sc1
+}
+
+htmlweeklycalendar "htmlweeklycalendar.html" {
+    columns index, name, scenario, effort
+    scenarios *
+}
+
+icalreport "icalreport.ics" {
+    scenario sc1
+}
+
+xmlreport "xmlreport.xml.gz" {
+    scenarios *
+}

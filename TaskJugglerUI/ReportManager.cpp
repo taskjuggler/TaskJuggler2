@@ -139,6 +139,12 @@ ReportManager::updateReportBrowser()
     csvReports->setOpen(openReports.find(csvReports->text(0)) !=
                         openReports.end());
 
+    svgReports = new KListViewItem(browser, i18n("SVG Reports"));
+    svgReports->setPixmap(0, KGlobal::iconLoader()->
+                          loadIcon("tj_svg_reports", KIcon::Small));
+    svgReports->setOpen(openReports.find(svgReports->text(0)) !=
+                        openReports.end());
+
     xmlReports = new KListViewItem(browser, i18n("XML Reports"));
     xmlReports->setPixmap(0, KGlobal::iconLoader()->
                           loadIcon("tj_xml_reports", KIcon::Small));
@@ -183,6 +189,11 @@ ReportManager::updateReportBrowser()
         {
             prefix = 3;
             parent = csvReports;
+        }
+        else if (strncmp(r->getType(), "SVG", 3) == 0)
+        {
+            prefix = 3;
+            parent = svgReports;
         }
         else if (strncmp(r->getType(), "XML", 3) == 0)
         {
@@ -232,6 +243,10 @@ ReportManager::updateReportBrowser()
                 KGlobal::iconLoader()->loadIcon("tj_status_report",
                                                 KIcon::Small);
         else if (strncmp(subType, "Report", strlen("Report")) == 0)
+            subTypeIcon =
+                KGlobal::iconLoader()->loadIcon("tj_file_tji",
+                                                KIcon::Small);
+        else if (strncmp(subType, "TimeTime", strlen("TimeTime")) == 0)
             subTypeIcon =
                 KGlobal::iconLoader()->loadIcon("tj_file_tji",
                                                 KIcon::Small);
@@ -350,6 +365,19 @@ ReportManager::showReport(QListViewItem* lvi, bool& showReportTab)
             changeStatusBar(i18n("Displaying CSV report: '%1'")
                             .arg(rep->getFileName()));
             KRun::runURL(reportUrl, "text/x-csv");
+        }
+        else if (strncmp(type, "SVG", 3) == 0)
+        {
+            if (!rep->generate())
+                result = false;
+            // show the SVG file in preferred SVG handler
+            KURL reportUrl =
+                KURL::fromPathOrURL(rep->getDefinitionFile());
+            reportUrl.setFileName(rep->getFileName());
+
+            changeStatusBar(i18n("Displaying SVG report: '%1'")
+                            .arg(rep->getFileName()));
+            KRun::runURL(reportUrl, "text/x-svg");
         }
         else if (strncmp(type, "HTML", 4) == 0)
             tjr = new TjHTMLReport(reportStack, this, rep);
