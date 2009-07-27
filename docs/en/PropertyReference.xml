@@ -467,6 +467,10 @@ file processing, the report macros must be prefixed with an additional
    hierarchical structure of the list as well as the start and end dates.
    </member>
 
+   <member><varname>hierarchlevel</varname></member>
+      <member>The hierarchical level of a task. The level is 0 for the top
+         level task in the report, 1 for its subtasks, and so on.</member>
+
    <member><varname>hierarchno</varname></member>
    <member>The hierarchical number of a task. It is based on the order of
    declaration.</member>

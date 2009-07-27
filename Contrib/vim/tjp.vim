@@ -124,6 +124,7 @@ syn keyword tjspkeyword hidecellurl
 syn keyword tjspkeyword hideresource
 syn keyword tjspkeyword hidetask
 syn keyword tjspkeyword hierarchindex
+syn keyword tjspkeyword hierarchlevel
 syn keyword tjspkeyword hierarchno
 syn keyword tjspkeyword hours
 syn keyword tjspkeyword htmlaccountreport
