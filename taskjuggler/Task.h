@@ -147,12 +147,20 @@ public:
     {
         scenarios[sc].specifiedStart = s;
     }
+    time_t getSpecifiedStart(int sc)
+    {
+        return scenarios[sc].specifiedStart;
+    }
     void setStart(int sc, time_t s) { scenarios[sc].start = s; }
     time_t getStart(int sc) const { return scenarios[sc].start; }
 
     void setSpecifiedEnd(int sc, time_t s)
     {
         scenarios[sc].specifiedEnd = s;
+    }
+    time_t getSpecifiedEnd(int sc)
+    {
+        return scenarios[sc].specifiedEnd;
     }
     void setEnd(int sc, time_t s) { scenarios[sc].end = s; }
     time_t getEnd(int sc) const { return scenarios[sc].end; }
@@ -284,6 +292,10 @@ public:
     {
         scenarios[sc].specifiedScheduled = ps;
     }
+    bool getSpecifiedScheduled(int sc) const
+    {
+        return scenarios[sc].specifiedScheduled;
+    } 
     void setScheduled(int sc, bool ps) { scenarios[sc].scheduled = ps; }
     bool getScheduled(int sc) const { return scenarios[sc].scheduled; }
 
