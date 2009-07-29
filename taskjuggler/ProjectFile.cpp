@@ -2513,21 +2513,6 @@ ProjectFile::readBooking(int sc, Resource* resource)
         }
     }
 
-
-    if (task->hasSubs())
-    {
-        errorMessage(i18n("'%1' is a container task. It must not have "
-                          "bookings assigned to it.").arg(task->getId()));
-        return 0;
-    }
-    if (task->isMilestone())
-    {
-        errorMessage(i18n("'%1' is a milestone task. It must not have "
-                          "bookings assigned to it.").arg(task->getId()));
-        return 0;
-    }
-
-
     int sloppy = 0;
     int overtime = 0;
     if ((tt = nextToken(token)) == LBRACE)
