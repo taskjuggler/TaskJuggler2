@@ -2475,7 +2475,9 @@ ProjectFile::readBooking(int sc, Resource* resource)
         if (((tt = nextToken(token)) != ID && tt != ABSOLUTE_ID) ||
             (task = proj->getTask(getTaskPrefix() + token)) == 0)
         {
-            errorMessage(i18n("Task ID expected"));
+            errorMessage(i18n("Task ID expected (common caveat: booking "
+                "must be specified in a 'supplement resource' section "
+                "following the related task definition)"));
             return false;
         }
     }
@@ -2485,7 +2487,9 @@ ProjectFile::readBooking(int sc, Resource* resource)
         if ((tt != ID && tt != ABSOLUTE_ID) ||
             (task = proj->getTask(getTaskPrefix() + token)) == 0)
         {
-            errorMessage(i18n("Task ID expected"));
+            errorMessage(i18n("Task ID expected (common caveat: booking "
+                "must be specified in a 'supplement resource' section "
+                "following the related task definition)"));
             return false;
         }
 
