@@ -2765,7 +2765,8 @@ ProjectFile::readAllocate(Task* t)
                              proj->getScheduleGranularity()));
                 if (limits->getDailyMax() == 0)
                 {
-                    errorMessage(i18n("Value must be at least %f")
+                    errorMessage(i18n("Value must be at least %1 (see "
+                                      "'timingresolution' property)")
                                  .arg(proj->convertToDailyLoad
                                       (proj->getScheduleGranularity())));
                     delete limits;
