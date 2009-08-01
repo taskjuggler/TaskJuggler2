@@ -1770,7 +1770,13 @@ detailed specification of what the task is about.</para></descr>
  </property>
  <property name="monthlymax" id="monthlymax" inheritable="Yes">
   <descr><para>Sets the monthly limit of a resource usage or a resource
-allocation to a task.</para></descr>
+allocation to a task.</para>
+<para>For "weekly" and "monthly" limits the time unit is optional when
+the limit is used in the "project" or "resource" section. When there is
+no unit, the value is used as a ratio (&gt; 0 and &lt;= 1) among
+workable time during the interval. Workable time is calculated as the
+sum of allocated (worked) time and free time, and does not include
+neither off time nor vacations.</para></descr>
   <attributes>
    <attr name="value" type="REAL"/>
    <attr name="unit" type="UNIT"/>
@@ -3204,7 +3210,13 @@ Currently version 2 is highly recommended.</para></descr>
  </property>
  <property name="weeklymax" id="weeklymax" inheritable="Yes">
   <descr><para>Sets the weekly limit of a resource usage or a resource
-allocation to a task.</para></descr>
+allocation to a task.</para>
+<para>For "weekly" and "monthly" limits the time unit is optional when
+the limit is used in the "project" or "resource" section. When there is
+no unit, the value is used as a ratio (&gt; 0 and &lt;= 1) among
+workable time during the interval. Workable time is calculated as the
+sum of allocated (worked) time and free time, and does not include
+neither off time nor vacations.</para></descr>
   <attributes>
    <attr name="value" type="REAL"/>
    <attr name="unit" type="UNIT"/>

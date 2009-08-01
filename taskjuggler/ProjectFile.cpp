@@ -262,7 +262,7 @@ ProjectFile::parse()
             else if (token == KW("limits"))
             {
                 UsageLimits* limits;
-                if ((limits = readLimits()) == 0)
+                if ((limits = readLimits(true)) == 0)
                     return false;
                 proj->setResourceLimits(limits);
                 break;
@@ -2222,7 +2222,7 @@ ProjectFile::readResourceBody(Resource* r)
         else if (token == KW("limits"))
         {
             UsageLimits* limits;
-            if ((limits = readLimits()) == 0)
+            if ((limits = readLimits(true)) == 0)
                 return false;
             r->setLimits(limits);
         }
@@ -2781,7 +2781,7 @@ ProjectFile::readAllocate(Task* t)
             else if (token == KW("limits"))
             {
                 UsageLimits* limits;
-                if ((limits = readLimits()) == 0)
+                if ((limits = readLimits(false)) == 0)
                     return false;
                 a->setLimits(limits);
             }
@@ -2844,7 +2844,7 @@ ProjectFile::readAllocate(Task* t)
 }
 
 UsageLimits*
-ProjectFile::readLimits()
+ProjectFile::readLimits(bool acceptRatioLimit)
 {
     UsageLimits* limits = new UsageLimits;
 
@@ -2859,37 +2859,70 @@ ProjectFile::readLimits()
     while ((tt = nextToken(token)) == ID)
     {
         double val;
-        if (!readTimeFrame(val, true))
+        bool ratio = false;
+        if (acceptRatioLimit &&
+            (token == KW("weeklymax") || token == KW("monthlymax")))
+            ratio = true;
+        if (!readTimeFrame(val, true, false, ratio, ratio))
         {
             delete limits;
             return 0;
         }
-        uint uval = static_cast<uint>((val * proj->getDailyWorkingHours() * 3600) /
-                            proj->getScheduleGranularity());
-        if (uval == 0)
+        if (ratio)
         {
-            errorMessage(i18n("Value must be larger than scheduling "
-                              "granularity"));
-            delete limits;
-            return 0;
+            if (token == KW("weeklymax"))
+                limits->setWeeklyRatioMax(val);
+            else if (token == KW("monthlymax"))
+                limits->setMonthlyRatioMax(val);
+            else if (token == KW("dailymax") || token == KW("yearlymax")
+                     || token == KW("projectmax"))
+            {
+                errorMessage(i18n("Ratio limit not supported for limit type "
+                                  "'%1', you must specify a value limit")
+                             .arg(token));
+                delete limits;
+                return 0;
+            }
+            else
+            {
+                errorMessage(i18n("Unknown limit type '%1'").arg(token));
+                delete limits;
+                return 0;
+            }
         }
-        if (token == KW("dailymax"))
-            limits->setDailyMax(uval);
-        else if (token == KW("weeklymax"))
-            limits->setWeeklyMax(uval);
-        else if (token == KW("monthlymax"))
-            limits->setMonthlyMax(uval);
-        else if (token == KW("yearlymax"))
-            limits->setYearlyMax(uval);
-        else if (token == KW("projectmax"))
-            limits->setProjectMax(uval);
         else
         {
-            errorMessage(i18n("Unknown limit type '%1'").arg(token));
-            delete limits;
-            return 0;
+            uint uval = static_cast<uint>((val * proj->getDailyWorkingHours() * 3600) /
+                               proj->getScheduleGranularity());
+            if (uval == 0)
+            {
+                errorMessage(i18n("Value must be larger than scheduling "
+                                  "granularity"));
+                delete limits;
+                return 0;
+            }
+            if (token == KW("dailymax"))
+                limits->setDailyMax(uval);
+            else if (token == KW("weeklymax"))
+                limits->setWeeklyMax(uval);
+            else if (token == KW("monthlymax"))
+                limits->setMonthlyMax(uval);
+            else if (token == KW("yearlymax"))
+                limits->setYearlyMax(uval);
+            else if (token == KW("projectmax"))
+                limits->setProjectMax(uval);
+            else
+            {
+                errorMessage(i18n("Unknown limit type '%1'").arg(token));
+                delete limits;
+                return 0;
+            }
         }
     }
+    /*printf("read limits: daily:%d weekly:%d+%g monthly:%d+%g yearly:%d projectmax:%d\n",
+       limits->getDailyMax(), limits->getWeeklyMax(), limits->getWeeklyRatioMax(),
+       limits->getMonthlyMax(), limits->getMonthlyRatioMax(), limits->getYearlyMax(),
+       limits->getProjectMax());*/
     if (tt != RBRACE)
     {
         errorMessage(i18n("'}' expected"));
@@ -3001,7 +3034,8 @@ ProjectFile::readInterval(Interval& iv, bool check)
 }
 
 bool
-ProjectFile::readTimeFrame(double& value, bool workingDays, bool allowZero)
+ProjectFile::readTimeFrame(double& value, bool workingDays, bool allowZero,
+                           bool allowRatio, bool& isRatio)
 {
     QString val;
     TokenType tt;
@@ -3028,11 +3062,8 @@ ProjectFile::readTimeFrame(double& value, bool workingDays, bool allowZero)
     }
 
     QString unit;
-    if (nextToken(unit) != ID)
-    {
-        errorMessage(i18n("Unit expected"));
-        return false;
-    }
+    if ((tt = nextToken(unit)) != ID)
+        goto noUnit;
     if (unit == KW("min"))
         value = val.toDouble() /
             (workingDays ? proj->getDailyWorkingHours() * 60 : 24 * 60);
@@ -3051,12 +3082,30 @@ ProjectFile::readTimeFrame(double& value, bool workingDays, bool allowZero)
         value = val.toDouble() *
             (workingDays ? proj->getYearlyWorkingDays() : 365);
     else
+        goto noUnit;
+    if (allowRatio)
+        isRatio = false;
+    return true;
+
+ noUnit:
+    if (allowRatio)
     {
-        errorMessage(i18n("Unit expected"));
+        returnToken(tt, unit);
+        if (val.toDouble() > 1)
+        {
+            errorMessage(i18n("Value must be lesser or equal to 1."));
+            return false;
+        }
+        value = val.toDouble();
+        isRatio = true;
+        return true;
+    }
+    else
+    {
+        errorMessage(i18n("Time unit expected but got '%1' instead.")
+                     .arg(unit).ascii());
         return false;
     }
-
-    return true;
 }
 
 bool

@@ -403,7 +403,6 @@ Resource::isAvailable(time_t date)
             SbBooking* b = scoreboard[i];
             if (b < (SbBooking*) 4)
                 continue;
-
             bookedSlots++;
         }
 
@@ -416,22 +415,27 @@ Resource::isAvailable(time_t date)
             return 2;
         }
     }
-    if ((limits && limits->getWeeklyMax() > 0))
+    if ((limits && (limits->getWeeklyMax() > 0)
+                    || limits->getWeeklyRatioMax() > 0.0))
     {
         // Now check that the resource is not overloaded on this week.
         uint bookedSlots = 1;
+        uint workableSlots = 0;
 
         for (uint i = WeekStartIndex[sbIdx]; i <= WeekEndIndex[sbIdx]; i++)
         {
             SbBooking* b = scoreboard[i];
-            if (b < (SbBooking*) 4)
+            if (b == NULL)
+                workableSlots++;
+             if (b < (SbBooking*) 4)
                 continue;
-
+            workableSlots++;
             bookedSlots++;
         }
 
-        if (limits && limits->getWeeklyMax() > 0 &&
-            bookedSlots > limits->getWeeklyMax())
+        if (limits->getWeeklyMax() > 0 && bookedSlots > limits->getWeeklyMax()
+            || limits->getWeeklyRatioMax() > 0.0 &&
+               limits->getWeeklyRatioMax() < (double)bookedSlots/workableSlots)
         {
             if (DEBUGRS(6))
                 qDebug("  Resource %s overloaded this week (%d)", id.latin1(),
@@ -439,22 +443,27 @@ Resource::isAvailable(time_t date)
             return 2;
         }
     }
-    if ((limits && limits->getMonthlyMax() > 0))
+    if ((limits && (limits->getMonthlyMax() > 0)
+                    || limits->getMonthlyRatioMax() > 0.0))
     {
         // Now check that the resource is not overloaded on this month.
         uint bookedSlots = 1;
+        uint workableSlots = 0;
 
         for (uint i = MonthStartIndex[sbIdx]; i <= MonthEndIndex[sbIdx]; i++)
         {
             SbBooking* b = scoreboard[i];
+            if (b == NULL)
+                workableSlots++;
             if (b < (SbBooking*) 4)
                 continue;
-
+            workableSlots++;
             bookedSlots++;
         }
 
-        if (limits && limits->getMonthlyMax() > 0 &&
-            bookedSlots > limits->getMonthlyMax())
+        if (limits->getMonthlyMax() > 0 && bookedSlots > limits->getMonthlyMax()
+            || limits->getMonthlyRatioMax() > 0.0 &&
+               limits->getMonthlyRatioMax() < (double)bookedSlots/workableSlots)
         {
             if (DEBUGRS(6))
                 qDebug("  Resource %s overloaded this month (%d)", id.latin1(),

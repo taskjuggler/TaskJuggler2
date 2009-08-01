@@ -28,7 +28,9 @@ class UsageLimits
         UsageLimits() :
             dailyMax(0),
             weeklyMax(0),
+            weeklyRatioMax(0.0),
             monthlyMax(0),
+            monthlyRatioMax(0.0),
             yearlyMax(0),
             projectMax(0)
         { }
@@ -41,8 +43,14 @@ class UsageLimits
         void setWeeklyMax(uint m) { weeklyMax = m; }
         uint getWeeklyMax() const { return weeklyMax; }
 
+        void setWeeklyRatioMax(double m) { weeklyRatioMax = m; }
+        double getWeeklyRatioMax() const { return weeklyRatioMax; }
+
         void setMonthlyMax(uint m) { monthlyMax = m; }
         uint getMonthlyMax() const { return monthlyMax; }
+
+        void setMonthlyRatioMax(double m) { monthlyRatioMax = m; }
+        double getMonthlyRatioMax() const { return monthlyRatioMax; }
 
         void setYearlyMax(uint m) { yearlyMax = m; }
         uint getYearlyMax() const { return yearlyMax; }
@@ -53,7 +61,9 @@ class UsageLimits
     private:
         uint dailyMax;
         uint weeklyMax;
+        double weeklyRatioMax;
         uint monthlyMax;
+        double monthlyRatioMax;
         uint yearlyMax;
         uint projectMax;
 } ;

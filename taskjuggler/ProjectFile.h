@@ -139,9 +139,16 @@ private:
     bool readBooking(int sc, Resource* resource);
     bool readCredit(Account* a);
     bool readAllocate(Task* t);
-    UsageLimits* readLimits();
+    UsageLimits* readLimits(bool acceptRatioLimits);
     bool readInterval(Interval& iv, bool check = true);
-    bool readTimeFrame(double& d, bool workingDays, bool allowZero = false);
+    bool readTimeFrame(double& d, bool workingDays, bool allowZero,
+                       bool allowRatio, bool& isRatio);
+    inline bool readTimeFrame(double& d, bool workingDays,
+                              bool allowZero = false)
+    {
+        bool dummy;
+        return readTimeFrame(d, workingDays, allowZero, false, dummy);
+    }
     bool readDate(time_t& val, time_t correction, bool checkPrjInterval = true);
     bool readRealFormat(RealFormat* format);
     bool readReference(QString& ref, QString& label);

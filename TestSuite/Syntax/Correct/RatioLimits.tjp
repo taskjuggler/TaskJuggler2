@@ -1,0 +1,38 @@
+project myProjectId "My Project" "1.0" 2009-1-1 - 2009-2-28
+
+resource r1 "R1" {
+  limits {
+    weeklymax 4d
+    weeklymax 0.5
+    dailymax 1d
+    monthlymax 0.75
+    monthlymax 30d
+    yearlymax 300d
+    projectmax 700d
+  }
+}
+
+resource r2 "R2" {
+  limits { weeklymax 0.5 monthlymax 0.5 }
+  vacation 2009-1-6 +1d
+}
+
+task t2 "T2" {
+  allocate r2 { limits { weeklymax 5d } }
+}
+
+taskreport "Gantt" {
+  columns id,start,end,maxeffort,chart
+}
+
+htmltaskreport "/tmp/tjweekly.html" {
+  columns hierarchindex, name, start, end, maxeffort, weekly { title " " subtitle "$${year}-$${month} s$${week}" }
+  loadunit days
+  hideresource 0
+}
+
+htmltaskreport "/tmp/tjmonthly.html" {
+  columns hierarchindex, name, start, end, maxeffort, monthly { title " " subtitle "$${year}-$${month}" }
+  loadunit days
+  hideresource 0
+}
