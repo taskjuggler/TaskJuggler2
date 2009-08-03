@@ -155,7 +155,7 @@ Resource::~Resource()
         if (scoreboards[sc])
         {
             for (uint i = 0; i < sbSize; i++)
-                if (scoreboards[sc][i] > (SbBooking*) 3)
+                if (SB_IS_ALLOCATED(scoreboards[sc][i]))
                 {
                     uint j;
                     for (j = i + 1; j < sbSize &&
@@ -170,7 +170,7 @@ Resource::~Resource()
         if (specifiedBookings[sc])
         {
             for (uint i = 0; i < sbSize; i++)
-                if (specifiedBookings[sc][i] > (SbBooking*) 3)
+                if (SB_IS_ALLOCATED(specifiedBookings[sc][i]))
                 {
                     uint j;
                     for (j = i + 1; j < sbSize &&
@@ -293,7 +293,7 @@ Resource::initScoreboard()
 
     // First mark all scoreboard slots as unavailable (1).
     for (uint i = 0; i < sbSize; i++)
-        scoreboard[i] = (SbBooking*) 1;
+        scoreboard[i] = SB_OFF;
 
     // Then change all worktime slots to 0 (available) again.
     for (time_t t = project->getStart(); t < project->getEnd() + 1;
@@ -301,7 +301,7 @@ Resource::initScoreboard()
     {
         if (isOnShift(Interval(t,
                                t + project->getScheduleGranularity() - 1)))
-            scoreboard[sbIndex(t)] = (SbBooking*) 0;
+            scoreboard[sbIndex(t)] = SB_FREE;
     }
     // Then mark all resource specific vacation slots as such (2).
     for (QPtrListIterator<Interval> ivi(vacations); *ivi != 0; ++ivi)
@@ -309,7 +309,7 @@ Resource::initScoreboard()
              (*ivi)->getStart() : project->getStart();
              date < (*ivi)->getEnd() && date < project->getEnd() + 1;
              date += project->getScheduleGranularity())
-            scoreboard[sbIndex(date)] = (SbBooking*) 2;
+            scoreboard[sbIndex(date)] = SB_VACATION;
 
     // Mark all global vacation slots as such (2)
     for (VacationList::Iterator ivi(project->getVacationListIterator());
@@ -323,7 +323,7 @@ Resource::initScoreboard()
         uint endIdx = sbIndex((*ivi)->getEnd() <= project->getEnd() ?
                               (*ivi)->getEnd() : project->getEnd());
         for (uint idx = startIdx; idx <= endIdx; ++idx)
-            scoreboard[idx] = (SbBooking*) 2;
+            scoreboard[idx] = SB_VACATION;
     }
 }
 
@@ -354,14 +354,13 @@ Resource::index2end(uint idx) const
 }
 
 /**
- * \retval 0 { resource is available }
- * \retval 1 { resource is on vacation }
- * \retval 2 { resource is generally overloaded }
- * \retval 3 { resource is overloaded for this task }
- * \retval 4 { resource is allocated to other task }
+ * \retval BOOKING_FREE { slot is available }
+ * \retval BOOKING_OFF { vacation/off duty }
+ * \retval BOOKING_OVERLIMIT { resource overloaded }
+ * \retval BOOKING_BOOKED { already booked }
  */
 int
-Resource::isAvailable(time_t date)
+Resource::getBooking(time_t date)
 {
     /* The scoreboard of a resource is only generated on demand, so that large
      * resource lists that are only scarcely used for the project do not slow
@@ -370,16 +369,18 @@ Resource::isAvailable(time_t date)
         initScoreboard();
     // Check if the interval is booked or blocked already.
     uint sbIdx = sbIndex(date);
-    if (scoreboard[sbIdx])
+    if (!SB_IS_FREE(scoreboard[sbIdx]))
     {
         if (DEBUGRS(6))
         {
             QString reason;
-            if (scoreboard[sbIdx] == ((SbBooking*) 1))
+            if (scoreboard[sbIdx] == SB_OFF)
                 reason = "off-hour";
-            else if (scoreboard[sbIdx] == ((SbBooking*) 2))
+            else if (scoreboard[sbIdx] == SB_VACATION)
                 reason = "vacation";
-            else if (scoreboard[sbIdx] == ((SbBooking*) 3))
+            else if (scoreboard[sbIdx] == SB_OVERLIMIT)
+                reason = "over usage limits";
+            else if (SB_IS_UNAVAILABLE(scoreboard[sbIdx]))
                 reason = "UNDEFINED";
             else
                 reason = "allocated to " +
@@ -387,11 +388,15 @@ Resource::isAvailable(time_t date)
             qDebug("  Resource %s is busy (%s)", id.latin1(),
                    reason.latin1());
         }
-        return scoreboard[sbIdx] < ((SbBooking*) 4) ? 1 : 4;
+        if (scoreboard[sbIdx] == SB_OVERLIMIT)
+            return BOOKING_OVERLIMIT;
+        if (SB_IS_UNAVAILABLE(scoreboard[sbIdx]))
+            return BOOKING_OFF;
+        return BOOKING_BOOKED;
     }
 
     if (!limits)
-        return 0;
+        return BOOKING_FREE;
 
     if ((limits && limits->getDailyMax() > 0))
     {
@@ -401,7 +406,7 @@ Resource::isAvailable(time_t date)
         for (uint i = DayStartIndex[sbIdx]; i <= DayEndIndex[sbIdx]; i++)
         {
             SbBooking* b = scoreboard[i];
-            if (b < (SbBooking*) 4)
+            if (!SB_IS_ALLOCATED(b))
                 continue;
             bookedSlots++;
         }
@@ -412,7 +417,8 @@ Resource::isAvailable(time_t date)
             if (DEBUGRS(6))
                 qDebug("  Resource %s overloaded today (%d)", id.latin1(),
                        bookedSlots);
-            return 2;
+            scoreboard[sbIdx] = SB_OVERLIMIT;
+            return BOOKING_OVERLIMIT;
         }
     }
     if ((limits && (limits->getWeeklyMax() > 0)
@@ -425,9 +431,9 @@ Resource::isAvailable(time_t date)
         for (uint i = WeekStartIndex[sbIdx]; i <= WeekEndIndex[sbIdx]; i++)
         {
             SbBooking* b = scoreboard[i];
-            if (b == NULL)
+            if (SB_IS_FREE(b))
                 workableSlots++;
-             if (b < (SbBooking*) 4)
+             if (!SB_IS_ALLOCATED(b))
                 continue;
             workableSlots++;
             bookedSlots++;
@@ -440,7 +446,8 @@ Resource::isAvailable(time_t date)
             if (DEBUGRS(6))
                 qDebug("  Resource %s overloaded this week (%d)", id.latin1(),
                        bookedSlots);
-            return 2;
+            scoreboard[sbIdx] = SB_OVERLIMIT;
+            return BOOKING_OVERLIMIT;
         }
     }
     if ((limits && (limits->getMonthlyMax() > 0)
@@ -453,9 +460,9 @@ Resource::isAvailable(time_t date)
         for (uint i = MonthStartIndex[sbIdx]; i <= MonthEndIndex[sbIdx]; i++)
         {
             SbBooking* b = scoreboard[i];
-            if (b == NULL)
+            if (SB_IS_FREE(b))
                 workableSlots++;
-            if (b < (SbBooking*) 4)
+            if (!SB_IS_ALLOCATED(b))
                 continue;
             workableSlots++;
             bookedSlots++;
@@ -468,7 +475,8 @@ Resource::isAvailable(time_t date)
             if (DEBUGRS(6))
                 qDebug("  Resource %s overloaded this month (%d)", id.latin1(),
                        bookedSlots);
-            return 2;
+            scoreboard[sbIdx] = SB_OVERLIMIT;
+            return BOOKING_OVERLIMIT;
         }
     }
     if ((limits && limits->getYearlyMax() > 0))
@@ -479,7 +487,7 @@ Resource::isAvailable(time_t date)
         for (uint i = YearStartIndex[sbIdx]; i <= YearEndIndex[sbIdx]; i++)
         {
             SbBooking* b = scoreboard[i];
-            if (b < (SbBooking*) 4)
+            if (!SB_IS_ALLOCATED(b))
                 continue;
 
             bookedSlots++;
@@ -491,7 +499,8 @@ Resource::isAvailable(time_t date)
             if (DEBUGRS(6))
                 qDebug("  Resource %s overloaded this year (%d)", id.latin1(),
                        bookedSlots);
-            return 2;
+            scoreboard[sbIdx] = SB_OVERLIMIT;
+            return BOOKING_OVERLIMIT;
         }
     }
     if ((limits && limits->getProjectMax() > 0))
@@ -502,7 +511,7 @@ Resource::isAvailable(time_t date)
         for (uint i = 0; i < sbSize; i++)
         {
             SbBooking* b = scoreboard[i];
-            if (b < (SbBooking*) 4)
+            if (!SB_IS_ALLOCATED(b))
                 continue;
 
             bookedSlots++;
@@ -514,11 +523,12 @@ Resource::isAvailable(time_t date)
             if (DEBUGRS(6))
                 qDebug("  Resource %s overloaded this project (%d)",
                        id.latin1(), bookedSlots);
-            return 2;
+            scoreboard[sbIdx] = SB_OVERLIMIT;
+            return BOOKING_OVERLIMIT;
         }
     }
 
-    return 0;
+    return BOOKING_FREE;
 }
 
 bool
@@ -541,16 +551,16 @@ Resource::bookSlot(uint idx, SbBooking* nb, int overtime)
 
     SbBooking* b;
     // Try to merge the booking with the booking in the previous slot.
-    if (idx > 0 && (b = scoreboard[idx - 1]) > (SbBooking*) 3 &&
-        b->getTask() == nb->getTask())
+    b = scoreboard[idx - 1];
+    if (idx > 0 && SB_IS_ALLOCATED(b) && b->getTask() == nb->getTask())
     {
         scoreboard[idx] = b;
         delete nb;
         return true;
     }
     // Try to merge the booking with the booking in the following slot.
-    if (idx < sbSize - 1 && (b = scoreboard[idx + 1]) > (SbBooking*) 3 &&
-        b->getTask() == nb->getTask())
+    b = scoreboard[idx + 1];
+    if (idx < sbSize - 1 && SB_IS_ALLOCATED(b) && b->getTask() == nb->getTask())
     {
         scoreboard[idx] = b;
         delete nb;
@@ -575,7 +585,7 @@ Resource::bookInterval(Booking* nb, int sc, int sloppy, int overtime)
             for (j = i + 1 ; j <= eIdx &&
                  scoreboard[i] == scoreboard[j]; j++)
                 ;
-            if (scoreboard[i] == (SbBooking*) 1)
+            if (scoreboard[i] == SB_OFF)
             {
                 if (sloppy > 0)
                 {
@@ -590,7 +600,7 @@ Resource::bookInterval(Booking* nb, int sc, int sloppy, int overtime)
                      .arg(id).arg(time2ISO(index2start(i)))
                      .arg(nb->getTask()->getId().latin1()));
             }
-            else if (scoreboard[i] == (SbBooking*) 2)
+            else if (scoreboard[i] == SB_VACATION)
             {
                 if (sloppy > 1)
                 {
@@ -710,7 +720,7 @@ Resource::getCurrentLoadSub(uint startIdx, uint endIdx, const Task* task) const
     for (uint i = startIdx; i <= endIdx && i < sbSize; i++)
     {
         SbBooking* b = scoreboard[i];
-        if (b < (SbBooking*) 4)
+        if (!SB_IS_ALLOCATED(b))
             continue;
         if (!task || task == b->getTask() || b->getTask()->isDescendantOf(task))
             bookings++;
@@ -744,7 +754,7 @@ Resource::getCurrentDaySlots(time_t date, const Task* t)
     for (uint i = DayStartIndex[sbIdx]; i <= DayEndIndex[sbIdx]; i++)
     {
         SbBooking* b = scoreboard[i];
-        if (b < (SbBooking*) 4)
+        if (!SB_IS_ALLOCATED(b))
             continue;
 
         if (!t || b->getTask() == t || b->getTask()->isDescendantOf(t))
@@ -779,7 +789,7 @@ Resource::getCurrentWeekSlots(time_t date, const Task* t)
     for (uint i = WeekStartIndex[sbIdx]; i <= WeekEndIndex[sbIdx]; i++)
     {
         SbBooking* b = scoreboard[i];
-        if (b < (SbBooking*) 4)
+        if (!SB_IS_ALLOCATED(b))
             continue;
 
         if (!t || b->getTask() == t || b->getTask()->isDescendantOf(t))
@@ -814,7 +824,7 @@ Resource::getCurrentMonthSlots(time_t date, const Task* t)
     for (uint i = MonthStartIndex[sbIdx]; i <= MonthEndIndex[sbIdx]; i++)
     {
         SbBooking* b = scoreboard[i];
-        if (b < (SbBooking*) 4)
+        if (!SB_IS_ALLOCATED(b))
             continue;
 
         if (!t || b->getTask() == t || b->getTask()->isDescendantOf(t))
@@ -849,7 +859,7 @@ Resource::getCurrentYearSlots(time_t date, const Task* t)
     for (uint i = YearStartIndex[sbIdx]; i <= YearEndIndex[sbIdx]; i++)
     {
         SbBooking* b = scoreboard[i];
-        if (b < (SbBooking*) 4)
+        if (!SB_IS_ALLOCATED(b))
             continue;
 
         if (!t || b->getTask() == t || b->getTask()->isDescendantOf(t))
@@ -882,7 +892,7 @@ Resource::getProjectSlots(const Task* t)
     for (uint i = 0; i < sbSize; i++)
     {
         SbBooking* b = scoreboard[i];
-        if (b < (SbBooking*) 4)
+        if (!SB_IS_ALLOCATED(b))
             continue;
 
         if (!t || b->getTask() == t || b->getTask()->isDescendantOf(t))
@@ -992,7 +1002,7 @@ Resource::getAllocatedSlots(int sc, uint startIdx, uint endIdx,
     for (uint i = startIdx; i <= endIdx && i < sbSize; i++)
     {
         SbBooking* b = scoreboards[sc][i];
-        if (b < (SbBooking*) 4)
+        if (!SB_IS_ALLOCATED(b))
             continue;
         if ((task == 0 ||
              (task != 0 && (task == b->getTask() ||
@@ -1122,7 +1132,7 @@ Resource::isAllocatedSub(int sc, uint startIdx, uint endIdx, const QString&
     for (uint i = startIdx; i <= endIdx; i++)
     {
         SbBooking* b = scoreboards[sc][i];
-        if (b < (SbBooking*) 4)
+        if (!SB_IS_ALLOCATED(b))
             continue;
         if (prjId.isNull() || b->getTask()->getProjectId() == prjId)
             return true;
@@ -1166,7 +1176,7 @@ Resource::isAllocatedSub(int sc, uint startIdx, uint endIdx, const Task* task)
     for (uint i = startIdx; i <= endIdx; i++)
     {
         SbBooking* b = scoreboards[sc][i];
-        if (b < (SbBooking*) 4)
+        if (!SB_IS_ALLOCATED(b))
             continue;
         if (!task || b->getTask() == task || b->getTask()->isDescendantOf(task))
             return true;
@@ -1191,7 +1201,7 @@ Resource::getPIDs(int sc, const Interval& period, const Task* task,
          i <= sbIndex(iv.getEnd()) && i < sbSize; i++)
     {
         SbBooking* b = scoreboards[sc][i];
-        if (b < (SbBooking*) 4)
+        if (!SB_IS_ALLOCATED(b))
             continue;
         if ((!task || task == b->getTask() ||
              b->getTask()->isDescendantOf(task)) &&
@@ -1271,17 +1281,17 @@ Resource::getJobs(int sc) const
         for (uint i = 0; i < sbSize; i++)
             if (scoreboards[sc][i] != b)
             {
-                if (b)
+                if (!SB_IS_FREE(b))
                     bl.append(new Booking(Interval(index2start(startIdx),
                                                    index2end(i - 1)),
                                           scoreboards[sc][startIdx]));
-                if (scoreboards[sc][i] > (SbBooking*) 3)
+                if (SB_IS_ALLOCATED(scoreboards[sc][i]))
                 {
                     b = scoreboards[sc][i];
                     startIdx = i;
                 }
                 else
-                    b = 0;
+                    b = SB_FREE;
             }
     }
     return bl;
@@ -1294,7 +1304,7 @@ Resource::getStartOfFirstSlot(int sc, const Task* task)
         return 0;
     for (uint i = 0; i < sbSize; ++i)
     {
-        if (scoreboards[sc][i] > ((SbBooking*) 3) &&
+        if (SB_IS_ALLOCATED(scoreboards[sc][i]) &&
             scoreboards[sc][i]->getTask() == task)
             return index2start(i);
     }
@@ -1311,7 +1321,7 @@ Resource::getEndOfLastSlot(int sc, const Task* task)
     for ( ; ; )
     {
         --i;
-        if (scoreboards[sc][i] > ((SbBooking*) 3) &&
+        if (SB_IS_ALLOCATED(scoreboards[sc][i]) &&
             scoreboards[sc][i]->getTask() == task)
             return index2end(i);
         if (i == 0)
@@ -1329,7 +1339,7 @@ Resource::copyBookings(int sc, SbBooking*** src, SbBooking*** dst)
      */
     if (dst[sc])
         for (uint i = 0; i < sbSize; i++)
-            if (dst[sc][i] > (SbBooking*) 3)
+            if (SB_IS_ALLOCATED(dst[sc][i]))
             {
                 /* Small pointers are fake bookings. We can safely ignore
                  * them. Identical pointers in successiv slots must only be
@@ -1348,7 +1358,7 @@ Resource::copyBookings(int sc, SbBooking*** src, SbBooking*** dst)
         if (!dst[sc])
             dst[sc] = new SbBooking*[sbSize];
         for (uint i = 0; i < sbSize; i++)
-            if (src[sc][i] > (SbBooking*) 3)
+            if (SB_IS_ALLOCATED(src[sc][i]))
             {
                 /* Small pointers can just be copied. Identical successiv
                  * pointers need to be allocated once and can then be assigned
@@ -1366,7 +1376,7 @@ Resource::copyBookings(int sc, SbBooking*** src, SbBooking*** dst)
     else
     {
         delete [] dst[sc];
-        dst[sc] = 0;
+        dst[sc] = SB_FREE;
     }
 }
 
@@ -1396,7 +1406,7 @@ Resource::finishScenario(int sc)
 bool
 Resource::bookingsOk(int sc)
 {
-    if (scoreboards[sc] == 0)
+    if (scoreboards[sc] == NULL)
         return true;
 
     if (hasSubs())
@@ -1407,7 +1417,7 @@ Resource::bookingsOk(int sc)
     }
 
     for (uint i = 0; i < sbSize; ++i)
-        if (scoreboards[sc][i] >= ((SbBooking*) 4))
+        if (SB_IS_ALLOCATED(scoreboards[sc][i]))
         {
             time_t start = index2start(i);
             time_t end = index2end(i);
@@ -1452,7 +1462,7 @@ Resource::updateSlotMarks(int sc)
     if (scoreboard)
     {
         for (uint i = 0; i < sbSize; i++)
-            if (scoreboard[i] > (SbBooking*) 4)
+            if (SB_IS_ALLOCATED(scoreboard[i]))
             {
                 if (scenarios[sc].firstSlot == -1)
                     scenarios[sc].firstSlot = i;

@@ -95,10 +95,15 @@ public:
 
     /***
      * Check if the slot with the specified duration is booked already.
-     * @ret 0 slot is available, 1 vacation/off duty, 2 resource overloaded,
-     * 3 task overloaded, 4 booked for other task,
+     * @ret BOOKING_FREE slot is available, BOOKING_OFF vacation/off duty,
+     * BOOKING_OVERLIMIT resource overloaded, BOOKING_BOOKED already booked.
+     * Nota: this method used to be (mis)called "isAvailable".
      */
-    int isAvailable(time_t day);
+    int getBooking(time_t day);
+#define BOOKING_FREE 0
+#define BOOKING_OFF 1
+#define BOOKING_OVERLIMIT 2
+#define BOOKING_BOOKED 4
 
     bool book(Booking* b);
 
@@ -239,9 +244,27 @@ private:
 
     /**
      * For each time slot (of length scheduling granularity) we store a
-     * pointer to a booking, a '1' if slot is off-hours, a '2' if slot is
-     * during a vacation or 0 if resource is available. */
+     * pointer to a booking, a SB_OFF if slot is off-hours, a SB_VACATION
+     * if slot is during a vacation or SB_FREE if resource is available.
+     *
+     * SB_IS_FREE is true if the slot can be allocated to a task or when
+     *   it has not yet been detected to be over the resource usage limits
+     *   (by Resource::getBooking())
+     * SB_IS_ALLOCATED is true when the slot is already allocated to a
+     *   a task, in this case, the slot is a pointer to a valid SbBooking
+     *   object
+     * SB_IS_UNAVAILABLE is true when the slot is unavailable for any
+     *   other reason than an allocation: off hours, vacations, resource
+     *   usage limits expired or any future reason. */
     SbBooking** scoreboard;
+#define SB_FREE (NULL)
+#define SB_OFF ((SbBooking*)1)
+#define SB_VACATION ((SbBooking*)2)
+#define SB_OVERLIMIT ((SbBooking*)4)
+#define SB_IS_FREE(value) ((value)==SB_FREE)
+#define SB_IS_ALLOCATED(value) ((value)>SB_OVERLIMIT)
+#define SB_IS_UNAVAILABLE(value) (!SB_IS_FREE(value)&&!SB_IS_ALLOCATED(value))
+
     /// The number of time slots in the project.
     uint sbSize;
 

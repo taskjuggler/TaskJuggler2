@@ -604,12 +604,13 @@ Task::bookResources(int sc, time_t date, time_t slotDuration)
             }
             if ((*ali)->isPersistent() && (*ali)->getLockedResource())
             {
-                int availability;
-                if ((availability = (*ali)->getLockedResource()->
-                     isAvailable(date)) > 0)
+                int booking = (*ali)->getLockedResource()->
+                    getBooking(date);
+                if (booking != BOOKING_FREE)
                 {
                     allMandatoriesAvailables = false;
-                    if (availability >= 4 && !(*ali)->getConflictStart())
+                    if (booking == BOOKING_BOOKED &&
+                        !(*ali)->getConflictStart())
                         (*ali)->setConflictStart(date);
                     break;
                 }
@@ -619,33 +620,34 @@ Task::bookResources(int sc, time_t date, time_t slotDuration)
                 /* For a mandatory allocation with alternatives at least one
                  * of the resources or resource groups must be available. */
                 bool found = false;
-                int maxAvailability = 0;
+                bool encounteredBooked = false;
                 QPtrList<Resource> candidates = (*ali)->getCandidates();
                 for (QPtrListIterator<Resource> rli(candidates);
                      *rli && !found; ++rli)
                 {
                     /* If a resource group is marked mandatory, all members
                      * of the group must be available. */
-                    int availability;
+                    int booking;
                     bool allAvailable = true;
                     for (ResourceTreeIterator rti(*rli); *rti != 0; ++rti)
-                        if ((availability =
-                             (*rti)->isAvailable(date)) > 0 ||
+                    {
+                        booking = (*rti)->getBooking(date);
+                        if (booking != BOOKING_FREE ||
                             mandatoryResources.findRef(*rti) >= 0)
                         {
                             allAvailable = false;
-                            if (availability >= maxAvailability)
-                                maxAvailability = availability;
+                            if (booking == BOOKING_BOOKED)
+                                encounteredBooked = true;
                         }
                         else
                             mandatoryResources.append(*rti);
-
+                    }
                     if (allAvailable)
                         found = true;
                 }
                 if (!found)
                 {
-                    if (maxAvailability >= 4 && !(*ali)->getConflictStart())
+                    if (encounteredBooked && !(*ali)->getConflictStart())
                         (*ali)->setConflictStart(date);
                     allMandatoriesAvailables = false;
                     break;
@@ -760,13 +762,13 @@ Task::bookResources(int sc, time_t date, time_t slotDuration)
          * has already been picked, try to book this resource again. If the
          * resource is not available there will be no booking for this
          * time slot. */
-        int maxAvailability = 0;
+        bool encounteredBooked = false;
         if ((*ali)->isPersistent() && (*ali)->getLockedResource())
         {
             if (!bookResource((*ali)->getLockedResource(), date, slotDuration,
-                              slotsToLimit, maxAvailability))
+                              slotsToLimit, encounteredBooked))
             {
-                if (maxAvailability >= 4 && !(*ali)->getConflictStart())
+                if (encounteredBooked && !(*ali)->getConflictStart())
                     (*ali)->setConflictStart(date);
             }
             else if ((*ali)->getConflictStart())
@@ -788,13 +790,13 @@ Task::bookResources(int sc, time_t date, time_t slotDuration)
             bool found = false;
             for (QPtrListIterator<Resource> rli(cl); *rli != 0; ++rli)
                 if (bookResource((*rli), date, slotDuration, slotsToLimit,
-                                 maxAvailability))
+                                 encounteredBooked))
                 {
                     (*ali)->setLockedResource(*rli);
                     found = true;
                     break;
                 }
-            if (!found && maxAvailability >= 4 && !(*ali)->getConflictStart())
+            if (!found && encounteredBooked && !(*ali)->getConflictStart())
                 (*ali)->setConflictStart(date);
             else if (found && (*ali)->getConflictStart())
             {
@@ -825,16 +827,15 @@ Task::bookResources(int sc, time_t date, time_t slotDuration)
 
 bool
 Task::bookResource(Resource* r, time_t date, time_t slotDuration,
-                   int& slotsToLimit, int& maxAvailability)
+                   int& slotsToLimit, bool& encounteredBooked)
 {
     bool booked = false;
     double intervalLoad = project->convertToDailyLoad(slotDuration);
 
     for (ResourceTreeIterator rti(r); *rti != 0; ++rti)
     {
-        int availability;
-        if ((availability =
-             (*rti)->isAvailable(date)) == 0)
+        int booking = (*rti)->getBooking(date);
+        if (booking == BOOKING_FREE)
         {
             (*rti)->book(new Booking(Interval(date, date + slotDuration - 1),
                                      this));
@@ -865,8 +866,8 @@ Task::bookResource(Resource* r, time_t date, time_t slotDuration,
             if (slotsToLimit > 0 && --slotsToLimit <= 0)
                 return true;
         }
-        else if (availability > maxAvailability)
-            maxAvailability = availability;
+        else if (booking == BOOKING_BOOKED)
+            encounteredBooked = true;
     }
     return booked;
 }
