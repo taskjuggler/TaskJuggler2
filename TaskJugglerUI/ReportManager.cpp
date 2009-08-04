@@ -358,10 +358,14 @@ ReportManager::showReport(QListViewItem* lvi, bool& showReportTab)
             if (!rep->generate())
                 result = false;
             // show the CSV file in preferred CSV handler
+            QString baseDir;
+            if (rep->getFileName()[0].latin1() == '/')
+                baseDir = "/";
+            else
+                baseDir = rep->getDefinitionFile();
             KURL reportUrl =
-                KURL::fromPathOrURL(rep->getDefinitionFile());
+                KURL::fromPathOrURL(baseDir);
             reportUrl.setFileName(rep->getFileName());
-
             changeStatusBar(i18n("Displaying CSV report: '%1'")
                             .arg(rep->getFileName()));
             KRun::runURL(reportUrl, "text/x-csv");
