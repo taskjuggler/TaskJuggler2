@@ -57,6 +57,7 @@ Resource::Resource(Project* p, const QString& i, const QString& n,
     specifiedBookings(new SbBooking**[p->getMaxScenarios()]),
     scoreboards(new SbBooking**[p->getMaxScenarios()]),
     scenarios(new ResourceScenario[p->getMaxScenarios()]),
+    frozenScenarios(new bool[p->getMaxScenarios()]),
     allocationProbability(new double[p->getMaxScenarios()])
 {
     vacations.setAutoDelete(true);
@@ -68,6 +69,7 @@ Resource::Resource(Project* p, const QString& i, const QString& n,
     {
         scoreboards[sc] = 0;
         specifiedBookings[sc] = 0;
+        frozenScenarios[sc] = false;
     }
 
     for (int i = 0; i < p->getMaxScenarios(); ++i)
@@ -398,6 +400,9 @@ Resource::getBooking(time_t date)
     if (!limits)
         return BOOKING_FREE;
 
+    // TODO: stop here if the scenario is frozen (but how should I guess which
+    // is the current scenario?)
+
     if ((limits && limits->getDailyMax() > 0))
     {
         // Now check that the resource is not overloaded on this day.
@@ -573,6 +578,8 @@ Resource::bookSlot(uint idx, SbBooking* nb, int overtime)
 bool
 Resource::bookInterval(Booking* nb, int sc, int sloppy, int overtime)
 {
+    assert(frozenScenarios[sc] == false);
+
     uint sIdx = sbIndex(nb->getStart());
     uint eIdx = sbIndex(nb->getEnd());
 
@@ -649,6 +656,8 @@ Resource::bookInterval(Booking* nb, int sc, int sloppy, int overtime)
 bool
 Resource::addBooking(int sc, Booking* nb, int sloppy, int overtime)
 {
+    assert(frozenScenarios[sc] == false);
+
     SbBooking** tmp = scoreboard;
 
     if (scoreboards[sc])
@@ -1017,7 +1026,7 @@ Resource::getAllocatedSlots(int sc, uint startIdx, uint endIdx,
 }
 
 double
-Resource::getEffectiveFreeLoad(int sc, const Interval& period)
+Resource::getFreeLoad(int sc, const Interval& period, bool effective)
 {
     double load = 0.0;
     Interval iv(period);
@@ -1027,7 +1036,7 @@ Resource::getEffectiveFreeLoad(int sc, const Interval& period)
     if (hasSubs())
     {
         for (ResourceListIterator rli(*sub); *rli != 0; ++rli)
-            load += (*rli)->getEffectiveFreeLoad(sc, iv);
+            load += (*rli)->getFreeLoad(sc, iv, effective);
     }
     else
     {
@@ -1035,28 +1044,59 @@ Resource::getEffectiveFreeLoad(int sc, const Interval& period)
         uint endIdx = sbIndex(iv.getEnd());
         load = project->convertToDailyLoad
             (getAvailableSlots(sc, startIdx, endIdx) *
-             project->getScheduleGranularity()) * efficiency;
+             project->getScheduleGranularity())
+            * ((!effective || efficiency == 0.0) ? 1.0 : efficiency);
     }
 
     return load;
 }
 
 double
-Resource::getAvailableTimeLoad(int sc, const Interval& period)
+Resource::getOverLimitLoad(int sc, const Interval& period, bool effective)
 {
-    return project->convertToDailyLoad(getAvailableTime(sc, period));
-}
-
-long
-Resource::getAvailableTime(int sc, const Interval& period)
-{
+    double load = 0.0;
     Interval iv(period);
     if (!iv.overlap(Interval(project->getStart(), project->getEnd())))
-        return 0;
+        return 0.0;
 
-    return getAvailableSlots(sc, sbIndex(iv.getStart()),
-                             sbIndex(iv.getEnd())) *
-        project->getScheduleGranularity();
+    if (hasSubs())
+    {
+        for (ResourceListIterator rli(*sub); *rli != 0; ++rli)
+            load += (*rli)->getOverLimitLoad(sc, iv, effective);
+    }
+    else
+    {
+        uint startIdx = sbIndex(iv.getStart());
+        uint endIdx = sbIndex(iv.getEnd());
+        load = project->convertToDailyLoad
+            (getOverLimitSlots(sc, startIdx, endIdx) *
+             project->getScheduleGranularity())
+            * ((!effective || efficiency == 0.0) ? 1.0 : efficiency);
+    }
+
+    return load;
+}
+
+void
+Resource::freezeScenario(int sc)
+{
+    if (frozenScenarios[sc])
+        return;
+    // browse all booking slots for a given scenario, to force
+    // evaluation of resource usage limits a last time before using
+    // scoreboard content in getAvailableSlots() et getOverLimitSlots()
+    SbBooking** tmp = scoreboard;
+    scoreboard = scoreboards[sc];
+    if (!scoreboard)
+    {
+        initScoreboard();
+        scoreboards[sc] = scoreboard;
+    }
+    for (time_t d = project->getStart(); d < project->getEnd();
+         d += project->getScheduleGranularity())
+        getBooking(d);
+    scoreboard = tmp;
+    frozenScenarios[sc] = true;
 }
 
 long
@@ -1071,19 +1111,34 @@ Resource::getAvailableSlots(int sc, uint startIdx, uint endIdx)
     }
     else
     {
-        if (!scoreboards[sc])
-        {
-            scoreboard = scoreboards[sc];
-            initScoreboard();
-            scoreboards[sc] = scoreboard;
-        }
-
+        freezeScenario(sc);
         for (uint i = startIdx; i <= endIdx; i++)
-            if (scoreboards[sc][i] == 0)
+            if (scoreboards[sc][i] == SB_FREE)
                 availSlots++;
     }
 
     return availSlots;
+}
+
+long
+Resource::getOverLimitSlots(int sc, uint startIdx, uint endIdx)
+{
+    long overSlots = 0;
+
+    if (!sub->isEmpty())
+    {
+        for (ResourceListIterator rli(*sub); *rli != 0; ++rli)
+            overSlots += (*rli)->getOverLimitSlots(sc, startIdx, endIdx);
+    }
+    else
+    {
+        freezeScenario(sc);
+        for (uint i = startIdx; i <= endIdx; i++)
+            if (scoreboards[sc][i] == SB_OVERLIMIT)
+                overSlots++;
+    }
+
+    return overSlots;
 }
 
 double
@@ -1479,6 +1534,3 @@ QDomElement Resource::xmlIDElement( QDomDocument& doc ) const
 
    return( elem );
 }
-
-
-

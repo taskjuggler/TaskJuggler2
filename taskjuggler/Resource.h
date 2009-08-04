@@ -107,7 +107,6 @@ public:
 
     bool book(Booking* b);
 
-    bool bookSlot(uint idx, SbBooking* nb, int overtime = 0);
     bool bookInterval(Booking* b, int sc, int sloppy = 0, int overtime = 0);
     bool addBooking(int sc, Booking* b, int sloppy = 0, int overtime = 0);
 
@@ -134,11 +133,14 @@ public:
 
     /***
      * Return the unallocated load of the resource and its children wheighted
-     * by their efficiency.
+     * by their efficiency if effective == true and efficiency != 0.0.
      */
-    double getEffectiveFreeLoad(int sc, const Interval& period);
-    double getAvailableTimeLoad(int sc, const Interval& period);
-    long getAvailableTime(int sc, const Interval& period);
+    double getFreeLoad(int sc, const Interval& period, bool effective);
+    inline double getEffectiveFreeLoad(int sc, const Interval& period)
+    {
+        return getFreeLoad(sc, period, true);
+    }
+    double getOverLimitLoad(int sc, const Interval& period, bool effective);
 
     double getCredits(int sc, const Interval& i, AccountType acctType,
                       const Task* task = 0) const;
@@ -192,12 +194,16 @@ private:
 
     void initScoreboard();
 
+    bool bookSlot(uint idx, SbBooking* nb, int overtime = 0);
+
     long getCurrentLoadSub(uint startIdx, uint endIdx, const Task* task) const;
 
     long getAllocatedSlots(int sc, uint startIdx, uint endIdx,
                            AccountType acctType, const Task* task) const;
 
     long getAvailableSlots(int sc, uint startIdx, uint endIdx);
+    long getOverLimitSlots(int sc, uint startIdx, uint endIdx);
+    void freezeScenario(int sc);
 
     bool isAllocatedSub(int sc, uint startIdx, uint endIdx, const QString&
                         prjId) const;
@@ -272,6 +278,8 @@ private:
     SbBooking*** scoreboards;
 
     ResourceScenario* scenarios;
+
+    bool* frozenScenarios;
 
     /**
      * The allocation probability is calculated prior to scheduling a
