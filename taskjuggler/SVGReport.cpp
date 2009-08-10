@@ -152,12 +152,12 @@ bool SVGReport::parseExternalProject()
 
                 externalProject->project->pass2(false);
 
-//                 if (TJMH.getErrors() == 0)
+                if (TJMH.getErrors() == 0)
                 {
                     externalProject->project->scheduleAllScenarios();
                 }
-//                 else
-//                     return false;
+                else
+                    return false;
 
                 if (externalProject->scenario != "*")
                 {
