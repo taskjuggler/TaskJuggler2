@@ -193,6 +193,7 @@ SVGTimeTimeReport::SVGTimeTimeReport(Project* p, const QString& file, const QStr
 {
     // default headline
     setHeadline(getProject()->getName() + " time/time report.");
+    taskSortCriteria[0] = CoreAttributesList::NameUp;
 }
 
 bool

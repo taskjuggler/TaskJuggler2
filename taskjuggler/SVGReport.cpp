@@ -47,8 +47,6 @@ SVGReport::SVGReport(Project* p, const QString& file, const QString& defFile,
             scenarios.append(i);
     }
 
-    taskSortCriteria[0] = CoreAttributesList::NameUp;
-
 }
 
 SVGReport::~SVGReport()
