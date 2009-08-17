@@ -32,17 +32,17 @@ HTMLIndexReportElement::HTMLIndexReportElement(Report* r,
 bool
 HTMLIndexReportElement::generateReportLine(Report* report, int level)
 {
-    // Deduce report file name relativly to index directory.
+    // Deduce report file name relatively to index directory.
     QString absSourceFilePath = QFileInfo(defFileName).dir(true).canonicalPath();
     QString absReportFilePath = QFileInfo(report->getFullFileName()).dir(true).canonicalPath();
     QString reportRelPath = "";
-    for (QString sourceFilePath = defFileName.left(defFileName.findRev(QDir().separator())-1);
+    for (QString sourceFilePath = defFileName; // .left(defFileName.findRev(QDir().separator())-1);
         sourceFilePath.find('/') >= 0;
-        sourceFilePath = sourceFilePath.left(sourceFilePath.findRev(QDir().separator())-1))
+        sourceFilePath = sourceFilePath.left(sourceFilePath.findRev(QDir().separator())))
     {
         if (strncmp(sourceFilePath, absReportFilePath, sourceFilePath.length()) == 0)
         {
-            reportRelPath += absReportFilePath.right(absReportFilePath.length() - sourceFilePath.length() - 2);
+            reportRelPath += absReportFilePath.right(absReportFilePath.length() - sourceFilePath.length() - 1);
             break;
         }
         else
@@ -51,33 +51,13 @@ HTMLIndexReportElement::generateReportLine(Report* report, int level)
         }
     }
 
-    QString thumbnailDir = absReportFilePath + QDir().separator() + ".thumbnails";
-    QString thumbnailFileName = QFileInfo(report->getFullFileName()).fileName() + ".gif";
-    QString thumbnailFile = thumbnailDir + QDir().separator() + thumbnailFileName;
     QString reportRelFile = reportRelPath + QDir().separator() + QFileInfo(report->getFullFileName()).fileName();
     // Make thumbnail directory in case it does not exists yet
-    QDir().mkdir(QFileInfo(thumbnailDir).absFilePath());
 
     // Generate thumbnail
-    QFile thumb (thumbnailFile);
     QFile reportQFile (report->getFullFileName() );
-    if (!thumb.exists() ||
-        QFileInfo(thumb).created() < QFileInfo(thumb).created() )
-    {
-        QString thumbnailCommand;
-//         if (strncmp(report->getType(), "SVG", 3) == 0)
-//         {
-//             thumbnailCommand = "inkscape -h 40 -e '" + thumbnailFile + "' '" + report->getFullFileName() + "'";
-//         }
-//         else if (strncmp(report->getType(), "HTML", 4) != 0 || reportQFile.size() < 500000)
-//         {
-//             thumbnailCommand = "convert -geometry 40x -delay 100 '" + report->getFullFileName() + "' '" + thumbnailFile + "'";
-//         }
-        thumbnailCommand = "evince-thumbnailer -s 100 '" + thumbnailFile + "' '" + report->getFullFileName() + "'";
-        system(thumbnailCommand.ascii());
-    }
-
     s() << "<TR style=\"background-color:" << colors.getColorName("default") << "; \" ><TD>";
+    s() << "</TD><TD><A HREF='" << reportRelFile << "'>";
     for (int i = 0 ; i < level; i++)
         s() << "<ul>";
 
@@ -85,9 +65,7 @@ HTMLIndexReportElement::generateReportLine(Report* report, int level)
     for (int i = 0 ; i < level; i++)
         s() << "</ul>";
 
-    s() << "</TD><TD><A HREF='" << reportRelFile << "'>";
-    s() << "<img src='" << reportRelPath + QDir().separator() + ".thumbnails" + QDir().separator() + thumbnailFileName << "' />";
-    s() << "</A></TD>";
+    s() << "</TD>";
 
     s() << "<TD><i> ( " << report->getType() << " ) </i></TD>";
     ElementHolder *elementHolder = dynamic_cast<ElementHolder*>(this);
