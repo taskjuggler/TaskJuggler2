@@ -416,10 +416,10 @@ Task::scheduleContainer(int sc)
             nEnd = (*tli)->end;
     }
 
-    if (start == 0 || start > nStart)
+    if (scenarios[sc].specifiedStart == 0 || start > nStart)
         propagateStart(sc, nStart);
 
-    if (end == 0 || end < nEnd)
+    if (scenarios[sc].specifiedEnd == 0 || end < nEnd)
         propagateEnd(sc, nEnd);
 
     if (DEBUGTS(4))
@@ -447,7 +447,7 @@ Task::propagateStart(int sc, time_t date)
             propagateEnd(sc, start - 1);
     }
 
-    /* Set start date to all previous that have no start date yet, but are
+    /* Set end date to all previous that have no end date yet, but are
      * ALAP task or have no duration. */
     for (TaskListIterator tli(previous); *tli != 0; ++tli)
         if ((*tli)->end == 0 && (*tli)->latestEnd(sc) != 0 &&
