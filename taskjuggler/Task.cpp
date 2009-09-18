@@ -447,6 +447,15 @@ Task::propagateStart(int sc, time_t date)
             propagateEnd(sc, start - 1);
     }
 
+    /* Skip boundary date propagation to previous if current task is
+     * a container and itself and at less one of its subtasks are not yet
+     * scheduled, since its start date may still change */
+    if (scenarios[sc].specifiedStart == 0)
+        for (TaskListIterator tli(*sub); *tli != 0; ++tli)
+        {
+            if ((*tli)->start == 0)
+                goto skip_propagate_to_previous;
+        }
     /* Set end date to all previous that have no end date yet, but are
      * ALAP task or have no duration. */
     for (TaskListIterator tli(previous); *tli != 0; ++tli)
@@ -459,6 +468,7 @@ Task::propagateStart(int sc, time_t date)
             /* Recursively propagate the end date */
             (*tli)->propagateEnd(sc, (*tli)->latestEnd(sc));
         }
+ skip_propagate_to_previous:;
 
     /* Propagate start time to sub tasks which have only an implicit
      * dependency on the parent task. Do not touch container tasks. */
@@ -499,6 +509,15 @@ Task::propagateEnd(int sc, time_t date)
             propagateStart(sc, end + 1);
     }
 
+    /* Skip boundary date propagation to followers if current task is
+     * a container and itself and at less one of its subtasks are not yet
+     * scheduled, since its end date may still change */
+    if (scenarios[sc].specifiedEnd == 0)
+        for (TaskListIterator tli(*sub); *tli != 0; ++tli)
+        {
+            if ((*tli)->end == 0)
+                goto skip_propagate_to_followers;
+        }
     /* Set start date to all followers that have no start date yet, but are
      * ASAP task or have no duration. */
     for (TaskListIterator tli(followers); *tli != 0; ++tli)
@@ -511,6 +530,8 @@ Task::propagateEnd(int sc, time_t date)
             /* Recursively propagate the start date */
             (*tli)->propagateStart(sc, (*tli)->earliestStart(sc));
         }
+ skip_propagate_to_followers:;
+
     /* Propagate end time to sub tasks which have only an implicit
      * dependency on the parent task. Do not touch container tasks. */
     for (TaskListIterator tli(*sub); *tli != 0; ++tli)
