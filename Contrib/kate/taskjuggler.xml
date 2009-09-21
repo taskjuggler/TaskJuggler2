@@ -170,6 +170,8 @@
         <item> table </item>
         <item> taskattributes </item>
         <item> taskid </item>
+        <item> taskbarpostfix </item>
+        <item> taskbarprefix </item>
         <item> taskprefix </item>
         <item> taskreport </item>
         <item> taskroot </item>

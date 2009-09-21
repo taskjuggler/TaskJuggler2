@@ -289,6 +289,8 @@ syn keyword tjspkeyword supplement
 syn keyword tjspkeyword table
 syn keyword tjspkeyword task
 syn keyword tjspkeyword taskattributes
+syn keyword tjspkeyword taskbarpostfix
+syn keyword tjspkeyword taskbarprefix
 syn keyword tjspkeyword taskid
 syn keyword tjspkeyword taskprefix
 syn keyword tjspkeyword taskreport
