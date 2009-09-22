@@ -2442,6 +2442,21 @@ Task::scheduleOk(int sc) const
         if ((*tdi)->getTaskRef()->runAway)
             return false;
 
+    /* In some rare and hard to test cases, scheduling algorithm can lead
+     * to a task with end date before start date without detecting this
+     * inconsistency, therefore we should check it.
+     * Some tasks have their start date 1 second ahead from their end
+     * date in a regular manner, so they must be ignored by this test,
+     * this is the case for example for milestones and containers only
+     * containing milestones. */
+    if (start > end + 1) {
+        errorMessage(i18n("Task '%1' would need to end before its start "
+                          "time for the '%2' scenario (%3 is before %4).")
+                     .arg(id).arg(scenario).arg(time2tjp(end))
+                     .arg(time2tjp(start)));
+        return false;
+    }
+
     if (start == 0)
     {
         errorMessage(i18n("Task '%1' has no start time for the '%2'"
