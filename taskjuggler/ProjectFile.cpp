@@ -72,8 +72,6 @@ bool
 ProjectFile::open(const QString& file, const QString& parentPath,
                   const QString& taskPrefix, bool masterfile)
 {
-    if (DEBUGPF(10))
-        qDebug("Requesting to open file %s", file.latin1());
     if (masterfile)
     {
         proj->setProgressBar(0, 100);
@@ -122,14 +120,8 @@ ProjectFile::open(const QString& file, const QString& parentPath,
     }
 
     // Register source file
-    if (DEBUGPF(2))
-        qDebug("Reading %s", absFileName.latin1());
     proj->addSourceFile(absFileName);
-    if (DEBUGPF(2))
-        qDebug("Reading %s", absFileName.latin1());
     proj->setProgressInfo(i18n("Parsing %1...").arg(absFileName));
-    if (DEBUGPF(2))
-        qDebug("Reading %s", absFileName.latin1());
 
     if (DEBUGPF(2))
         qDebug("Reading %s", absFileName.latin1());
@@ -4800,8 +4792,7 @@ ProjectFile::readSVGTimeTimeReport(const QString& reportType, Report* parentRepo
             }
             if (token == reportType)
             {
-                if (!readSVGTimeTimeReport(reportType, report))
-                    goto error;
+                readSVGTimeTimeReport(reportType, report);
             }
             else if (token == KW("start"))
             {
@@ -4888,52 +4879,38 @@ ProjectFile::readSVGTimeTimeReport(const QString& reportType, Report* parentRepo
             else if (token == KW("scenarios"))
             {
                 report->clearScenarios();
-                QString token, projectFile;
-                QString strSc = "";
-                QStringList strList;
-
-                for ( ; ; )
+                QString scId;
+                tt = nextToken(scId);
+                if (tt == STAR)
                 {
-                    tt = nextToken(token);
-
-                    if (tt != STAR && tt != ID && tt != STRING)
+                    for (ScenarioListIterator sli(proj->getScenarioIterator()); *sli ; ++sli)
+                        if ((*sli)->getEnabled())
+                            report->addScenario(proj->getScenarioIndex((*sli)->getId()) - 1);
+                }
+                else
+                {
+                    for ( ; ; )
                     {
-                        errorMessage(i18n("Scenario ID, project file or '*' expected"));
-                        goto error;
-                    }
-                    if (tt == STAR)
-                    {
-                        for (ScenarioListIterator sli(proj->getScenarioIterator()); *sli ; ++sli)
-                            if ((*sli)->getEnabled())
-                                report->addScenario(proj->getScenarioIndex((*sli)->getId()) - 1);
-                    }
-                    else if (tt == STRING)
-                    {
-                        strList = QStringList::split ( ":", token);
-                        projectFile = strList[0];
-                        if (strList.size() > 1)
-                            strSc = strList[1];
-                        else
-                            strSc = "";
-                        report->addProjectFile(projectFile, strSc);
-                    }
-                    else /* Case tt==ID */
-                    {
-                        int scIdx;
-                        if ((scIdx = proj->getScenarioIndex(token)) == -1)
+                        if (tt != ID)
                         {
-                            errorMessage(i18n("Unknown scenario %1")
-                                        .arg(token));
+                            errorMessage(i18n("Scenario ID or '*' expected"));
                             goto error;
                         }
-                        if (proj->getScenario(scIdx - 1)->getEnabled()) {
-                            report->addScenario(proj->getScenarioIndex(token) - 1);
+                        int scIdx;
+                        if ((scIdx = proj->getScenarioIndex(scId)) == -1)
+                        {
+                            errorMessage(i18n("Unknown scenario %1")
+                                        .arg(scId));
+                            goto error;
                         }
-                    }
-                    if ((tt = nextToken(token)) != COMMA)
-                    {
-                        returnToken(tt, token);
-                        break;
+                        if (proj->getScenario(scIdx - 1)->getEnabled())
+                            report->addScenario(proj->getScenarioIndex(scId) - 1);
+                        if ((tt = nextToken(token)) != COMMA)
+                        {
+                            returnToken(tt, token);
+                            break;
+                        }
+                        tt = nextToken(scId);
                     }
                 }
             }

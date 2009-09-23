@@ -766,7 +766,6 @@ public:
     long int convertToSlots(double effort) const;
 
     void setMaxErrors(int me) { maxErrors = me; }
-    int getMaxErrors() const { return maxErrors; }
 
     void addJournalEntry(JournalEntry* entry);
 

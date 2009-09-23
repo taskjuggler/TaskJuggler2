@@ -12,7 +12,7 @@
  * description of the various syntax elements. You can find more
  * information about TaskJuggler at http://www.taskjuggler.org!
  */
-project yourID "SVG Test Project" "1.0" 2009-04-01 - 2010-12-31 {
+project yourID "SVG Test Project" "1.0" 2009-06-01 - 2010-12-31 {
     # Hide the clock time. Only show the date.
     timeformat "%Y-%m-%d"
     # The currency for all money values is EUR.
@@ -50,9 +50,7 @@ task mainTask "Main Task" {
     task a "Task A" {
         start 2009-06-01
         progress1:start 2009-08-10
-        progress2:start 2009-09-14
         duration 30d
-        progress2:duration 1d
     }
     task b "Task B" { duration 30d depends !a flags hidden }
     task b2 "Task B2" { duration 30d depends !a flags hidden }
@@ -80,7 +78,6 @@ taskreport "report scenario progress4" {
 
 svgtimetimereport "project_a_1.svg" {
     headline "project_a_1"
-    scenarios initial
 
     svgtimetimereport "project_a_2.svg" {
         headline "project_a_2"
@@ -89,9 +86,7 @@ svgtimetimereport "project_a_1.svg" {
 
     svgtimetimereport "project_a_3.svg" {
         headline "project_a_3"
-        scenarios initial,
-        progress3,
-        progress4
+        scenarios initial, progress3, progress4
         period 2009-07-10 - 2010-12-31
     }
 
@@ -105,56 +100,8 @@ svgtimetimereport "project_a_1.svg" {
         hidetask ~hidden
         sorttasks tree, namedown
     }
-
-    svgtimetimereport "project_a_6.svg" {
-        headline "project_a_6"
-        scenarios "ganttreport_1.tjp",
-        "ganttreport_1.tjp:*",
-        initial,
-        progress3,
-        progress4
-        period 2009-07-10 - 2010-12-31
-    }
-
-    svgtimetimereport "project_a_7.svg" {
-        headline "project_a_7"
-        scenarios "ganttreport_1.tjp",
-        "ganttreport_1.tjp:*",
-        "ganttreport_1.tjp:delayed",
-        "ganttreport_1.tjp:delayed2",
-        initial,
-        progress3,
-        progress4
-        period 2009-07-10 - 2010-12-31
-    }
-
-    svgtimetimereport "project_a_8.svg" {
-        headline "project_a_8"
-        scenarios "ganttreport_1.tjp:*", *
-        period 2009-07-10 - 2010-12-31
-    }
-
-    svgtimetimereport "project_a_9.svg" {
-        headline "project_a_9"
-        scenarios "ganttreport_1.tjp"
-        period 2009-07-10 - 2010-12-31
-    }
-
-    svgtimetimereport "project_a_10.svg" {
-        headline "project_a_10"
-        scenarios "ganttreport_*.tjp:*"
-        period 2009-07-10 - 2010-12-31
-    }
-
-    svgtimetimereport "project_a_11.svg" {
-        headline "project_a_11"
-        scenarios "ganttreport_*.tjp:*" , *
-        period 2009-07-10 - 2010-12-31
-    }
-
 }
 
 htmltaskreport "htmltaskreport" {
     scenarios initial, progress1, progress2, progress3, progress4
 }
-

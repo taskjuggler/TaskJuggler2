@@ -212,7 +212,6 @@ SVGTimeTimeReport::generate()
     const int gap = 10; // Spacing between axes and text
     QDomElement svgText, diagonal, rect, polyline, circlemark, milestonedate, taskName, line ;
     QDomDocument doc;
-    Task *taskExtern = 0;
 
     if( !open())
     {
@@ -220,12 +219,6 @@ SVGTimeTimeReport::generate()
                  .arg(fileName));
         return false;
     }
-
-    // If only external project scenario where choosen by user, then add default scenario
-    if (scenarios.count() == 0) scenarios.append(0);
-
-    if (!parseExternalProject())
-        return false;
 
     TaskList filteredTaskList;
     if (!filterTaskList(filteredTaskList, 0, getHideTask(), 0))
@@ -253,37 +246,6 @@ SVGTimeTimeReport::generate()
                     datemin = date;
                 if (datemax == 0 || datemax < date)
                     datemax = date;
-            }
-
-            ExternalProject *externalProject = 0;
-            for (QPtrListStdIterator<ExternalProject>  it = externalProjects.begin();
-                it != externalProjects.end(); ++it)
-            {
-                externalProject = *it;
-                if (externalProject && externalProject->project)
-                {
-                    date = externalProject->sc->getDate();
-                    if (date > 0)
-                    {
-                        if (datemin == 0 || datemin > date)
-                            datemin = date;
-                        if (datemax == 0 || datemax < date)
-                            datemax = date;
-                    }
-
-                    taskExtern = externalProject->project->getTask((*tli)->getId());
-                    if (taskExtern)
-                    {
-                        date = taskExtern->getStart(externalProject->sc->getIndex()-1);
-                        if (date > 0)
-                        {
-                            if (datemin == 0 || datemin > date)
-                                datemin = date;
-                            if (datemax == 0 || datemax < date)
-                                datemax = date;
-                        }
-                    }
-                }
             }
         }
     }
@@ -397,7 +359,6 @@ SVGTimeTimeReport::generate()
     diagonal.setAttribute("y2", ymax);
     diagonal.setAttribute("stroke", "black");
     diagonal.setAttribute("stroke-width", 1);
-if (DEBUGPS(4)) tjDebug(i18n("--------------------"));
 
     // First, loop on tasks, to get longest task name
     unsigned int maxTaskNameLength = 0;
@@ -415,12 +376,11 @@ if (DEBUGPS(4)) tjDebug(i18n("--------------------"));
     QString polylinepoints;
     unsigned int nbLegendPerColumn = (width + getProject()->getTimeFormat().length() * fontHeight) / fontHeight / 2;
 
-    svg.setAttribute("width", 2 * margex + width + 2 * gap + ( 1 + filteredTaskList.count() / nbLegendPerColumn) * maxTaskNameLength * fontHeight);
+    svg.setAttribute("width", margex + width + 2 * gap + ( 1 + filteredTaskList.count() / nbLegendPerColumn) * maxTaskNameLength * fontHeight);
     svg.setAttribute("height", margey + width + 2 * gap + 10 * fontHeight);
 
     for (TaskListIterator tli(filteredTaskList); *tli != 0; ++tli, i++)
     {
-if (DEBUGPS(4)) tjDebug(i18n("%1:%2 %3").arg(__FILE__).arg(__LINE__).arg((*tli)->getName()));
         // Add comment, task name
         svg.appendChild(doc.createComment("Task : " + (*tli)->getName()));
 
@@ -478,60 +438,16 @@ if (DEBUGPS(4)) tjDebug(i18n("%1:%2 %3").arg(__FILE__).arg(__LINE__).arg((*tli)-
         taskName.setAttribute("onmouseout", "jmouseout(evt, '" + (*tli)->getFullId() + "')");
         taskName.setAttribute("id", "legendtext." + (*tli)->getFullId());
 
-//         for (it = scenarios.begin(); it != scenarios.end(); ++it)
-//         {
-//             // Add point only if above diagonal
-//             if ((*tli)->getStart(*it) >= getProject()->getScenario(*it)->getDate())
-//             {
-//                 // Add comment, scenario name
-//                 svg.appendChild(doc.createComment("Scenario : " + getProject()->getScenario(*it)->getName()));
-//
-//                 x = DATE_TO_X(getProject()->getScenario(*it)->getDate());
-//                 y = DATE_TO_Y((*tli)->getStart(*it));
-//
-//                 // Add this point to polylinepoints QString.
-//                 polylinepoints.append(" " + QString::number(x) + "," + QString::number(y) + " ");
-//
-//                 // Add one circle mark for each task and each milestones.
-//                 circlemark = doc.createElement("circle");
-//                 svg.appendChild(circlemark);
-//                 circlemark.setAttribute("r", 3);
-//                 circlemark.setAttribute("cx", x);
-//                 circlemark.setAttribute("cy", y);
-//                 circlemark.setAttribute("fill", "none");
-//                 circlemark.setAttribute("stroke", svgColors[colorSelection]);
-//                 circlemark.setAttribute("stroke-width", 1);
-//             }
-//         }
-
-        for (QPtrListStdIterator<AllScenario>  idsas = dateSortedAllScenarios.begin();
-            idsas != dateSortedAllScenarios.end(); ++idsas)
+        for (it = scenarios.begin(); it != scenarios.end(); ++it)
         {
-
-            AllScenario *allScenario = *idsas;
-if (DEBUGPS(4)) tjDebug(i18n("-- %1:%2 scnr:%3").arg(__FILE__).arg(__LINE__).arg(allScenario->sc->getId()));
-
-            Task* task = 0;
-            if (allScenario->project == getProject())
-                task  = *tli;
-            else
-                task = allScenario->project->getTask((*tli)->getId());
-
-            int sc = allScenario->sc->getIndex() - 1;
-            // if current task not in this scenario, continue
-            if (task == 0) continue;
-
-if (DEBUGPS(4)) tjDebug(i18n("-- %1:%2 scnr: %3 task:%4").arg(__FILE__).arg(__LINE__)
-    .arg(time2user(allScenario->sc->getDate(), getProject()->getTimeFormat()))
-    .arg(time2user(task->getStart(sc), getProject()->getTimeFormat())));
             // Add point only if above diagonal
-//             if (task->getStart(sc) >= allScenario->sc->getDate())
+            if ((*tli)->getStart(*it) >= getProject()->getScenario(*it)->getDate())
             {
                 // Add comment, scenario name
-                svg.appendChild(doc.createComment("Scenario : " + allScenario->sc->getName()));
+                svg.appendChild(doc.createComment("Scenario : " + getProject()->getScenario(*it)->getName()));
 
-                x = DATE_TO_X(allScenario->sc->getDate());
-                y = DATE_TO_Y(task->getStart(sc));
+                x = DATE_TO_X(getProject()->getScenario(*it)->getDate());
+                y = DATE_TO_Y((*tli)->getStart(*it));
 
                 // Add this point to polylinepoints QString.
                 polylinepoints.append(" " + QString::number(x) + "," + QString::number(y) + " ");
