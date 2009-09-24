@@ -1371,4 +1371,58 @@ characters are used.</para></listitem>
 
 </itemizedlist></para>
 </sect2>
+<sect2 id="Changelog_2_4_4"><title>Version 2.4.4 (no release date yet)</title>
+<para>
+<itemizedlist mark='opencircle'>
+
+<listitem><para>Adding "projectmax" and "yearlymax" resource usage
+                limits.</para></listitem>
+
+<listitem><para>Fixed: Column "hierarchlevel" was not described in the online
+                doc.</para></listitem>
+
+<listitem><para>Removing redundant error checking related to booking
+                declaration. This is only an internal change, users won't be
+                impacted by the change.</para></listitem>
+
+<listitem><para>Auto enlarge "scheduled" task time frame if a "booking" does
+                not fit it.</para></listitem>
+
+<listitem><para>Fixed error message when allocate {load xxx} was under
+                timingresolution.</para></listitem>
+
+<listitem><para>Automatically align underspecified tasks boundaries on project
+                boundaries when possible.</para></listitem>
+
+<listitem><para>Adding ratio-based usage limits for "weeklymax" and
+                "monthlymax".</para></listitem>
+
+<listitem><para>Adding an "overlimit" booking code and clarify constants usage
+                for booking. This is only an internal change, users won't be
+                impacted by the change (but by some performance enhancement
+                in some cases)</para></listitem>
+
+<listitem><para>Separating "over resource limits load" from free load in
+                graphical charts.</para></listitem>
+
+<listitem><para>Fixed: The GUI failed to open the correct CSV report file if
+                it had an absolute path.</para></listitem>
+
+<listitem><para>Clarify some error messages.</para></listitem>
+
+<listitem><para>Fixed: Containers end and start dates were miscalculated in
+                some cases</para></listitem>
+
+<listitem><para>Fixed a rare scheduler bug involving containers early boundary
+                date propagation</para></listitem>
+
+<listitem><para>Added syntactical coloration for taskbarprefix and
+                taskbarpostfix properties</para></listitem>
+
+<listitem><para>Fixed: Some unschedulable tasks simply disappeared without
+                any error message</para></listitem>
+
+
+</itemizedlist></para>
+</sect2>
 </sect1>
