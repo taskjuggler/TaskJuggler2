@@ -554,7 +554,7 @@ Report::inheritValues()
 {
     if (parentReport)
     {
-       clearScenarios();
+        clearScenarios();
         for (unsigned int sc = 0; sc < parentReport->getScenarioCount(); ++sc)
         {
             addScenario(parentReport->getScenario(sc));

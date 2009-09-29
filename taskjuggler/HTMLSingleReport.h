@@ -41,13 +41,6 @@ public:
 
         return close() && ok;
     }
-
-    void inheritValues()
-    {
-        HTMLReport::inheritValues();
-
-        ElementHolder::inheritValues(dynamic_cast<ElementHolder*>(getParentReport()));
-    }
 } ;
 
 #endif

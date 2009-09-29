@@ -3701,8 +3701,7 @@ ProjectFile::readReport(const QString& reportType, Report* parentReport)
     // If report is inherited, retrieve parent values
     if (parentReport)
     {
-        ((Report*)report)->inheritValues();
-        ((ElementHolder*)report)->inheritValues(dynamic_cast<ElementHolder*>(parentReport));
+        report->inheritValues();
     }
 
     TokenType tt;
@@ -3969,7 +3968,7 @@ error:
 }
 
 bool
-ProjectFile::readHTMLReport(const QString& reportType, Report* parentReport)
+ProjectFile::readHTMLReport(const QString& reportType)
 {
     QString token;
     if (nextToken(token) != STRING)
@@ -4014,16 +4013,6 @@ ProjectFile::readHTMLReport(const QString& reportType, Report* parentReport)
     {
         qFatal("readHTMLReport: bad report type");
         return false;   // Just to please the compiler.
-    }
-
-    // Set link to parent report if any
-    report->setParentReport(parentReport);
-
-    // If report is inherited, retrieve parent values
-    if (parentReport)
-    {
-        ((Report*)report)->inheritValues();
-        ((ElementHolder*)report)->inheritValues(dynamic_cast<ElementHolder*>(parentReport));
     }
 
     TokenType tt;
@@ -4340,15 +4329,6 @@ ProjectFile::readHTMLReport(const QString& reportType, Report* parentReport)
             else if (token == KW("notimestamp"))
             {
                 report->setTimeStamp(false);
-            }
-            else if (token == KW("include"))
-            {
-                if (!readInclude())
-                    goto exit_error;
-            }
-            else if (token == reportType)
-            {
-                readHTMLReport(reportType, report);
             }
             else
             {
