@@ -508,15 +508,6 @@ Project::pass2(bool noDepCheck)
     for (TaskListIterator tli(taskList); *tli != 0; ++tli)
         (*tli)->xRef(idHash);
 
-    /* Now we can copy the missing values from the plan scenario to the other
-     * scenarios. */
-    if (scenarioList.count() > 1)
-    {
-        for (ScenarioListIterator sli(scenarioList[0]->getSubListIterator());
-             *sli; ++sli)
-            overlayScenario(0, (*sli)->getSequenceNo() - 1);
-    }
-
     for (TaskListIterator tli(taskList); *tli != 0; ++tli)
     {
         // Set dates according to implicit dependencies
@@ -532,6 +523,15 @@ Project::pass2(bool noDepCheck)
     // Save a copy of all manually booked resources.
     for (ResourceListIterator rli(resourceList); *rli != 0; ++rli)
         (*rli)->saveSpecifiedBookings();
+
+    /* Now we can copy the missing values from the plan scenario to the other
+     * scenarios. */
+    if (scenarioList.count() > 1)
+    {
+        for (ScenarioListIterator sli(scenarioList[0]->getSubListIterator());
+             *sli; ++sli)
+            overlayScenario(0, (*sli)->getSequenceNo() - 1);
+    }
 
     // Now check that all tasks have sufficient data to be scheduled.
     setProgressInfo(i18n("Checking scheduling data..."));
