@@ -68,4 +68,12 @@ cp project_a_2.svg projectReference_a_2.svg
 cp project_a_3.svg projectReference_a_3.svg
 cp project_a_4.svg projectReference_a_4.svg
 cp project_a_5.svg projectReference_a_5.svg
+../../taskjuggler/taskjuggler ganttreport_1.tjp
+../../taskjuggler/taskjuggler ganttreport_2.tjp
+../../taskjuggler/taskjuggler ganttreport_3.tjp
+cp ganttreport_1.svg ganttreport_1_reference.svg
+cp ganttreport_2.svg ganttreport_2_reference.svg
+cp ganttreport_3.svg ganttreport_3_reference.svg
+cp ganttreport_4.svg ganttreport_4_reference.svg
+
 cd ..

@@ -604,12 +604,13 @@ Task::bookResources(int sc, time_t date, time_t slotDuration)
             }
             if ((*ali)->isPersistent() && (*ali)->getLockedResource())
             {
-                int availability;
-                if ((availability = (*ali)->getLockedResource()->
-                     isAvailable(date)) > 0)
+                int booking = (*ali)->getLockedResource()->
+                    getBooking(date);
+                if (booking != BOOKING_FREE)
                 {
                     allMandatoriesAvailables = false;
-                    if (availability >= 4 && !(*ali)->getConflictStart())
+                    if (booking == BOOKING_BOOKED &&
+                        !(*ali)->getConflictStart())
                         (*ali)->setConflictStart(date);
                     break;
                 }
@@ -619,33 +620,34 @@ Task::bookResources(int sc, time_t date, time_t slotDuration)
                 /* For a mandatory allocation with alternatives at least one
                  * of the resources or resource groups must be available. */
                 bool found = false;
-                int maxAvailability = 0;
+                bool encounteredBooked = false;
                 QPtrList<Resource> candidates = (*ali)->getCandidates();
                 for (QPtrListIterator<Resource> rli(candidates);
                      *rli && !found; ++rli)
                 {
                     /* If a resource group is marked mandatory, all members
                      * of the group must be available. */
-                    int availability;
+                    int booking;
                     bool allAvailable = true;
                     for (ResourceTreeIterator rti(*rli); *rti != 0; ++rti)
-                        if ((availability =
-                             (*rti)->isAvailable(date)) > 0 ||
+                    {
+                        booking = (*rti)->getBooking(date);
+                        if (booking != BOOKING_FREE ||
                             mandatoryResources.findRef(*rti) >= 0)
                         {
                             allAvailable = false;
-                            if (availability >= maxAvailability)
-                                maxAvailability = availability;
+                            if (booking == BOOKING_BOOKED)
+                                encounteredBooked = true;
                         }
                         else
                             mandatoryResources.append(*rti);
-
+                    }
                     if (allAvailable)
                         found = true;
                 }
                 if (!found)
                 {
-                    if (maxAvailability >= 4 && !(*ali)->getConflictStart())
+                    if (encounteredBooked && !(*ali)->getConflictStart())
                         (*ali)->setConflictStart(date);
                     allMandatoriesAvailables = false;
                     break;
@@ -760,13 +762,13 @@ Task::bookResources(int sc, time_t date, time_t slotDuration)
          * has already been picked, try to book this resource again. If the
          * resource is not available there will be no booking for this
          * time slot. */
-        int maxAvailability = 0;
+        bool encounteredBooked = false;
         if ((*ali)->isPersistent() && (*ali)->getLockedResource())
         {
             if (!bookResource((*ali)->getLockedResource(), date, slotDuration,
-                              slotsToLimit, maxAvailability))
+                              slotsToLimit, encounteredBooked))
             {
-                if (maxAvailability >= 4 && !(*ali)->getConflictStart())
+                if (encounteredBooked && !(*ali)->getConflictStart())
                     (*ali)->setConflictStart(date);
             }
             else if ((*ali)->getConflictStart())
@@ -788,13 +790,13 @@ Task::bookResources(int sc, time_t date, time_t slotDuration)
             bool found = false;
             for (QPtrListIterator<Resource> rli(cl); *rli != 0; ++rli)
                 if (bookResource((*rli), date, slotDuration, slotsToLimit,
-                                 maxAvailability))
+                                 encounteredBooked))
                 {
                     (*ali)->setLockedResource(*rli);
                     found = true;
                     break;
                 }
-            if (!found && maxAvailability >= 4 && !(*ali)->getConflictStart())
+            if (!found && encounteredBooked && !(*ali)->getConflictStart())
                 (*ali)->setConflictStart(date);
             else if (found && (*ali)->getConflictStart())
             {
@@ -825,16 +827,15 @@ Task::bookResources(int sc, time_t date, time_t slotDuration)
 
 bool
 Task::bookResource(Resource* r, time_t date, time_t slotDuration,
-                   int& slotsToLimit, int& maxAvailability)
+                   int& slotsToLimit, bool& encounteredBooked)
 {
     bool booked = false;
     double intervalLoad = project->convertToDailyLoad(slotDuration);
 
     for (ResourceTreeIterator rti(r); *rti != 0; ++rti)
     {
-        int availability;
-        if ((availability =
-             (*rti)->isAvailable(date)) == 0)
+        int booking = (*rti)->getBooking(date);
+        if (booking == BOOKING_FREE)
         {
             (*rti)->book(new Booking(Interval(date, date + slotDuration - 1),
                                      this));
@@ -865,8 +866,8 @@ Task::bookResource(Resource* r, time_t date, time_t slotDuration,
             if (slotsToLimit > 0 && --slotsToLimit <= 0)
                 return true;
         }
-        else if (availability > maxAvailability)
-            maxAvailability = availability;
+        else if (booking == BOOKING_BOOKED)
+            encounteredBooked = true;
     }
     return booked;
 }
@@ -1522,26 +1523,102 @@ Task::implicitXRef()
 
     if (!isMilestone() && isLeaf())
     {
-        /* Automatic milestone marker. As a convenience we convert tasks that
-         * only have a start or end criteria as a milestone. This is handy
-         * when in the early stage of a project draft, when you just want to
-         * specify the project outline and fill in subtasks and details
-         * later. */
-        bool hasStartSpec = false;
-        bool hasEndSpec = false;
-        bool hasDurationSpec = false;
+        /* Automatic boundary guesser for tasks that are underspecified in
+         * term of start/end/duration. As a convenience we add start and or
+         * end boundaries to task that are likely to be aligned on project
+         * start or end dates, and convert tasks to milestones in worst
+         * cases (i.e. when dependecies disables the tasks to be aligned
+         * on the project boundaries).
+         * This is handy when in the early stage of a project draft, when
+         * you just want to specify the project outline and fill in
+         * subtasks and details later.
+         * This is also handy even after the early stage for tasks that are
+         * actually aligned on one or both project boundary. */
+        int milestoneBallots = 0;
         for (int sc = 0; sc < project->getMaxScenarios(); ++sc)
         {
-            if (scenarios[sc].specifiedStart != 0 || !depends.isEmpty())
+            bool hasStartSpec = false;
+            bool hasEndSpec = false;
+            bool hasDurationSpec = false;
+            bool hasPreviousEvenInherited = false;
+            bool hasDependsEvenIhnerited = false;
+            bool hasFollowersEvenInherited = false;
+            bool hasPrecedesEvenInherited = false;
+            for (Task* task = this; task; task = task->getParent())
+            {
+                hasPreviousEvenInherited |= task->hasPrevious();
+                hasDependsEvenIhnerited |= !task->depends.isEmpty();
+                hasFollowersEvenInherited |= task->hasFollowers();
+                hasPrecedesEvenInherited |= !task ->precedes.isEmpty();
+            }
+            if (scenarios[sc].specifiedStart != 0 || hasDependsEvenIhnerited)
                 hasStartSpec = true;
-            if (scenarios[sc].specifiedEnd != 0 || !precedes.isEmpty())
+            if (scenarios[sc].specifiedEnd != 0 || hasPrecedesEvenInherited)
                 hasEndSpec = true;
             if (scenarios[sc].duration != 0 || scenarios[sc].length != 0 ||
                 scenarios[sc].effort != 0)
                 hasDurationSpec = true;
+            /*printf("O: %s/%d: (%g-%g %g) %d [%d %d] <-%d %d->\n", getId().ascii(),
+                    sc, scenarios[sc].duration, scenarios[sc].length,
+                    scenarios[sc].effort, (int)hasDurationSpec, (int)hasStartSpec,
+                    (int)hasEndSpec, (int)hasPreviousEvenInherited,
+                    (int)hasFollowersEvenInherited);*/
+            // ASAP tasks lacking start specification
+            // - --> * (no previous)
+            // - x-> * (no previous)
+            if (!hasPreviousEvenInherited && !hasStartSpec
+                && scheduling == ASAP)
+            {
+                hasStartSpec = true;
+                setSpecifiedStart(sc, project->getStart());
+                //printf("A: auto aligning %s on start date\n", getId().ascii());
+            }
+            // ALAP tasks lacking end specification
+            // * <-- - (no followers)
+            // * <-x - (no followers)
+            if (!hasFollowersEvenInherited && !hasEndSpec
+                && scheduling == ALAP)
+            {
+                hasEndSpec = true;
+                setSpecifiedEnd(sc, project->getEnd());
+                //printf("B: auto aligning %s on end date\n", getId().ascii());
+            }
+            // tasks with no duration spec and at most one boundary spec
+            if  (!hasDurationSpec && !(hasStartSpec && hasEndSpec))
+            {
+                // ASAP tasks with neither end nor duration spec
+                // * --> - (no followers)
+                if (!hasFollowersEvenInherited && !hasEndSpec
+                    && scheduling == ASAP)
+                {
+                    setSpecifiedEnd(sc, project->getEnd());
+                    //printf("C: auto aligning %s on end date\n", getId().ascii());
+                }
+                // ALAP tasks with neither start nor duration spec
+                // - <-- * (no previous)
+                else if (!hasPreviousEvenInherited && !hasStartSpec
+                    && scheduling == ALAP)
+                {
+                    setSpecifiedStart(sc, project->getStart());
+                    //printf("D: auto aligning %s on start date\n", getId().ascii());
+                }
+                // other cases, e.g.:
+                // D --> D
+                // D <-- D
+                // | --> D (with previous)
+                // D <-- | (with followers)
+                else
+                {
+                    ++milestoneBallots;
+                    //printf("E: voting for %s conversion to milestone\n", getId().ascii());
+                }
+            }
         }
-        if  (!hasDurationSpec && (hasStartSpec ^ hasEndSpec))
+        if (milestoneBallots == project->getMaxScenarios())
+        {
             milestone = true;
+            //printf("F: auto converting %s to milestone\n", getId().ascii());
+        }
     }
 }
 

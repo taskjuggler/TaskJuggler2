@@ -1,5 +1,6 @@
 project myProjectId "Project 1" "1.0" 2009-05-27 - 2009-11-23 {
-    now 2009-06-09
+    now 2009-06-21
+
     scenario sc1 "scenario 1" {
         scenario sc2 "scenario 2" {
             scenario sc3 "scenario 3" {

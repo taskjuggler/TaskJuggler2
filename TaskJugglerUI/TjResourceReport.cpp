@@ -252,8 +252,8 @@ TjResourceReport::generateStatusBarText(const QPoint& pos,
         double load = r->getEffectiveLoad(scenario, iv, AllAccounts);
         double allocatedTimeLoad = r->getAllocatedTimeLoad
             (scenario, iv, AllAccounts);
-        double freeLoad = r->getEffectiveFreeLoad(scenario, iv);
-        double freeTimeLoad = r->getAvailableTimeLoad (scenario, iv);
+        double freeLoad = r->getFreeLoad(scenario, iv, true);
+        double freeTimeLoad = r->getFreeLoad (scenario, iv, false);
         double totalLoad = load + freeLoad;
         double totalTimeLoad = allocatedTimeLoad + freeTimeLoad;
         text = i18n("%1(%2) - %3 -  Effort: %4 (%5%)  "

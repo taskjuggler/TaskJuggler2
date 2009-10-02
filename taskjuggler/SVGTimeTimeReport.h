@@ -13,13 +13,12 @@
 #ifndef _SVGTimeTimeReport_h_
 #define _SVGTimeTimeReport_h_
 
-#include "Report.h"
+#include "SVGReport.h"
 
 /**
- * @short Stores all information about an CSV task report.
- * @author Chris Schlaeger <cs@kde.org>
+ * @short Stores all information about an SVG time/time report.
  */
-class SVGTimeTimeReport : public Report
+class SVGTimeTimeReport : public SVGReport
 {
 public:
     SVGTimeTimeReport(Project* p, const QString& f, const QString& df, int dl);
@@ -31,11 +30,9 @@ public:
 
     virtual const char* getType() const { return "SVGTimeTimeReport"; }
 
-    void setCaption(const QString& s) { caption = s; }
-    const QString& getCaption() const { return caption; }
+    virtual void inheritValues();
 
 private:
-    QString caption;
 };
 
 #endif

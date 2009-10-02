@@ -172,6 +172,13 @@ public:
 
     virtual bool generate() = 0;
 
+    void setParentReport(Report* r) { parentReport = r; } ;
+    Report* getParentReport() const { return parentReport; } ;
+    void addChildrenReport(const Report *r ) { childrenReport.append(r); } ;
+    QPtrListIterator<Report> getChildrenReportListIterator() const { return QPtrListIterator<Report>(childrenReport); } ;
+
+    virtual void inheritValues();
+
 protected:
     void errorMessage(const QString& msg);
 
@@ -237,6 +244,10 @@ protected:
     bool showPIDs;
 
     bool timeStamp;
+
+    Report* parentReport;
+    QPtrList<Report> childrenReport;
+
 } ;
 
 #endif

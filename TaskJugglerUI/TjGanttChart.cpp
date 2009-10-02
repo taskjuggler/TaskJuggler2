@@ -71,6 +71,7 @@ TjGanttChart::TjGanttChart(QObject* obj)
     colors["taskLoadCol"] = QColor("#FD13C6");
     colors["otherLoadCol"] = QColor("#FF8D13");
     colors["freeLoadCol"] = QColor("#00AC00");
+    colors["overLimitCol"] = QColor("#505050");
     colors["loadFrameCol"] = Qt::black;
     colors["hightlightCol"] = Qt::white;
     colors["errorCol"] = Qt::red;
@@ -302,6 +303,7 @@ TjGanttChart::calcLegendHeight(int width)
     legendLabels.append(i18n("Completed Task"));
     legendLabels.append(i18n("Task Work Load"));
     legendLabels.append(i18n("Other Work Load"));
+    legendLabels.append(i18n("Over Resource Usage Limits"));
     legendLabels.append(i18n("Free Load"));
 
     maxLegendLabelWidth = 0;
@@ -496,7 +498,13 @@ TjGanttChart::generateLegend(int width, int height)
                             symbolWidth, legendLabelHeight,
                             "otherLoadCol", Qt::Dense4Pattern, legend);
                 break;
-            case 7:     // Free time
+            case 7:     // Over limit time
+                drawLoadBar(x + margin,
+                            (int) (legendLabelHeight * (1.5 * row + 0.5)),
+                            symbolWidth, legendLabelHeight,
+                            "overLimitCol", Qt::Dense4Pattern, legend);
+                break;
+            case 8:     // Free time
                 drawLoadBar(x + margin,
                             (int) (legendLabelHeight * (1.5 * row + 0.5)),
                             symbolWidth, legendLabelHeight,
@@ -1743,27 +1751,30 @@ TjGanttChart::drawResourceLoadColum(Resource* r, const Task* t,
     // Now we are calculating the load of the resource with respect to this
     // task, to all tasks, and we calculate the not yet allocated load.
     Interval period(start, end);
-    double freeLoad = r->getEffectiveFreeLoad(scenario, period);
+    double freeLoad;
+    double overLoad;
     double taskLoad;
     double load;
     Qt::BrushStyle pattern1 , pattern2, pattern3;
 
     if (r->getEfficiency() > 0.0)
     {
-        freeLoad = r->getEffectiveFreeLoad(scenario, period);
+        freeLoad = r->getFreeLoad(scenario, period, true);
+        overLoad = r->getOverLimitLoad(scenario, period, true);
         taskLoad = r->getEffectiveLoad(scenario, period, AllAccounts, t);
         load = r->getEffectiveLoad(scenario, period, AllAccounts);
         pattern1 = pattern2 = pattern3 = Qt::Dense4Pattern;
     }
     else
     {
-        freeLoad = r->getAvailableTimeLoad(scenario, period);
+        freeLoad = r->getFreeLoad(scenario, period, false);
+        overLoad = r->getOverLimitLoad(scenario, period, false);
         taskLoad = r->getAllocatedTimeLoad(scenario, period, AllAccounts, t);
         load = r->getAllocatedTimeLoad(scenario, period, AllAccounts);
         pattern1 = pattern2 = pattern3 = Qt::Dense5Pattern;
     }
     double otherLoad = load - taskLoad;
-    double maxLoad = load + freeLoad;
+    double maxLoad = load + freeLoad + overLoad;
     if (maxLoad <= 0.0)
         return;
 
@@ -1774,6 +1785,8 @@ TjGanttChart::drawResourceLoadColum(Resource* r, const Task* t,
                                             (taskLoad / maxLoad));
     int colOtherLoadTop = colBottom - (int) ((colBottom - colTop) *
                                              (load / maxLoad));
+    int colOverLimitTop = colBottom - (int) ((colBottom - colTop) *
+                                             ((load + overLoad) / maxLoad)); 
 
     // Now we draw the columns. But only if the load is larger than 0.
     if (taskLoad > 0.0)
@@ -1796,10 +1809,16 @@ TjGanttChart::drawResourceLoadColum(Resource* r, const Task* t,
                     "otherLoadCol", pattern2, chart);
     }
 
+    if (overLoad > 0.0)
+    {
+        drawLoadBar(cx, colOverLimitTop, cw, colOtherLoadTop - colOverLimitTop,
+                    "overLimitCol", pattern2, chart);
+    }
+
     if (freeLoad > 0.0)
     {
         // Unallocated load.
-        drawLoadBar(cx, colTop, cw, colOtherLoadTop - colTop, "freeLoadCol",
+        drawLoadBar(cx, colTop, cw, colOverLimitTop - colTop, "freeLoadCol",
                     pattern3, chart);
     }
 }

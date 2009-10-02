@@ -36,12 +36,14 @@
 #include "HTMLWeeklyCalendar.h"
 #include "HTMLMonthlyCalendar.h"
 #include "HTMLStatusReport.h"
+#include "HTMLIndexReport.h"
 #include "QtTaskReport.h"
 #include "QtResourceReport.h"
 #include "CSVTaskReport.h"
 #include "CSVResourceReport.h"
 #include "CSVAccountReport.h"
 #include "SVGTimeTimeReport.h"
+#include "SVGGanttTaskReport.h"
 #include "XMLReport.h"
 #ifdef HAVE_ICAL_SUPPORT
 #include "ICalReport.h"
@@ -262,7 +264,7 @@ ProjectFile::parse()
             else if (token == KW("limits"))
             {
                 UsageLimits* limits;
-                if ((limits = readLimits()) == 0)
+                if ((limits = readLimits(true)) == 0)
                     return false;
                 proj->setResourceLimits(limits);
                 break;
@@ -450,7 +452,8 @@ ProjectFile::parse()
                      token == KW("htmlresourcereport") ||
                      token == KW("htmlweeklycalendar") ||
                      token == KW("htmlmonthlycalendar") ||
-                     token == KW("htmlaccountreport"))
+                     token == KW("htmlaccountreport") ||
+                     token == KW("htmlindexreport"))
             {
                if (!readHTMLReport(token))
                    return false;
@@ -481,6 +484,12 @@ ProjectFile::parse()
             else if (token == KW("svgtimetimereport"))
             {
                 if (!readSVGTimeTimeReport(token))
+                    return false;
+                break;
+            }
+            else if (token == KW("svggantttaskreport"))
+            {
+                if (!readSVGGanttTaskReport(token))
                     return false;
                 break;
             }
@@ -2222,7 +2231,7 @@ ProjectFile::readResourceBody(Resource* r)
         else if (token == KW("limits"))
         {
             UsageLimits* limits;
-            if ((limits = readLimits()) == 0)
+            if ((limits = readLimits(true)) == 0)
                 return false;
             r->setLimits(limits);
         }
@@ -2475,7 +2484,9 @@ ProjectFile::readBooking(int sc, Resource* resource)
         if (((tt = nextToken(token)) != ID && tt != ABSOLUTE_ID) ||
             (task = proj->getTask(getTaskPrefix() + token)) == 0)
         {
-            errorMessage(i18n("Task ID expected"));
+            errorMessage(i18n("Task ID expected (common caveat: booking "
+                "must be specified in a 'supplement resource' section "
+                "following the related task definition)"));
             return false;
         }
     }
@@ -2485,7 +2496,9 @@ ProjectFile::readBooking(int sc, Resource* resource)
         if ((tt != ID && tt != ABSOLUTE_ID) ||
             (task = proj->getTask(getTaskPrefix() + token)) == 0)
         {
-            errorMessage(i18n("Task ID expected"));
+            errorMessage(i18n("Task ID expected (common caveat: booking "
+                "must be specified in a 'supplement resource' section "
+                "following the related task definition)"));
             return false;
         }
 
@@ -2508,21 +2521,6 @@ ProjectFile::readBooking(int sc, Resource* resource)
             }
         }
     }
-
-
-    if (task->hasSubs())
-    {
-        errorMessage(i18n("'%1' is a container task. It must not have "
-                          "bookings assigned to it.").arg(task->getId()));
-        return 0;
-    }
-    if (task->isMilestone())
-    {
-        errorMessage(i18n("'%1' is a milestone task. It must not have "
-                          "bookings assigned to it.").arg(task->getId()));
-        return 0;
-    }
-
 
     int sloppy = 0;
     int overtime = 0;
@@ -2566,6 +2564,25 @@ ProjectFile::readBooking(int sc, Resource* resource)
         Booking* b = new Booking(**ivit, task);
         if (!resource->addBooking(sc, b, sloppy, overtime))
             return false;
+        // auto enlarge "scheduled" tasks if the booking does not fit
+        // the boundaries
+        if(task->getSpecifiedScheduled(sc))
+        {
+            time_t tStart = task->getSpecifiedStart(sc);
+            time_t tEnd = task->getSpecifiedEnd(sc);
+            if (tStart == 0 || tStart > (*ivit)->getStart())
+            {
+                task->setSpecifiedStart(sc, (*ivit)->getStart());
+                //printf("setting new start date for %s at %d instead of %d\n",
+                //       task->getId().ascii(), (*ivit)->getStart(), tStart);
+            }
+            if (tEnd == 0 || tEnd < (*ivit)->getEnd())
+            {
+                task->setSpecifiedEnd(sc, (*ivit)->getEnd());
+                //printf("setting new end date for %s at %d instead of %d\n",
+                //       task->getId().ascii(), (*ivit)->getEnd(), tEnd);
+            }
+        }
     }
 
     return true;
@@ -2761,7 +2778,8 @@ ProjectFile::readAllocate(Task* t)
                              proj->getScheduleGranularity()));
                 if (limits->getDailyMax() == 0)
                 {
-                    errorMessage(i18n("Value must be at least %f")
+                    errorMessage(i18n("Value must be at least %1 (see "
+                                      "'timingresolution' property)")
                                  .arg(proj->convertToDailyLoad
                                       (proj->getScheduleGranularity())));
                     delete limits;
@@ -2772,7 +2790,7 @@ ProjectFile::readAllocate(Task* t)
             else if (token == KW("limits"))
             {
                 UsageLimits* limits;
-                if ((limits = readLimits()) == 0)
+                if ((limits = readLimits(false)) == 0)
                     return false;
                 a->setLimits(limits);
             }
@@ -2835,7 +2853,7 @@ ProjectFile::readAllocate(Task* t)
 }
 
 UsageLimits*
-ProjectFile::readLimits()
+ProjectFile::readLimits(bool acceptRatioLimit)
 {
     UsageLimits* limits = new UsageLimits;
 
@@ -2850,37 +2868,70 @@ ProjectFile::readLimits()
     while ((tt = nextToken(token)) == ID)
     {
         double val;
-        if (!readTimeFrame(val, true))
+        bool ratio = false;
+        if (acceptRatioLimit &&
+            (token == KW("weeklymax") || token == KW("monthlymax")))
+            ratio = true;
+        if (!readTimeFrame(val, true, false, ratio, ratio))
         {
             delete limits;
             return 0;
         }
-        uint uval = static_cast<uint>((val * proj->getDailyWorkingHours() * 3600) /
-                            proj->getScheduleGranularity());
-        if (uval == 0)
+        if (ratio)
         {
-            errorMessage(i18n("Value must be larger than scheduling "
-                              "granularity"));
-            delete limits;
-            return 0;
+            if (token == KW("weeklymax"))
+                limits->setWeeklyRatioMax(val);
+            else if (token == KW("monthlymax"))
+                limits->setMonthlyRatioMax(val);
+            else if (token == KW("dailymax") || token == KW("yearlymax")
+                     || token == KW("projectmax"))
+            {
+                errorMessage(i18n("Ratio limit not supported for limit type "
+                                  "'%1', you must specify a value limit")
+                             .arg(token));
+                delete limits;
+                return 0;
+            }
+            else
+            {
+                errorMessage(i18n("Unknown limit type '%1'").arg(token));
+                delete limits;
+                return 0;
+            }
         }
-        if (token == KW("dailymax"))
-            limits->setDailyMax(uval);
-        else if (token == KW("weeklymax"))
-            limits->setWeeklyMax(uval);
-        else if (token == KW("monthlymax"))
-            limits->setMonthlyMax(uval);
-        else if (token == KW("yearlymax"))
-            limits->setYearlyMax(uval);
-        else if (token == KW("projectmax"))
-            limits->setProjectMax(uval);
         else
         {
-            errorMessage(i18n("Unknown limit type '%1'").arg(token));
-            delete limits;
-            return 0;
+            uint uval = static_cast<uint>((val * proj->getDailyWorkingHours() * 3600) /
+                               proj->getScheduleGranularity());
+            if (uval == 0)
+            {
+                errorMessage(i18n("Value must be larger than scheduling "
+                                  "granularity"));
+                delete limits;
+                return 0;
+            }
+            if (token == KW("dailymax"))
+                limits->setDailyMax(uval);
+            else if (token == KW("weeklymax"))
+                limits->setWeeklyMax(uval);
+            else if (token == KW("monthlymax"))
+                limits->setMonthlyMax(uval);
+            else if (token == KW("yearlymax"))
+                limits->setYearlyMax(uval);
+            else if (token == KW("projectmax"))
+                limits->setProjectMax(uval);
+            else
+            {
+                errorMessage(i18n("Unknown limit type '%1'").arg(token));
+                delete limits;
+                return 0;
+            }
         }
     }
+    /*printf("read limits: daily:%d weekly:%d+%g monthly:%d+%g yearly:%d projectmax:%d\n",
+       limits->getDailyMax(), limits->getWeeklyMax(), limits->getWeeklyRatioMax(),
+       limits->getMonthlyMax(), limits->getMonthlyRatioMax(), limits->getYearlyMax(),
+       limits->getProjectMax());*/
     if (tt != RBRACE)
     {
         errorMessage(i18n("'}' expected"));
@@ -2992,7 +3043,8 @@ ProjectFile::readInterval(Interval& iv, bool check)
 }
 
 bool
-ProjectFile::readTimeFrame(double& value, bool workingDays, bool allowZero)
+ProjectFile::readTimeFrame(double& value, bool workingDays, bool allowZero,
+                           bool allowRatio, bool& isRatio)
 {
     QString val;
     TokenType tt;
@@ -3019,11 +3071,8 @@ ProjectFile::readTimeFrame(double& value, bool workingDays, bool allowZero)
     }
 
     QString unit;
-    if (nextToken(unit) != ID)
-    {
-        errorMessage(i18n("Unit expected"));
-        return false;
-    }
+    if ((tt = nextToken(unit)) != ID)
+        goto noUnit;
     if (unit == KW("min"))
         value = val.toDouble() /
             (workingDays ? proj->getDailyWorkingHours() * 60 : 24 * 60);
@@ -3042,12 +3091,30 @@ ProjectFile::readTimeFrame(double& value, bool workingDays, bool allowZero)
         value = val.toDouble() *
             (workingDays ? proj->getYearlyWorkingDays() : 365);
     else
+        goto noUnit;
+    if (allowRatio)
+        isRatio = false;
+    return true;
+
+ noUnit:
+    if (allowRatio)
     {
-        errorMessage(i18n("Unit expected"));
+        returnToken(tt, unit);
+        if (val.toDouble() > 1)
+        {
+            errorMessage(i18n("Value must be lesser or equal to 1."));
+            return false;
+        }
+        value = val.toDouble();
+        isRatio = true;
+        return true;
+    }
+    else
+    {
+        errorMessage(i18n("Time unit expected but got '%1' instead.")
+                     .arg(unit).ascii());
         return false;
     }
-
-    return true;
 }
 
 bool
@@ -3586,7 +3653,7 @@ ProjectFile::checkReportInterval(HTMLReport* report)
 }
 
 bool
-ProjectFile::readReport(const QString& reportType)
+ProjectFile::readReport(const QString& reportType, Report* parentReport)
 {
     QString token;
     if (nextToken(token) != STRING)
@@ -3596,7 +3663,8 @@ ProjectFile::readReport(const QString& reportType)
     }
 
     QtReport* report = 0;
-    ReportElement* tab;
+    ReportElement* tab = 0;
+
     if (reportType == KW("taskreport"))
     {
         report = new QtTaskReport(proj, token, getFile(), getLine());
@@ -3615,8 +3683,17 @@ ProjectFile::readReport(const QString& reportType)
     else
     {
         errorMessage(i18n("Report type %1 not yet supported!")
-                     .arg(reportType));
+                    .arg(reportType));
         return false;
+    }
+
+    // Set link to parent report if any
+    report->setParentReport(parentReport);
+
+    // If report is inherited, retrieve parent values
+    if (parentReport)
+    {
+        report->inheritValues();
     }
 
     TokenType tt;
@@ -3855,6 +3932,10 @@ ProjectFile::readReport(const QString& reportType)
                 }
                 tab->setTaskBarPostfix(token);
             }
+            else if (token == reportType)
+            {
+                readReport(reportType, report);
+            }
             else
             {
                 errorMessage(i18n("Illegal attribute"));
@@ -3869,6 +3950,7 @@ ProjectFile::readReport(const QString& reportType)
         goto error;
 
     proj->addReport(report);
+    if (parentReport) parentReport->addChildrenReport(report);
 
     return true;
 
@@ -3914,6 +3996,11 @@ ProjectFile::readHTMLReport(const QString& reportType)
         report = new HTMLAccountReport(proj, token, getFile(), getLine());
         tab = report->getTable();
     }
+    else if (reportType == KW("htmlindexreport"))
+    {
+        report = new HTMLIndexReport(proj, token, getFile(), getLine());
+        tab = report->getTable();
+    }
     else
     {
         qFatal("readHTMLReport: bad report type");
@@ -3932,7 +4019,7 @@ ProjectFile::readHTMLReport(const QString& reportType)
                 errorMessage(i18n("Attribute ID or '}' expected"));
                 goto exit_error;
             }
-            if (token == KW("columns"))
+            if (token == KW("columns") && reportType != KW("htmlindexreport"))
             {
                 tab->clearColumns();
                 for ( ; ; )
@@ -4662,7 +4749,7 @@ error:
 }
 
 bool
-ProjectFile::readSVGTimeTimeReport(const QString& reportType)
+ProjectFile::readSVGTimeTimeReport(const QString& reportType, Report* parentReport)
 {
     QString token;
     if (nextToken(token) != STRING)
@@ -4682,6 +4769,15 @@ ProjectFile::readSVGTimeTimeReport(const QString& reportType)
         return false;   // Just to please the compiler.
     }
 
+    // Set link to parent report if any
+    report->setParentReport(parentReport);
+
+    // If report is inherited, retrieve parent values
+    if (parentReport)
+    {
+        report->inheritValues();
+    }
+
     TokenType tt;
     if ((tt = nextToken(token)) == LBRACE)
     {
@@ -4694,7 +4790,198 @@ ProjectFile::readSVGTimeTimeReport(const QString& reportType)
                 errorMessage(i18n("Attribute ID or '}' expected"));
                 goto error;
             }
-            if (token == KW("start"))
+            if (token == reportType)
+            {
+                readSVGTimeTimeReport(reportType, report);
+            }
+            else if (token == KW("start"))
+            {
+                time_t start;
+                if (!readDate(start, 0))
+                    goto error;
+                report->setStart(start);
+            }
+            else if (token == KW("end"))
+            {
+                time_t end;
+                if (!readDate(end, 1))
+                    goto error;
+                report->setEnd(end);
+            }
+            else if (token == KW("period"))
+            {
+                Interval iv;
+                if (!readInterval(iv))
+                    goto error;
+                report->setPeriod(iv);
+            }
+            else if (token == KW("hidetask"))
+            {
+                Operation* op;
+                QString fileName = openFiles.last()->getFile();
+                int lineNo = openFiles.last()->getLine();
+                if ((op = readLogicalExpression()) == 0)
+                    goto error;
+                ExpressionTree* et = new ExpressionTree(op);
+                et->setDefLocation(fileName, lineNo);
+                report->setHideTask(et);
+            }
+            else if (token == KW("taskroot"))
+            {
+                if ((tt = nextToken(token)) == ID ||
+                    tt == ABSOLUTE_ID)
+                {
+                    if (!proj->getTask(token))
+                    {
+                        errorMessage(i18n("taskroot must be a known task"));
+                        goto error;
+                    }
+                    report->setTaskRoot(token + ".");
+                }
+                else
+                {
+                    errorMessage(i18n("Task ID expected"));
+                    goto error;
+                }
+            }
+            else if (token == KW("timeformat"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("Time format string expected"));
+                    goto error;
+                }
+                report->setTimeFormat(token);
+            }
+            else if (token == KW("headline"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("String expected"));
+                    goto error;
+                }
+                report->setHeadline(token);
+            }
+            else if (token == KW("caption"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("String expected"));
+                    goto error;
+                }
+                report->setCaption(getMacros().expandReportVariable(token, 0));
+            }
+            else if (token == KW("sorttasks"))
+            {
+                if (!readSorting(report, 0))
+                    goto error;
+            }
+            else if (token == KW("scenarios"))
+            {
+                report->clearScenarios();
+                QString scId;
+                tt = nextToken(scId);
+                if (tt == STAR)
+                {
+                    for (ScenarioListIterator sli(proj->getScenarioIterator()); *sli ; ++sli)
+                        if ((*sli)->getEnabled())
+                            report->addScenario(proj->getScenarioIndex((*sli)->getId()) - 1);
+                }
+                else
+                {
+                    for ( ; ; )
+                    {
+                        if (tt != ID)
+                        {
+                            errorMessage(i18n("Scenario ID or '*' expected"));
+                            goto error;
+                        }
+                        int scIdx;
+                        if ((scIdx = proj->getScenarioIndex(scId)) == -1)
+                        {
+                            errorMessage(i18n("Unknown scenario %1")
+                                        .arg(scId));
+                            goto error;
+                        }
+                        if (proj->getScenario(scIdx - 1)->getEnabled())
+                            report->addScenario(proj->getScenarioIndex(scId) - 1);
+                        if ((tt = nextToken(token)) != COMMA)
+                        {
+                            returnToken(tt, token);
+                            break;
+                        }
+                        tt = nextToken(scId);
+                    }
+                }
+            }
+            else
+            {
+                errorMessage(i18n("Illegal attribute"));
+                goto error;
+            }
+        }
+    }
+    else
+        returnToken(tt, token);
+
+    proj->addReport(report);
+    if (parentReport) parentReport->addChildrenReport(report);
+
+    return true;
+
+error:
+    delete report;
+    return false;
+}
+
+bool
+ProjectFile::readSVGGanttTaskReport(const QString& reportType, Report* parentReport)
+{
+    QString token;
+    if (nextToken(token) != STRING)
+    {
+        errorMessage(i18n("File name expected"));
+        return false;
+    }
+
+    SVGGanttTaskReport* report = 0;
+    if (reportType == KW("svggantttaskreport"))
+    {
+        report = new SVGGanttTaskReport(proj, token, getFile(), getLine());
+    }
+    else
+    {
+        qFatal("readSVGGanttTaskReport: bad report type");
+        return false;   // Just to please the compiler.
+    }
+
+    // Set link to parent report if any
+    report->setParentReport(parentReport);
+
+    // If report is inherited, retrieve parent values
+    if (parentReport)
+    {
+        report->inheritValues();
+    }
+
+    TokenType tt;
+    if ((tt = nextToken(token)) == LBRACE)
+    {
+        for ( ; ; )
+        {
+            if ((tt = nextToken(token)) == RBRACE)
+                break;
+            else if (tt != ID)
+            {
+                errorMessage(i18n("Attribute ID or '}' expected"));
+                goto error;
+            }
+            if (token == reportType)
+            {
+                if (!readSVGGanttTaskReport(reportType, report))
+                    goto error;
+            }
+            else if (token == KW("start"))
             {
                 time_t start;
                 if (!readDate(start, 0))
@@ -4771,10 +5058,43 @@ ProjectFile::readSVGTimeTimeReport(const QString& reportType)
                 }
                 report->setCaption(getMacros().expandReportVariable(token, 0));
             }
+            else if (token == KW("hidelinks"))
+            {
+                if (nextToken(token) != INTEGER)
+                {
+                    errorMessage(i18n("0 or 1 expected"));
+                    return false;
+                }
+                int hidelinks = atoi(token);
+                if (hidelinks < 0 || hidelinks > 1)
+                {
+                    errorMessage(i18n("0 or 1 expected"));
+                    return false;
+                }
+                report->setHideLinks(hidelinks);
+            }
             else if (token == KW("sorttasks"))
             {
                 if (!readSorting(report, 0))
                     return false;
+            }
+            else if (token == KW("taskbarprefix"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("String expected"));
+                    goto error;
+                }
+                report->setTaskBarPrefix(token);
+            }
+            else if (token == KW("taskbarpostfix"))
+            {
+                if (nextToken(token) != STRING)
+                {
+                    errorMessage(i18n("String expected"));
+                    goto error;
+                }
+                report->setTaskBarPostfix(token);
             }
             else if (token == KW("scenarios"))
             {
@@ -4825,6 +5145,7 @@ ProjectFile::readSVGTimeTimeReport(const QString& reportType)
         returnToken(tt, token);
 
     proj->addReport(report);
+    if (parentReport) parentReport->addChildrenReport(report);
 
     return true;
 

@@ -147,12 +147,20 @@ public:
     {
         scenarios[sc].specifiedStart = s;
     }
+    time_t getSpecifiedStart(int sc)
+    {
+        return scenarios[sc].specifiedStart;
+    }
     void setStart(int sc, time_t s) { scenarios[sc].start = s; }
     time_t getStart(int sc) const { return scenarios[sc].start; }
 
     void setSpecifiedEnd(int sc, time_t s)
     {
         scenarios[sc].specifiedEnd = s;
+    }
+    time_t getSpecifiedEnd(int sc)
+    {
+        return scenarios[sc].specifiedEnd;
     }
     void setEnd(int sc, time_t s) { scenarios[sc].end = s; }
     time_t getEnd(int sc) const { return scenarios[sc].end; }
@@ -284,6 +292,10 @@ public:
     {
         scenarios[sc].specifiedScheduled = ps;
     }
+    bool getSpecifiedScheduled(int sc) const
+    {
+        return scenarios[sc].specifiedScheduled;
+    } 
     void setScheduled(int sc, bool ps) { scenarios[sc].scheduled = ps; }
     bool getScheduled(int sc) const { return scenarios[sc].scheduled; }
 
@@ -361,6 +373,9 @@ public:
 
     QDomElement xmlElement( QDomDocument& doc, bool absId = true );
 
+    void setSvgGanttReportIndex(int sc, int i) { scenarios[sc].svgGanttReportIndex = i; }
+    int getSvgGanttReportIndex(int sc) { return scenarios[sc].svgGanttReportIndex;  }
+
 private:
     void propagateStart(int sc, time_t date);
     void propagateEnd(int sc, time_t date);
@@ -379,7 +394,7 @@ private:
     Task* subFirst() { return (Task*) sub->first(); }
     Task* subNext() { return (Task*) sub->next(); }
     bool bookResource(Resource* r, time_t day, time_t duration,
-                      int& slotsToLimit, int& availability);
+                      int& slotsToLimit, bool& encounteredBooked);
     void bookResources(int sc, time_t day, time_t duration);
     void addBookedResource(Resource* r)
     {

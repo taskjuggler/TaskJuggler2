@@ -33,3 +33,5 @@ Makefile
 /docs/en/taskjuggler.ps
 /docs/en/taskjuggler/
 /i18n/TaskJugglerUI/tr.gmo
+/TestSuite/Scheduler/Correct/*.html
+/TestSuite/Scheduler/.timeStamp

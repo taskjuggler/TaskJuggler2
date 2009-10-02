@@ -668,12 +668,24 @@ TjReport::generateResourceListLine(const QtReportElement* reportElement,
                     cellText += i18n("W: %1h").arg(limits->getWeeklyMax() *
                                                 sg / (60 * 60));
                 }
+                if (limits->getWeeklyRatioMax() > 0.0)
+                {
+                    if (!cellText.isEmpty())
+                        cellText += ", ";
+                    cellText += i18n("WR: %1").arg(limits->getWeeklyRatioMax());
+                }
                 if (limits->getMonthlyMax() > 0)
                 {
                     if (!cellText.isEmpty())
                         cellText += ", ";
                     cellText += i18n("M: %1d").arg(limits->getMonthlyMax() *
                                                       sg / (60 * 60 * dwh));
+                }
+                if (limits->getMonthlyRatioMax() > 0.0)
+                {
+                    if (!cellText.isEmpty())
+                        cellText += ", ";
+                    cellText += i18n("MR: %1").arg(limits->getMonthlyRatioMax());
                 }
                 if (limits->getYearlyMax() > 0)
                 {
@@ -1075,7 +1087,7 @@ TjReport::doPopupMenu(QListViewItem* lvi, const QPoint& pos, int)
             case 3:
                 break;
             case 4:
-                QApplication::clipboard()->setText("t->getId() <" + t->getId() +">" );
+                QApplication::clipboard()->setText(t->getId());
                 break;
             default:
                 break;

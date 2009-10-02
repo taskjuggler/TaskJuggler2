@@ -177,6 +177,9 @@ private:
      * critical followers.
      */
     QPtrList<Task> criticalLinks;
+
+    /// Index for svgganttreport
+    int svgGanttReportIndex;
 } ;
 
 #endif

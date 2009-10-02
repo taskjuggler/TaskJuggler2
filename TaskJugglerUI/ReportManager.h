@@ -26,12 +26,14 @@ class QListViewItem;
 class KMainWindow;
 class KSelectAction;
 class KListView;
+class KListViewItem;
 class KListViewSearchLine;
 class KURL;
 class Project;
 class Report;
 class CoreAttributes;
 class Report;
+class ManagedReportInfo;
 
 class ReportManager : public QObject
 {
@@ -66,6 +68,10 @@ public:
 
     void print();
 
+    void addReportItem (Report* r, QString currentReport);
+    ManagedReportInfo* getMRI(Report* r);
+    void setBrowserEntry(KListViewItem* item, Report* r);
+
 signals:
     void signalChangeStatusBar(const QString& text);
     void signalEditCoreAttributes(CoreAttributes* ca);
@@ -84,6 +90,8 @@ public slots:
 
 private:
     void updateReportBrowser();
+    void expandLVI(QListViewItem *lvi, bool opn);
+    bool generateReports(QListViewItem *lvi);
 
     KMainWindow* mainWindow;
     KSelectAction* zoomSelector;

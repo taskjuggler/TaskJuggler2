@@ -27,6 +27,7 @@ HTMLResourceReportElement.cpp \
 HTMLWeeklyCalendarElement.cpp \
 HTMLMonthlyCalendar.cpp HTMLMonthlyCalendarElement.cpp \
 HTMLAccountReportElement.cpp \
+HTMLIndexReportElement.cpp \
 HTMLStatusReport.cpp \
 CSVPrimitives.cpp CSVReportElement.cpp \
 CSVTaskReport.cpp CSVTaskReportElement.cpp \
@@ -34,7 +35,7 @@ CSVResourceReport.cpp CSVResourceReportElement.cpp \
 CSVAccountReportElement.cpp \
 ExportReport.cpp \
 XMLReport.cpp \
-SVGTimeTimeReport.cpp \
+SVGReport.cpp SVGTimeTimeReport.cpp SVGGanttTaskReport.cpp \
 Project.cpp ICalReport.cpp
 
 libtaskjuggler_la_LDFLAGS = $(all_libraries) $(QT_LDFLAGS) -version-info 3:3:0 -no-undefined
