@@ -2564,6 +2564,25 @@ ProjectFile::readBooking(int sc, Resource* resource)
         Booking* b = new Booking(**ivit, task);
         if (!resource->addBooking(sc, b, sloppy, overtime))
             return false;
+        // auto enlarge "scheduled" tasks if the booking does not fit
+        // the boundaries
+        if(task->getSpecifiedScheduled(sc))
+        {
+            time_t tStart = task->getSpecifiedStart(sc);
+            time_t tEnd = task->getSpecifiedEnd(sc);
+            if (tStart == 0 || tStart > (*ivit)->getStart())
+            {
+                task->setSpecifiedStart(sc, (*ivit)->getStart());
+                //printf("setting new start date for %s at %d instead of %d\n",
+                //       task->getId().ascii(), (*ivit)->getStart(), tStart);
+            }
+            if (tEnd == 0 || tEnd < (*ivit)->getEnd())
+            {
+                task->setSpecifiedEnd(sc, (*ivit)->getEnd());
+                //printf("setting new end date for %s at %d instead of %d\n",
+                //       task->getId().ascii(), (*ivit)->getEnd(), tEnd);
+            }
+        }
     }
 
     return true;
