@@ -1413,7 +1413,7 @@ Resource::bookingsOk(int sc)
                           "in scenario '%6'")
                      .arg(id).arg(scoreboards[sc][i]->getTask()->getId())
                      .arg(time2ISO(start)).arg(time2ISO(tStart))
-                     .arg(time2ISO(tEnd)).arg(project->getScenarioId(sc)));
+                     .arg(time2ISO(tEnd + 1)).arg(project->getScenarioId(sc)));
                 return false;
             }
         }
