@@ -65,15 +65,14 @@ HTMLIndexReportElement::generateReportLine(Report* report, int level)
         QFileInfo(thumb).created() < QFileInfo(thumb).created() )
     {
         QString thumbnailCommand;
-//         if (strncmp(report->getType(), "SVG", 3) == 0)
-//         {
-//             thumbnailCommand = "inkscape -h 40 -e '" + thumbnailFile + "' '" + report->getFullFileName() + "'";
-//         }
-//         else if (strncmp(report->getType(), "HTML", 4) != 0 || reportQFile.size() < 500000)
-//         {
-//             thumbnailCommand = "convert -geometry 40x -delay 100 '" + report->getFullFileName() + "' '" + thumbnailFile + "'";
-//         }
-        thumbnailCommand = "evince-thumbnailer -s 100 '" + thumbnailFile + "' '" + report->getFullFileName() + "'";
+        if (strncmp(report->getType(), "SVG", 3) == 0)
+        {
+            thumbnailCommand = "inkscape -h 40 -e '" + thumbnailFile + "' '" + report->getFullFileName() + "'";
+        }
+        else if (strncmp(report->getType(), "HTML", 4) != 0 || reportQFile.size() < 500000)
+        {
+            thumbnailCommand = "convert -geometry 40x -delay 100 '" + report->getFullFileName() + "' '" + thumbnailFile + "'";
+        }
         system(thumbnailCommand.ascii());
     }
 
