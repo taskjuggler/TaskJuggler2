@@ -80,7 +80,7 @@ public:
         value(0),
         name(),
         ops(new Operation*[2]),
-        opsCount(o2 ? 2 : 1),
+        opsCount(2),
         valid(false)
     {
         ops[0] = o1;
