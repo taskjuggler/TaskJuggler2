@@ -10,11 +10,6 @@
  * $Id$
  */
 
-#include <iostream>
-#include <stdlib.h>
-#include <fstream>
-#include <string>
-
 #include <config.h>
 #include <qdir.h>
 
@@ -48,7 +43,6 @@ SVGReport::SVGReport(Project* p, const QString& file, const QString& defFile,
     }
 
     taskSortCriteria[0] = CoreAttributesList::NameUp;
-
 }
 
 SVGReport::~SVGReport()
@@ -75,14 +69,6 @@ void SVGReport::inheritValues()
     if (parent)
     {
         setCaption(parent->getCaption());
-
-        ExternalProject *externalProject = 0;
-        for (QPtrListStdIterator<ExternalProject>  it = parent->externalProjects.begin();
-            it != parent->externalProjects.end(); ++it)
-        {
-            externalProject = *it;
-            externalProjects.append(new ExternalProject(externalProject->projectFile,externalProject->scenario));
-        }
     }
 }
 
@@ -99,65 +85,33 @@ bool SVGReport::parseExternalProject()
             QString mainFileName = QDir(this->getProject()->getSourceFiles()[0]).absPath();
             QString dir = mainFileName.left(mainFileName.length() - QFileInfo(mainFileName).fileName().length());
             QDir d( dir, externalProject->projectFile);
-
-            // Because the QDir is not flexible in term of wildcarding files and path names,
-            // the 'find' shell function is preferred, giving users full flexibility to define files.
-
-            char * tmpfimename;
-
-            tmpfimename = tmpnam (NULL);
-            QString tjpFileName;
-            if (dir == externalProject->projectFile.left(dir.length()))
-                tjpFileName = externalProject->projectFile;
-            else
-                tjpFileName = dir + externalProject->projectFile;
-
-            QString shellCmd = "find " + tjpFileName  + " > " + tmpfimename;
-            system(shellCmd);
-
-            std::string line;
-            std::ifstream myfile (tmpfimename);
-            if (!myfile.is_open())
+            for ( unsigned int fileNo = 0; fileNo < d.count(); fileNo++ )
             {
-                errorMessage(i18n("Cannot open file temporary file '%1' for reading.").arg(tmpfimename));
-                return false;
-            }
-            bool first = true;
-            while (!myfile.eof() )
-            {
-                getline (myfile,line);
-                if (line.length() == 0) continue;
-                QString tjpFile = line;
-
-                if (!first)
+//                 printf( "%s\n", d[fileNo] );
+                if (fileNo > 0)
                 {
-                    externalProject = new ExternalProject(tjpFile, externalProject->scenario);
+                    externalProject = new ExternalProject(d[fileNo], externalProject->scenario);
                     externalProjects.append(externalProject);
-                    externalProject->projectFile = tjpFile;
-                    continue;  // Will be processed later in the main for loop
+                    externalProject->projectFile = d[fileNo];
+                    break;  // Will be processed later in the main loop
                 }
-                first = false;
-                externalProject->projectFile = tjpFile;
+                externalProject->projectFile = d[fileNo];
                 externalProject->project = new Project();
                 externalProject->project->setMaxErrors(this->getProject()->getMaxErrors());
                 ProjectFile pf(externalProject->project);
-                if (!pf.open(tjpFile, dir, "", false))
+                if (!pf.open(d[fileNo], dir, "", false))
                 {
                     errorMessage(i18n("Cannot open file '%1' in '%2'").arg(externalProject->projectFile).arg(dir));
-                    errorMessage(i18n("Cannot open file '%1'").arg(tjpFile));
+                    errorMessage(i18n("Cannot open file '%1'").arg(d[fileNo]));
                     return false;
                 }
-
                 pf.parse();
 
                 externalProject->project->pass2(false);
-
-//                 if (TJMH.getErrors() == 0)
+                if (TJMH.getErrors() == 0)
                 {
                     externalProject->project->scheduleAllScenarios();
                 }
-//                 else
-//                     return false;
 
                 if (externalProject->scenario != "*")
                 {
@@ -179,7 +133,6 @@ bool SVGReport::parseExternalProject()
                             if ((*sli)->getDate() == 0) {
                                 (*sli)->setDate(externalProject->project->getNow());
                             }
-
                             dateSortedAllScenarios.append(new AllScenario(externalProject->project, externalProject->sc));
                             found = true;
                             break;
@@ -216,8 +169,6 @@ bool SVGReport::parseExternalProject()
                     }
                 }
             }
-            myfile.close();
-            QFile(tmpfimename).remove();
         }
     }
 
