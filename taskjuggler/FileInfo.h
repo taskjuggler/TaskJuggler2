@@ -42,7 +42,6 @@ public:
     virtual void errorMessage(const QString& msg);
     virtual void warningMessage(const QString& msg);
 
-    void setLocalMacros(QDict<Macro> plocalmacros) { localmacros = plocalmacros; }
 private:
     /**
      * A pointer to the ProjectFile class that stores all read-in
@@ -57,8 +56,6 @@ private:
      */
     QString oldLineBuf;
     int oldLine;
-
-    QDict<Macro> localmacros;
 };
 
 #endif

@@ -26,9 +26,7 @@ FileInfo::FileInfo(ProjectFile* p, const QString& file, const QString& tp) :
     pf(p),
     oldLineBuf(),
     oldLine(0)
-{
-    localmacros.setAutoDelete(false);
-}
+{ }
 
 bool
 FileInfo::open()
@@ -56,11 +54,6 @@ FileInfo::open()
 bool
 FileInfo::close()
 {
-    for (QDictIterator<Macro> di(localmacros); *di; ++di)
-    {
-        pf->getMacros().deleteMacro((*di)->getName());
-    }
-
     if (m_fh == stdin)
         return true;
 

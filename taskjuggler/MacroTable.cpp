@@ -34,12 +34,6 @@ MacroTable::addMacro(Macro* macro)
 }
 
 void
-MacroTable::insertMacro(Macro* macro)
-{
-    macros.insert(macro->getName(), macro);
-}
-
-void
 MacroTable::setMacro(Macro* macro)
 {
     macros.replace(macro->getName(), macro);

@@ -54,7 +54,6 @@ public:
     ~MacroTable() { }
 
     bool addMacro(Macro* m);
-    void insertMacro(Macro* m);
     void setMacro(Macro* m);
 
     bool deleteMacro(const QString name)

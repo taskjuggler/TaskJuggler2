@@ -1,8 +1,0 @@
-${reporttype} "${reportname}_all${reportextension}" {
-    headline "${reportname}_all"
-}
-
-${reporttype} "${reportname}_task1${reportextension}" {
-    headline "${reportname}_task1"
-    taskroot task1
-}
