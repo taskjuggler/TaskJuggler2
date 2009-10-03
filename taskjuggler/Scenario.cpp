@@ -22,7 +22,7 @@ Scenario::Scenario(Project* p, const QString& i, const QString& n,
     optimize(false),
     minSlackRate(0.05),
     maxPaths(10000000),
-    date(p->getNow())
+    date(0)
 {
     p->addScenario(this);
     if (pr)

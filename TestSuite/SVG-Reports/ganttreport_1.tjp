@@ -18,7 +18,7 @@
  * description of the various syntax elements. You can find more
  * information about TaskJuggler at http://www.taskjuggler.org!
  */
-project yourID "Your Project" "1.0" 2009-03-06 - 2009-12-03 {
+project yourID "Your Project" "1.0" 2009-06-06 - 2009-12-03 {
   # Hide the clock time. Only show the date.
   timeformat "%Y-%m-%d"
   # The currency for all money values is EUR.
@@ -29,13 +29,7 @@ project yourID "Your Project" "1.0" 2009-03-06 - 2009-12-03 {
   # We want to compare the baseline scenario, to one with a slightly
   # delayed start.
   scenario plan "Plan" {
-    date 2009-05-01
-    scenario delayed "Delayed" {
-        date 2009-04-01
-    }
-    scenario delayed2 "Delayed 2" {
-        date 2009-11-03
-    }
+    scenario delayed "Delayed"
   }
 }
 
@@ -109,18 +103,6 @@ task myProject "My Project" {
     task plan "Auqlification" { duration 5d depends !kickoff complete 0 }
     task approach "Acceptation" { duration 5d depends !plan complete 0 }
   }
-}
-
-
-task mainTask "Main Task" {
-    plan:start 2009-05-10
-    delayed:start 2009-04-15
-    task a "Task A" {
-        plan:start 2009-09-01
-        delayed:start 2009-10-10
-        delayed2:start 2009-11-10
-        duration 3d
-    }
 }
 
 taskreport "taskreport " {
