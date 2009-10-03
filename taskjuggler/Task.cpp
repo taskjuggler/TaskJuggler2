@@ -1523,102 +1523,26 @@ Task::implicitXRef()
 
     if (!isMilestone() && isLeaf())
     {
-        /* Automatic boundary guesser for tasks that are underspecified in
-         * term of start/end/duration. As a convenience we add start and or
-         * end boundaries to task that are likely to be aligned on project
-         * start or end dates, and convert tasks to milestones in worst
-         * cases (i.e. when dependecies disables the tasks to be aligned
-         * on the project boundaries).
-         * This is handy when in the early stage of a project draft, when
-         * you just want to specify the project outline and fill in
-         * subtasks and details later.
-         * This is also handy even after the early stage for tasks that are
-         * actually aligned on one or both project boundary. */
-        int milestoneBallots = 0;
+        /* Automatic milestone marker. As a convenience we convert tasks that
+         * only have a start or end criteria as a milestone. This is handy
+         * when in the early stage of a project draft, when you just want to
+         * specify the project outline and fill in subtasks and details
+         * later. */
+        bool hasStartSpec = false;
+        bool hasEndSpec = false;
+        bool hasDurationSpec = false;
         for (int sc = 0; sc < project->getMaxScenarios(); ++sc)
         {
-            bool hasStartSpec = false;
-            bool hasEndSpec = false;
-            bool hasDurationSpec = false;
-            bool hasPreviousEvenInherited = false;
-            bool hasDependsEvenIhnerited = false;
-            bool hasFollowersEvenInherited = false;
-            bool hasPrecedesEvenInherited = false;
-            for (Task* task = this; task; task = task->getParent())
-            {
-                hasPreviousEvenInherited |= task->hasPrevious();
-                hasDependsEvenIhnerited |= !task->depends.isEmpty();
-                hasFollowersEvenInherited |= task->hasFollowers();
-                hasPrecedesEvenInherited |= !task ->precedes.isEmpty();
-            }
-            if (scenarios[sc].specifiedStart != 0 || hasDependsEvenIhnerited)
+            if (scenarios[sc].specifiedStart != 0 || !depends.isEmpty())
                 hasStartSpec = true;
-            if (scenarios[sc].specifiedEnd != 0 || hasPrecedesEvenInherited)
+            if (scenarios[sc].specifiedEnd != 0 || !precedes.isEmpty())
                 hasEndSpec = true;
             if (scenarios[sc].duration != 0 || scenarios[sc].length != 0 ||
                 scenarios[sc].effort != 0)
                 hasDurationSpec = true;
-            /*printf("O: %s/%d: (%g-%g %g) %d [%d %d] <-%d %d->\n", getId().ascii(),
-                    sc, scenarios[sc].duration, scenarios[sc].length,
-                    scenarios[sc].effort, (int)hasDurationSpec, (int)hasStartSpec,
-                    (int)hasEndSpec, (int)hasPreviousEvenInherited,
-                    (int)hasFollowersEvenInherited);*/
-            // ASAP tasks lacking start specification
-            // - --> * (no previous)
-            // - x-> * (no previous)
-            if (!hasPreviousEvenInherited && !hasStartSpec
-                && scheduling == ASAP)
-            {
-                hasStartSpec = true;
-                setSpecifiedStart(sc, project->getStart());
-                //printf("A: auto aligning %s on start date\n", getId().ascii());
-            }
-            // ALAP tasks lacking end specification
-            // * <-- - (no followers)
-            // * <-x - (no followers)
-            if (!hasFollowersEvenInherited && !hasEndSpec
-                && scheduling == ALAP)
-            {
-                hasEndSpec = true;
-                setSpecifiedEnd(sc, project->getEnd());
-                //printf("B: auto aligning %s on end date\n", getId().ascii());
-            }
-            // tasks with no duration spec and at most one boundary spec
-            if  (!hasDurationSpec && !(hasStartSpec && hasEndSpec))
-            {
-                // ASAP tasks with neither end nor duration spec
-                // * --> - (no followers)
-                if (!hasFollowersEvenInherited && !hasEndSpec
-                    && scheduling == ASAP)
-                {
-                    setSpecifiedEnd(sc, project->getEnd());
-                    //printf("C: auto aligning %s on end date\n", getId().ascii());
-                }
-                // ALAP tasks with neither start nor duration spec
-                // - <-- * (no previous)
-                else if (!hasPreviousEvenInherited && !hasStartSpec
-                    && scheduling == ALAP)
-                {
-                    setSpecifiedStart(sc, project->getStart());
-                    //printf("D: auto aligning %s on start date\n", getId().ascii());
-                }
-                // other cases, e.g.:
-                // D --> D
-                // D <-- D
-                // | --> D (with previous)
-                // D <-- | (with followers)
-                else
-                {
-                    ++milestoneBallots;
-                    //printf("E: voting for %s conversion to milestone\n", getId().ascii());
-                }
-            }
         }
-        if (milestoneBallots == project->getMaxScenarios())
-        {
+        if  (!hasDurationSpec && (hasStartSpec ^ hasEndSpec))
             milestone = true;
-            //printf("F: auto converting %s to milestone\n", getId().ascii());
-        }
     }
 }
 

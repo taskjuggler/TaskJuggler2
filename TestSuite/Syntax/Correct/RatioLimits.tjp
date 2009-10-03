@@ -28,16 +28,19 @@ resource equip "equipement" {
 }
 
 task t2 "T2" {
+  start ${projectstart}
   allocate r2 { limits { weeklymax 5d } }
   allocate equip { mandatory limits {dailymax 5h} }
 }
 
 task t3 "T3" {
+  start ${projectstart}
   allocate r3 { limits {dailymax 2h} }
   allocate equip { mandatory limits {dailymax 2h} }
 }
 
 task t4 "T4" {
+  start ${projectstart}
   priority 499
   effort 10d
   allocate r3

@@ -8,22 +8,18 @@ resource tux2 "Tux2"
 task m1 "Milestone Task" {
   task m2 "M2" {
     start 2005-10-19
-    milestone
   }
   task m3 "M3" {
     task m4 "M4" {
       start 2005-10-22
-      milestone
     }
   }
   task m5 "M5" {
     start 2005-12-01
-    milestone
   }
   task m6 "M6" {
     task m7 "M7" {
       start 2005-12-24
-      milestone
     }
   }
 }

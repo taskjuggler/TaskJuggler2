@@ -1309,58 +1309,29 @@ TjReport::showResourceDetails(Resource* resource)
 
         if (*vli != 0)
         {
-            text += i18n("<p/><p>Personnal vacations:</p>");
-            for (QPtrListIterator<Interval> vli(resource->getVacationListIterator()); *vli != 0; ++vli)
+            for (QPtrListIterator<Interval>
+                 vli(resource->getVacationListIterator()); *vli != 0; ++vli)
             {
-                if (sameTimeNextDay((*vli)->getStart()) == 1 + (*vli)->getEnd()
+                if (sameTimeNextDay((*vli)->getStart()) == 1 +
+                    (*vli)->getEnd()
                     && secondsOfDay((*vli)->getStart()) == 0 )
                     text += i18n("<li>%1</li>")
-                        .arg(time2user((*vli)->getStart(), resource->getProject()->getTimeFormat()));
+                        .arg(time2user((*vli)->getStart(),
+                                       resource->getProject()->getTimeFormat()));
                 else
                     text += i18n("<li>%1 - %2</li>")
-                        .arg(time2user((*vli)->getStart(), resource->getProject()->getTimeFormat()))
-                        .arg(time2user((*vli)->getEnd(), resource->getProject()->getTimeFormat()));
+                        .arg(time2user((*vli)->getStart(),
+                                       resource->getProject()->getTimeFormat()))
+                        .arg(time2user((*vli)->getEnd(),
+                                       resource->getProject()->getTimeFormat()));
             }
         }
         else
         {
-            text += i18n("<p>No personnal vacations.</p>");
+            text += i18n("<p>No vacations.</p>");
         }
     }
 
-    {
-        VacationList::Iterator vli(resource->getProject()->getVacationListIterator());
-        if (*vli != 0)
-        {
-            text += i18n("<p>Global vacations:</p>");
-            // Because the global vacation list is in reverse order and we want to display in original order, we use a temp string.
-            QString tmpText;
-            for ( ; *vli != 0; ++vli)
-            {
-                // Only display one day when vacation duration is one day, starting at midnight.
-                if (sameTimeNextDay((*vli)->getStart()) == 1 + (*vli)->getEnd()
-                    && secondsOfDay((*vli)->getStart()) == 0 )
-                {
-                    tmpText = i18n("<li>%1 : %2</li>")
-                        .arg(time2user((*vli)->getStart(), resource->getProject()->getTimeFormat()))
-                        .arg((*vli)->getName()) + tmpText;
-                }
-                // Otherwise, display the two vacation dates in user datetime format.
-                else
-                {
-                    tmpText = i18n("<li>%1 - %2 : %3</li>")
-                        .arg(time2user((*vli)->getStart(), resource->getProject()->getTimeFormat()))
-                        .arg(time2user((*vli)->getEnd(), resource->getProject()->getTimeFormat()))
-                        .arg((*vli)->getName()) + tmpText;
-                }
-            }
-            text += tmpText;
-        }
-        else
-        {
-            text += i18n("<p>No global vacations:.</p>");
-        }
-    }
     text += "<hr/>";
 
     richTextDisplay->textDisplay->setText(text);
