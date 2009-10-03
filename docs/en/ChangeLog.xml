@@ -1364,6 +1364,11 @@ characters are used.</para></listitem>
 		--with-ical-support=no for distros that no longer ship
 		with KDEPIM3 packages.</para></listitem>
 
+<listitem><para>Container tasks inside container tasks were not
+		scheduled properly if the enclosing container had a
+		dependency. The resulting container tasks now only
+		enclose the nested tasks.</para></listitem>
+
 </itemizedlist></para>
 </sect2>
 </sect1>

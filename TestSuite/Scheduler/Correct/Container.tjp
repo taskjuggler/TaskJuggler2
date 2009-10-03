@@ -1,0 +1,40 @@
+project prj "Project" "1.0" 2009-01-01-0:00-UTC +1m {
+  timezone "UTC"
+}
+
+task S "start" {
+  milestone
+  start 2009-1-1
+}
+task E "end" {
+  milestone
+  end 2009-1-30
+}
+task C0 "C0" {
+  depends S
+  precedes E
+  task C1 "C1" {
+    task T1 "T1" {
+      start 2009-1-10
+      length 1w
+    }
+  }
+  task C2 "C2" {
+    scheduling alap
+    task T2 "T2" {
+      end 2009-1-20
+      length 1w
+    }
+  }
+}
+
+taskreport "tasks" {
+  columns name, start, end, chart
+}
+
+export "Container-Export.tjp" {
+        hidetask 0
+        hideresource 0
+        taskattributes all
+        notimestamp
+}

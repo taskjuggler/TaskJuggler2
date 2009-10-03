@@ -1,0 +1,79 @@
+/*
+ * For details about TaskJuggler see http://www.taskjuggler.org
+ */
+project prj "Project" "1.0" 2009-01-01-00:00:00-+0000 - 2009-01-31-00:00:00-+0000 {
+  timezone "UTC"
+  dailyworkinghours 8
+  yearlyworkingdays 260.714
+  timingresolution 60min
+  timeformat "%Y-%m-%d %H:%M"
+  shorttimeformat "%H:%M"
+  currencyformat "(" ")" "," "." 0
+  weekstartsmonday
+  workinghours sun off
+  workinghours mon 9:00 - 12:00, 13:00 - 18:00
+  workinghours tue 9:00 - 12:00, 13:00 - 18:00
+  workinghours wed 9:00 - 12:00, 13:00 - 18:00
+  workinghours thu 9:00 - 12:00, 13:00 - 18:00
+  workinghours fri 9:00 - 12:00, 13:00 - 18:00
+  workinghours sat off
+  scenario plan "Plan" {
+    enabled
+  }
+}
+projectids prj
+task S "start" {
+  projectid prj
+  plan:start 2009-01-01-00:00:00-+0000
+  plan:scheduled
+  milestone 
+  scheduling asap
+}
+task C0 "C0" {
+  projectid prj
+  depends S
+  precedes E
+  task C1 "C1" {
+    task T1 "T1" {
+      plan:start 2009-01-10-00:00:00-+0000
+      plan:end 2009-01-16-18:00:00-+0000
+      plan:scheduled
+      scheduling asap
+    }
+    scheduling alap
+  }
+  task C2 "C2" {
+    task T2 "T2" {
+      plan:start 2009-01-13-09:00:00-+0000
+      plan:end 2009-01-20-00:00:00-+0000
+      plan:scheduled
+      scheduling alap
+    }
+    scheduling alap
+  }
+  scheduling alap
+}
+task E "end" {
+  projectid prj
+  plan:start 2009-01-30-00:00:00-+0000
+  plan:scheduled
+  milestone 
+  scheduling alap
+}
+supplement task S {
+  priority 500
+}
+supplement task C0 {
+  supplement task C1 {
+    supplement task T1 {
+    }
+  }
+  supplement task C2 {
+    supplement task T2 {
+    }
+  }
+  priority 500
+}
+supplement task E {
+  priority 500
+}
