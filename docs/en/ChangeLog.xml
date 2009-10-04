@@ -1364,14 +1364,9 @@ characters are used.</para></listitem>
 		--with-ical-support=no for distros that no longer ship
 		with KDEPIM3 packages.</para></listitem>
 
-<listitem><para>Container tasks inside container tasks were not
-		scheduled properly if the enclosing container had a
-		dependency. The resulting container tasks now only
-		enclose the nested tasks.</para></listitem>
-
 </itemizedlist></para>
 </sect2>
-<sect2 id="Changelog_2_4_4"><title>Version 2.4.4 (no release date yet)</title>
+<sect2 id="Changelog_2_5_0"><title>Version 2.5.0 (no release date yet)</title>
 <para>
 <itemizedlist mark='opencircle'>
 
@@ -1410,8 +1405,10 @@ characters are used.</para></listitem>
 
 <listitem><para>Clarify some error messages.</para></listitem>
 
-<listitem><para>Fixed: Containers end and start dates were miscalculated in
-                some cases</para></listitem>
+<listitem><para>Container tasks inside container tasks were not
+		scheduled properly if the enclosing container had a
+		dependency. The resulting container tasks now only
+		enclose the nested tasks.</para></listitem>
 
 <listitem><para>Fixed a rare scheduler bug involving containers early boundary
                 date propagation</para></listitem>
@@ -1421,7 +1418,6 @@ characters are used.</para></listitem>
 
 <listitem><para>Fixed: Some unschedulable tasks simply disappeared without
                 any error message</para></listitem>
-
 
 </itemizedlist></para>
 </sect2>
