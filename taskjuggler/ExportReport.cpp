@@ -99,6 +99,24 @@ ExportReport::generate()
         if (!generateProjectProperty())
             return false;
         generateVacations();
+        if (!project->getAllowedFlags().empty())
+        {
+            bool first = true;
+            for (QStringList::ConstIterator it =
+                 project->getAllowedFlags().begin();
+                 it != project->getAllowedFlags().end(); ++it)
+            {
+                if (first)
+                {
+                    s << "flags ";
+                    first = false;
+                }
+                else
+                    s << ", ";
+                s << *it;
+            }
+            s << endl;
+        }
     }
 
     if (listShifts)
@@ -879,6 +897,23 @@ ExportReport::generateResourceAttributesList(TaskList& filteredTaskList,
                     {
                         s << "supplement resource " << (*rli)->getId()
                             << " {" << endl;
+                        if (!(*rli)->getFlagList().empty())
+                        {
+                            s << "  purge flags" << endl;
+                            s << "  flags ";
+                            QStringList fl = (*rli)->getFlagList();
+                            bool first = true;
+                            for (QStringList::Iterator jt = fl.begin();
+                                 jt != fl.end(); ++jt)
+                            {
+                                if (!first)
+                                    s << ", ";
+                                else
+                                    first = false;
+                                s << *jt;
+                            }
+                            s << endl;
+                        }
                         first = false;
                     }
                     /* Trim the booking interval so that it does not extend
