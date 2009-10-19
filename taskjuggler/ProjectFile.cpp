@@ -5282,6 +5282,25 @@ ProjectFile::readExportReport()
                     }
                 }
             }
+            else if (token == KW("resourceattributes"))
+            {
+                for ( ; ; )
+                {
+                    QString ta;
+                    if (nextToken(ta) != ID ||
+                        !report->addResourceAttribute(ta))
+                    {
+                        errorMessage(i18n("resource attribute expected"));
+                        goto error;
+                    }
+
+                    if ((tt = nextToken(token)) != COMMA)
+                    {
+                        returnToken(tt, token);
+                        break;
+                    }
+                }
+            }
             else if (token == KW("scenarios"))
             {
                 report->clearScenarios();

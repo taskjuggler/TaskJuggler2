@@ -33,6 +33,9 @@ public:
     bool addTaskAttribute(const QString& ta);
     QStringList getTaskAttributes() const { return taskAttributes; }
 
+    bool addResourceAttribute(const QString& ra);
+    QStringList getResourceAttributes() const { return resourceAttributes; }
+
     void setMasterFile(bool mf) { masterFile = mf; }
 
     void resetContentFlags();
@@ -69,6 +72,7 @@ private:
                                       int indent);
 
     QStringList taskAttributes;
+    QStringList resourceAttributes;
 
     // True if the file should be a standalone project (*.tjp file).
     bool masterFile;

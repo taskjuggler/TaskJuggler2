@@ -1023,6 +1023,7 @@ project IDs of the included tasks must be declared first with the
    <optattr>hideresource</optattr>
    <optattr>hidetask</optattr>
    <optattr>properties</optattr>
+   <optattr>resourceattributes</optattr>
    <optattr>rollupresource</optattr>
    <optattr>rolluptask</optattr>
    <optattr>period_report</optattr>
@@ -2162,6 +2163,30 @@ name="name" type="STRING"/> </attributes>
    <also>task</also>
   </seealso>
   <example>&example_resource;</example>
+ </property>
+ <property name="resourceattributes" id="resourceattributes" inheritable="No">
+  <descr><para>The list of attribute names specifies which resource
+attributes should be listed in the report in addition to the ones
+exported by default. The following values are supported. They
+correspond to the respective attributes of a <link linkend="PROPERTY_resource">
+task</link>.</para>
+
+<para><varname>flags</varname>, <varname>shift</varname>,
+	<varname>workinghours</varname>
+</para>
+
+<para>By specifying the ID of a <link
+linkend="PROPERTY_extend">user-defined</link> attribute, these can be
+included as well.</para>
+
+<para>A special case the is <varname>all</varname> keyword. If this is
+part of the list, all supported resource attributes will be included in
+the report.	This includes all user-defined task
+attributes.</para></descr>
+  <attributes>
+   <attr name="attribute" type="ID" list="1"/>
+  </attributes>
+  <example>&example_export;</example>
  </property>
  <property name="resourcereport" id="resourcereport" inheritable="No">
   <descr><para>This report is intended for the TaskJuggler graphical

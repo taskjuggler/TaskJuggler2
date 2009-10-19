@@ -1419,6 +1419,8 @@ characters are used.</para></listitem>
 <listitem><para>Fixed: Some unschedulable tasks simply disappeared without
                 any error message</para></listitem>
 
+<listitem><para>Export reports can now contain more attributes as specified by resourceattributes.</para></listitem>
+
 </itemizedlist></para>
 </sect2>
 </sect1>

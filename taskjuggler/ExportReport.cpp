@@ -27,9 +27,11 @@
 #include "ReferenceAttribute.h"
 
 static QMap<QString, int> TaskAttributeDict;
+static QMap<QString, int> ResourceAttributeDict;
 typedef enum TADs { TA_FLAGS = 0, TA_NOTE, TA_PRIORITY, TA_MINSTART,
     TA_MAXSTART, TA_MINEND, TA_MAXEND, TA_COMPLETE, TA_RESPONSIBLE,
     TA_DEPENDS };
+typedef enum RADs { RA_FLAGS = 0, RA_SHIFT, RA_WORKINGHOURS };
 
 ExportReport::ExportReport(Project* p, const QString& f,
                            const QString& df, int dl) :
@@ -53,6 +55,12 @@ ExportReport::ExportReport(Project* p, const QString& f,
         TaskAttributeDict[KW("note")] = TA_NOTE;
         TaskAttributeDict[KW("priority")] = TA_PRIORITY;
         TaskAttributeDict[KW("responsible")] = TA_RESPONSIBLE;
+    }
+    if (ResourceAttributeDict.empty())
+    {
+        ResourceAttributeDict[KW("flags")] = RA_FLAGS;
+        ResourceAttributeDict[KW("shift")] = RA_SHIFT;
+        ResourceAttributeDict[KW("workinghours")] = RA_WORKINGHOURS;
     }
     // show all tasks
     hideTask = new ExpressionTree(new Operation(0));
@@ -477,6 +485,16 @@ ExportReport::generateResource(ResourceList& filteredResourceList,
             << time2tjp((*sli)->getPeriod().getEnd() + 1) << endl;
     }
 
+    for (QStringList::Iterator it = resourceAttributes.begin();
+         it != resourceAttributes.end(); ++it)
+    {
+        if (!ResourceAttributeDict.contains(*it))
+        {
+            if (resource->getCustomAttribute(*it))
+                generateCustomAttributeValue(*it, resource, indent);
+            continue;
+        }
+    }
     s << QString().fill(' ', indent) << "}" << endl;
 
     return true;
@@ -986,7 +1004,6 @@ ExportReport::generateCustomAttributeValue(const QString& id,
     return true;
 }
 
-
 bool
 ExportReport::addTaskAttribute(const QString& ta)
 {
@@ -1016,6 +1033,39 @@ ExportReport::addTaskAttribute(const QString& ta)
     if (taskAttributes.findIndex(ta) >= 0)
         return true;
     taskAttributes.append(ta);
+    return true;
+}
+
+bool
+ExportReport::addResourceAttribute(const QString& ra)
+{
+    if (ra == KW("all"))
+    {
+        QMap<QString, int>::ConstIterator it;
+        for (it = ResourceAttributeDict.begin();
+             it != ResourceAttributeDict.end();
+             ++it)
+        {
+            if (resourceAttributes.findIndex(it.key()) < 0)
+                resourceAttributes.append(it.key());
+        }
+        for (QDictIterator<CustomAttributeDefinition>
+             it(project->getResourceAttributeDict()); *it; ++it)
+            resourceAttributes.append(it.currentKey());
+
+        return true;
+    }
+
+    /* Make sure the 'ra' is a valid attribute name and that we don't
+     * insert it twice into the list. Trying to insert it twice it not an
+     * error though. */
+    if (ResourceAttributeDict.find(ra) == ResourceAttributeDict.end() &&
+        project->getResourceAttribute(ra) == 0)
+        return false;
+
+    if (resourceAttributes.findIndex(ra) >= 0)
+        return true;
+    resourceAttributes.append(ra);
     return true;
 }
 
