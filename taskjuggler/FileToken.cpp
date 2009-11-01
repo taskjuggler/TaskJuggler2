@@ -159,6 +159,12 @@ bool FileToken::readMacroCall()
 
     m_lineBuf = lineBufCopy;
 
+    if (m_macroStack.count() > 30)
+    {
+        errorMessage(i18n("Too many nested macro calls."));
+        return false;
+    }
+
     // Push pointer to macro on stack. Needed for error handling.
     m_macroStack.append(getMacro(id));
 
