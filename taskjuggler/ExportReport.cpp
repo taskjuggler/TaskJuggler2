@@ -216,6 +216,8 @@ ExportReport::generateProjectProperty()
     generateScenario(project->getScenario(0), 2);
 
     s << "}" << endl;
+    if (project->getCopyright())
+        s << "copyright \"" << project->getCopyright() << "\"" << endl;
 
     return true;
 }
