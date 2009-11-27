@@ -40,51 +40,47 @@ resource team "Team" {
 projectids test
 task t4 "Task4" {
   projectid test
-  plan:start 2000-01-01-00:00:00-+0000
+  priority 500
   plan:end 2000-01-27-00:00:00-+0000
+  plan:start 2000-01-01-00:00:00-+0000
   plan:scheduled
-  scheduling asap
 }
 task t1 "Task1" {
   projectid test
-  plan:start 2000-01-04-09:00:00-+0000
+  priority 500
   plan:end 2000-01-26-18:00:00-+0000
+  plan:start 2000-01-04-09:00:00-+0000
   plan:scheduled
-  scheduling asap
 }
 task t2 "Task2" {
   projectid test
-  plan:start 2000-01-04-09:00:00-+0000
+  priority 500
   plan:end 2000-01-26-18:00:00-+0000
+  plan:start 2000-01-04-09:00:00-+0000
   plan:scheduled
-  scheduling asap
 }
 task t3 "Task3" {
   projectid test
-  plan:start 2000-01-04-09:00:00-+0000
+  priority 500
   plan:end 2000-01-26-18:00:00-+0000
+  plan:start 2000-01-04-09:00:00-+0000
   plan:scheduled
-  scheduling asap
 }
 supplement task t4 {
   plan:maxend 2000-01-27-00:00:00-+0000
   plan:minend 2000-01-27-00:00:00-+0000
-  priority 500
 }
 supplement task t1 {
   plan:maxend 2000-01-26-18:00:00-+0000
   plan:minend 2000-01-26-18:00:00-+0000
-  priority 500
 }
 supplement task t2 {
   plan:maxend 2000-01-26-18:00:00-+0000
   plan:minend 2000-01-26-18:00:00-+0000
-  priority 500
 }
 supplement task t3 {
   plan:maxend 2000-01-26-18:00:00-+0000
   plan:minend 2000-01-26-18:00:00-+0000
-  priority 500
 }
 supplement resource r3 {
   plan:booking t3

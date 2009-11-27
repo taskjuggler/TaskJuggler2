@@ -549,6 +549,27 @@ ExportReport::generateTask(TaskList& filteredTaskList, const Task* task,
                 generateDepList(filteredTaskList, task,
                                 task->getPrecedesIterator(), false, indent);
                 break;
+            case TA_RESPONSIBLE:
+                if (task->getResponsible() &&
+                    (!task->getParent() ||
+                     (task->getParent()->getId() + '.' == taskRoot) ||
+                     (task->getResponsible() !=
+                      task->getParent()->getResponsible())))
+                {
+                    s << QString().fill(' ', indent + 2) << "responsible "
+                        << task->getResponsible()->getId() << endl;
+                }
+                break;
+            case TA_PRIORITY:
+                if (task->getParent() == 0 ||
+                    task->getParent()->getId() + '.' == taskRoot ||
+                    task->getParent()->getPriority() != task->getPriority())
+                {
+                    s << QString().fill(' ', indent + 2)
+                        << "priority "
+                        << QString().sprintf("%d", task->getPriority()) << endl;
+                }
+                break;
             default:
                 break;
         }
@@ -574,14 +595,29 @@ ExportReport::generateTask(TaskList& filteredTaskList, const Task* task,
         {
             QString start = time2tjp(task->getStart(*it));
             QString end = time2tjp(task->getEnd(*it) + 1);
-            s << QString().fill(' ', indent + 2) <<
-                project->getScenarioId(*it) << ":"
-                << "start " << start << endl;
-            if (!task->isMilestone())
+            if (task->getScheduling() == Task::ALAP)
             {
-                s << QString().fill(' ', indent + 2)
-                    << project->getScenarioId(*it) << ":"
-                    << "end " << end << endl;
+                s << QString().fill(' ', indent + 2) <<
+                    project->getScenarioId(*it) << ":"
+                    << "start " << start << endl;
+                if (!task->isMilestone())
+                {
+                    s << QString().fill(' ', indent + 2)
+                        << project->getScenarioId(*it) << ":"
+                        << "end " << end << endl;
+                }
+            }
+            else
+            {
+                if (!task->isMilestone())
+                {
+                    s << QString().fill(' ', indent + 2)
+                        << project->getScenarioId(*it) << ":"
+                        << "end " << end << endl;
+                }
+                s << QString().fill(' ', indent + 2) <<
+                    project->getScenarioId(*it) << ":"
+                    << "start " << start << endl;
             }
             if (task->getScheduled(*it))
                 s << QString().fill(' ', indent + 2)
@@ -592,10 +628,6 @@ ExportReport::generateTask(TaskList& filteredTaskList, const Task* task,
 
     if (task->isMilestone())
         s << QString().fill(' ', indent + 2) << "milestone " << endl;
-
-    s << QString().fill(' ', indent + 2)
-        << "scheduling " << (task->getScheduling() == Task::ASAP ?
-                             "asap" : "alap") << endl;
 
     s << QString().fill(' ', indent) << "}" << endl;
 
@@ -777,15 +809,11 @@ ExportReport::generateTaskSupplement(TaskList& filteredTaskList,
                         << "note \"" << task->getNote() << "\"" << endl;
                 }
                 break;
+            case TA_RESPONSIBLE:
+                /* Already taken care of */
+                break;
             case TA_PRIORITY:
-                if (task->getParent() == 0 ||
-                    task->getParent()->getId() + '.' == taskRoot ||
-                    task->getParent()->getPriority() != task->getPriority())
-                {
-                    s << QString().fill(' ', indent + 2)
-                        << "priority "
-                        << QString().sprintf("%d", task->getPriority()) << endl;
-                }
+                /* Already taken care of */
                 break;
             case TA_MINSTART:
                 {
@@ -867,13 +895,6 @@ ExportReport::generateTaskSupplement(TaskList& filteredTaskList,
                     }
                     break;
                 }
-            case TA_RESPONSIBLE:
-                if (task->getResponsible())
-                {
-                    s << QString().fill(' ', indent + 2) << "responsible "
-                        << task->getResponsible()->getId() << endl;
-                }
-                break;
             case TA_DEPENDS:
                 // handled in generateTaskList
                 break;

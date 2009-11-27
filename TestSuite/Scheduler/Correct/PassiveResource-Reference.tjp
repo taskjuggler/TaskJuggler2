@@ -35,15 +35,14 @@ resource room "Meeting room" {
 projectids passive
 task spec "Make Spec" {
   projectid passive
-  plan:start 2004-11-22-08:00:00-+0000
+  priority 500
   plan:end 2004-12-21-12:00:00-+0000
+  plan:start 2004-11-22-08:00:00-+0000
   plan:scheduled
-  scheduling asap
 }
 supplement task spec {
   plan:maxend 2004-12-21-12:00:00-+0000
   plan:minend 2004-12-21-12:00:00-+0000
-  priority 500
 }
 supplement resource arch1 {
   plan:booking spec

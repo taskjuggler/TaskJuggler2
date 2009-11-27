@@ -48,371 +48,338 @@ resource tux9 "Tux9" {
 projectids prj
 task t1 "|->" {
   projectid prj
-  plan:start 2003-01-06-00:00:00-+0000
+  priority 500
   plan:end 2003-01-10-18:00:00-+0000
+  plan:start 2003-01-06-00:00:00-+0000
   plan:scheduled
-  scheduling asap
 }
 task m1 "Milestone1" {
   projectid prj
   depends t1
+  priority 500
   plan:start 2003-01-10-18:00:00-+0000
   plan:scheduled
   milestone 
-  scheduling asap
 }
 task c21 "-D --> |" {
   projectid prj
   depends m1
+  priority 500
   plan:start 2003-01-10-18:00:00-+0000
   plan:end 2003-01-18-00:00:00-+0000
   plan:scheduled
-  scheduling alap
 }
 task c23 "-D --> |D" {
   projectid prj
   depends m1
   precedes m2
-  plan:start 2003-01-10-18:00:00-+0000
+  priority 500
   plan:end 2003-01-18-00:00:00-+0000
+  plan:start 2003-01-10-18:00:00-+0000
   plan:scheduled
-  scheduling asap
 }
 task c28 "-D <-- |" {
   projectid prj
   depends m1
+  priority 500
   plan:start 2003-01-10-18:00:00-+0000
   plan:end 2003-01-18-00:00:00-+0000
   plan:scheduled
-  scheduling alap
 }
 task c30 "-D <-- |D" {
   projectid prj
   depends m1
   precedes m2
+  priority 500
   plan:start 2003-01-10-18:00:00-+0000
   plan:end 2003-01-18-00:00:00-+0000
   plan:scheduled
-  scheduling alap
 }
 task c22 "-D --> -D" {
   projectid prj
   depends m1
   precedes m2
-  plan:start 2003-01-10-18:00:00-+0000
+  priority 500
   plan:end 2003-01-20-09:00:00-+0000
+  plan:start 2003-01-10-18:00:00-+0000
   plan:scheduled
-  scheduling asap
 }
 task c29 "-D <-- -D" {
   projectid prj
   depends m1
   precedes m2
+  priority 500
   plan:start 2003-01-10-18:00:00-+0000
   plan:end 2003-01-20-09:00:00-+0000
   plan:scheduled
-  scheduling alap
 }
 task c3 "| --> |" {
   projectid prj
+  priority 500
   plan:start 2003-01-13-00:00:00-+0000
   plan:end 2003-01-18-00:00:00-+0000
   plan:scheduled
-  scheduling alap
 }
 task c5 "| --> |D" {
   projectid prj
   precedes m2
-  plan:start 2003-01-13-00:00:00-+0000
+  priority 500
   plan:end 2003-01-18-00:00:00-+0000
+  plan:start 2003-01-13-00:00:00-+0000
   plan:scheduled
-  scheduling asap
 }
 task c6 "| <-- |" {
   projectid prj
+  priority 500
   plan:start 2003-01-13-00:00:00-+0000
   plan:end 2003-01-18-00:00:00-+0000
   plan:scheduled
-  scheduling alap
 }
 task c8 "| <-- |D" {
   projectid prj
   precedes m2
+  priority 500
   plan:start 2003-01-13-00:00:00-+0000
   plan:end 2003-01-18-00:00:00-+0000
   plan:scheduled
-  scheduling alap
 }
 task c11 "|D --> |" {
   projectid prj
   depends m1
-  plan:start 2003-01-13-00:00:00-+0000
+  priority 500
   plan:end 2003-01-18-00:00:00-+0000
+  plan:start 2003-01-13-00:00:00-+0000
   plan:scheduled
-  scheduling asap
 }
 task c13 "|D --> |D" {
   projectid prj
   depends m1
   precedes m2
-  plan:start 2003-01-13-00:00:00-+0000
+  priority 500
   plan:end 2003-01-18-00:00:00-+0000
+  plan:start 2003-01-13-00:00:00-+0000
   plan:scheduled
-  scheduling asap
 }
 task c14 "|D <-- |" {
   projectid prj
   depends m1
+  priority 500
   plan:start 2003-01-13-00:00:00-+0000
   plan:end 2003-01-18-00:00:00-+0000
   plan:scheduled
-  scheduling alap
 }
 task c15 "|D <-- -D" {
   projectid prj
   depends m1
   precedes m2
+  priority 500
   plan:start 2003-01-13-00:00:00-+0000
   plan:end 2003-01-18-00:00:00-+0000
   plan:scheduled
-  scheduling alap
 }
 task c4 "| --> -D" {
   projectid prj
   precedes m2
-  plan:start 2003-01-13-00:00:00-+0000
+  priority 500
   plan:end 2003-01-20-09:00:00-+0000
+  plan:start 2003-01-13-00:00:00-+0000
   plan:scheduled
-  scheduling asap
 }
 task c7 "| <-- -D" {
   projectid prj
   precedes m2
+  priority 500
   plan:start 2003-01-13-00:00:00-+0000
   plan:end 2003-01-20-09:00:00-+0000
   plan:scheduled
-  scheduling alap
 }
 task c12 "|D --> -D" {
   projectid prj
   depends m1
   precedes m2
-  plan:start 2003-01-13-00:00:00-+0000
+  priority 500
   plan:end 2003-01-20-09:00:00-+0000
+  plan:start 2003-01-13-00:00:00-+0000
   plan:scheduled
-  scheduling asap
 }
 task c1 "| x-> -" {
   projectid prj
-  plan:start 2003-01-13-09:00:00-+0000
+  priority 500
   plan:end 2003-01-17-18:00:00-+0000
+  plan:start 2003-01-13-09:00:00-+0000
   plan:scheduled
-  scheduling asap
 }
 task c2 "| x-> -D" {
   projectid prj
   precedes m2
-  plan:start 2003-01-13-09:00:00-+0000
+  priority 500
   plan:end 2003-01-17-18:00:00-+0000
+  plan:start 2003-01-13-09:00:00-+0000
   plan:scheduled
-  scheduling asap
 }
 task c9 "|D x-> -" {
   projectid prj
   depends m1
-  plan:start 2003-01-13-09:00:00-+0000
+  priority 500
   plan:end 2003-01-17-18:00:00-+0000
+  plan:start 2003-01-13-09:00:00-+0000
   plan:scheduled
-  scheduling asap
 }
 task c10 "|D x-> -D" {
   projectid prj
   depends m1
   precedes m2
-  plan:start 2003-01-13-09:00:00-+0000
+  priority 500
   plan:end 2003-01-17-18:00:00-+0000
+  plan:start 2003-01-13-09:00:00-+0000
   plan:scheduled
-  scheduling asap
 }
 task c16 "- <-x |" {
   projectid prj
+  priority 500
   plan:start 2003-01-13-09:00:00-+0000
   plan:end 2003-01-17-18:00:00-+0000
   plan:scheduled
-  scheduling alap
 }
 task c17 "- <-x -D" {
   projectid prj
   precedes m2
+  priority 500
   plan:start 2003-01-13-09:00:00-+0000
   plan:end 2003-01-17-18:00:00-+0000
   plan:scheduled
-  scheduling alap
 }
 task c18 "- <-x |D" {
   projectid prj
   precedes m2
+  priority 500
   plan:start 2003-01-13-09:00:00-+0000
   plan:end 2003-01-17-18:00:00-+0000
   plan:scheduled
-  scheduling alap
 }
 task c19 "-D x-> -" {
   projectid prj
   depends m1
-  plan:start 2003-01-13-09:00:00-+0000
+  priority 500
   plan:end 2003-01-17-18:00:00-+0000
+  plan:start 2003-01-13-09:00:00-+0000
   plan:scheduled
-  scheduling asap
 }
 task c20 "-D x-> -D" {
   projectid prj
   depends m1
   precedes m2
-  plan:start 2003-01-13-09:00:00-+0000
+  priority 500
   plan:end 2003-01-17-18:00:00-+0000
+  plan:start 2003-01-13-09:00:00-+0000
   plan:scheduled
-  scheduling asap
 }
 task c24 "-D <-x |" {
   projectid prj
   depends m1
+  priority 500
   plan:start 2003-01-13-09:00:00-+0000
   plan:end 2003-01-17-18:00:00-+0000
   plan:scheduled
-  scheduling alap
 }
 task c25 "-D <-x -D" {
   projectid prj
   depends m1
   precedes m2
+  priority 500
   plan:start 2003-01-13-09:00:00-+0000
   plan:end 2003-01-17-18:00:00-+0000
   plan:scheduled
-  scheduling alap
 }
 task c26 "-D <-x |D" {
   projectid prj
   depends m1
   precedes m2
+  priority 500
   plan:start 2003-01-13-09:00:00-+0000
   plan:end 2003-01-17-18:00:00-+0000
   plan:scheduled
-  scheduling alap
 }
 task m2 "Milestone2" {
   projectid prj
   precedes t2
+  priority 500
   plan:start 2003-01-20-09:00:00-+0000
   plan:scheduled
   milestone 
-  scheduling alap
 }
 task t2 "<-|" {
   projectid prj
+  priority 500
   plan:start 2003-01-20-09:00:00-+0000
   plan:end 2003-01-27-00:00:00-+0000
   plan:scheduled
-  scheduling alap
 }
 supplement task t1 {
-  priority 500
 }
 supplement task m1 {
-  priority 500
 }
 supplement task c21 {
-  priority 500
 }
 supplement task c23 {
-  priority 500
 }
 supplement task c28 {
-  priority 500
 }
 supplement task c30 {
-  priority 500
 }
 supplement task c22 {
-  priority 500
 }
 supplement task c29 {
-  priority 500
 }
 supplement task c3 {
-  priority 500
 }
 supplement task c5 {
-  priority 500
 }
 supplement task c6 {
-  priority 500
 }
 supplement task c8 {
-  priority 500
 }
 supplement task c11 {
-  priority 500
 }
 supplement task c13 {
-  priority 500
 }
 supplement task c14 {
-  priority 500
 }
 supplement task c15 {
-  priority 500
 }
 supplement task c4 {
-  priority 500
 }
 supplement task c7 {
-  priority 500
 }
 supplement task c12 {
-  priority 500
 }
 supplement task c1 {
-  priority 500
 }
 supplement task c2 {
-  priority 500
 }
 supplement task c9 {
-  priority 500
 }
 supplement task c10 {
-  priority 500
 }
 supplement task c16 {
-  priority 500
 }
 supplement task c17 {
-  priority 500
 }
 supplement task c18 {
-  priority 500
 }
 supplement task c19 {
-  priority 500
 }
 supplement task c20 {
-  priority 500
 }
 supplement task c24 {
-  priority 500
 }
 supplement task c25 {
-  priority 500
 }
 supplement task c26 {
-  priority 500
 }
 supplement task m2 {
-  priority 500
 }
 supplement task t2 {
-  priority 500
 }
 supplement resource tux1 {
   plan:booking c1

@@ -32,43 +32,39 @@ resource r4 "R4" {
 projectids limits1
 task t1 "Task 1" {
   projectid limits1
-  plan:start 2004-03-01-09:00:00-+0000
+  priority 500
   plan:end 2004-04-30-00:00:00-+0000
+  plan:start 2004-03-01-09:00:00-+0000
   plan:scheduled
-  scheduling asap
 }
 task t2 "Task 2" {
   projectid limits1
-  plan:start 2004-03-01-09:00:00-+0000
+  priority 500
   plan:end 2004-04-30-00:00:00-+0000
+  plan:start 2004-03-01-09:00:00-+0000
   plan:scheduled
-  scheduling asap
 }
 task t4 "Task 4" {
   projectid limits1
-  plan:start 2004-03-01-09:00:00-+0000
+  priority 500
   plan:end 2004-04-30-00:00:00-+0000
+  plan:start 2004-03-01-09:00:00-+0000
   plan:scheduled
-  scheduling asap
 }
 task t3 "Task 3" {
   projectid limits1
-  plan:start 2004-03-03-09:00:00-+0000
+  priority 500
   plan:end 2004-03-31-00:00:00-+0000
+  plan:start 2004-03-03-09:00:00-+0000
   plan:scheduled
-  scheduling asap
 }
 supplement task t1 {
-  priority 500
 }
 supplement task t2 {
-  priority 500
 }
 supplement task t4 {
-  priority 500
 }
 supplement task t3 {
-  priority 500
 }
 supplement resource r1 {
   plan:booking t1

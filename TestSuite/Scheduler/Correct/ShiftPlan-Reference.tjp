@@ -59,52 +59,48 @@ resource s4 "Karen Supporter" {
 projectids simple
 task start "Start of plan" {
   projectid simple
+  priority 500
   plan:start 2002-06-01-00:00:00-+0000
   plan:scheduled
   milestone 
-  scheduling asap
 }
 task t2 "Printer Support" {
   projectid simple
   depends start
-  plan:start 2002-06-03-07:00:00-+0000
+  priority 600
   plan:end 2002-07-23-15:30:00-+0000
+  plan:start 2002-06-03-07:00:00-+0000
   plan:scheduled
-  scheduling asap
 }
 task t1 "Installation Support" {
   projectid simple
   depends start
-  plan:start 2002-06-03-09:00:00-+0000
+  priority 500
   plan:end 2002-07-29-11:00:00-+0000
+  plan:start 2002-06-03-09:00:00-+0000
   plan:scheduled
-  scheduling asap
 }
 task t3 "Network Support" {
   projectid simple
   depends start
-  plan:start 2002-06-03-11:00:00-+0000
+  priority 700
   plan:end 2002-07-30-16:30:00-+0000
+  plan:start 2002-06-03-11:00:00-+0000
   plan:scheduled
-  scheduling asap
 }
 supplement task start {
-  priority 500
 }
 supplement task t2 {
   plan:maxend 2002-07-23-15:30:00-+0000
   plan:minend 2002-07-23-15:30:00-+0000
-  priority 600
 }
 supplement task t1 {
   plan:maxend 2002-07-29-11:00:00-+0000
   plan:minend 2002-07-29-11:00:00-+0000
-  priority 500
 }
 supplement task t3 {
   plan:maxend 2002-07-30-16:30:00-+0000
   plan:minend 2002-07-30-16:30:00-+0000
-  priority 700
 }
 supplement resource s1 {
   plan:booking t1

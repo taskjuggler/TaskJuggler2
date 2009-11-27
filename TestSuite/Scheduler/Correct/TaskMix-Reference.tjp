@@ -44,155 +44,141 @@ resource tux9 "Tux9" {
 projectids simple
 task t1 "|->" {
   projectid simple
-  plan:start 2003-01-06-00:00:00-+0000
+  priority 500
   plan:end 2003-01-10-18:00:00-+0000
+  plan:start 2003-01-06-00:00:00-+0000
   plan:scheduled
-  scheduling asap
 }
 task t7 "|->M1" {
   projectid simple
   precedes m1
+  priority 500
   plan:start 2003-01-06-00:00:00-+0000
   plan:end 2003-01-10-18:00:00-+0000
   plan:scheduled
-  scheduling alap
 }
 task t12 "|<-|M2" {
   projectid simple
   precedes m2
+  priority 500
   plan:start 2003-01-06-00:00:00-+0000
   plan:end 2003-01-17-18:00:00-+0000
   plan:scheduled
-  scheduling alap
 }
 task t10 "|<-|" {
   projectid simple
+  priority 500
   plan:start 2003-01-06-00:00:00-+0000
   plan:end 2003-01-24-18:00:00-+0000
   plan:scheduled
-  scheduling alap
 }
 task t9 "|->|" {
   projectid simple
-  plan:start 2003-01-06-09:00:00-+0000
+  priority 500
   plan:end 2003-01-27-00:00:00-+0000
+  plan:start 2003-01-06-09:00:00-+0000
   plan:scheduled
-  scheduling asap
 }
 task m1 "Milestone1" {
   projectid simple
   depends t1
+  priority 500
   plan:start 2003-01-10-18:00:00-+0000
   plan:scheduled
   milestone 
-  scheduling asap
 }
 task t6 "M1<-M2" {
   projectid simple
   depends m1
   precedes m2
+  priority 500
   plan:start 2003-01-10-18:00:00-+0000
   plan:end 2003-01-17-18:00:00-+0000
   plan:scheduled
-  scheduling alap
 }
 task t3 "M1->" {
   projectid simple
   depends m1
-  plan:start 2003-01-13-09:00:00-+0000
+  priority 500
   plan:end 2003-01-17-18:00:00-+0000
+  plan:start 2003-01-13-09:00:00-+0000
   plan:scheduled
-  scheduling asap
 }
 task t4 "<-M2" {
   projectid simple
   precedes m2
+  priority 500
   plan:start 2003-01-13-09:00:00-+0000
   plan:end 2003-01-17-18:00:00-+0000
   plan:scheduled
-  scheduling alap
 }
 task t5 "M1->M2" {
   projectid simple
   depends m1
   precedes m2
-  plan:start 2003-01-13-09:00:00-+0000
+  priority 500
   plan:end 2003-01-20-09:00:00-+0000
+  plan:start 2003-01-13-09:00:00-+0000
   plan:scheduled
-  scheduling asap
 }
 task t11 "M1|->|" {
   projectid simple
   depends m1
-  plan:start 2003-01-13-09:00:00-+0000
+  priority 500
   plan:end 2003-01-27-00:00:00-+0000
+  plan:start 2003-01-13-09:00:00-+0000
   plan:scheduled
-  scheduling asap
 }
 task m2 "Milestone2" {
   projectid simple
   precedes t2
+  priority 500
   plan:start 2003-01-20-09:00:00-+0000
   plan:scheduled
   milestone 
-  scheduling alap
 }
 task t2 "<-|" {
   projectid simple
+  priority 500
   plan:start 2003-01-20-09:00:00-+0000
   plan:end 2003-01-27-00:00:00-+0000
   plan:scheduled
-  scheduling alap
 }
 task t8 "M2<-|" {
   projectid simple
   depends m2
-  plan:start 2003-01-20-09:00:00-+0000
+  priority 500
   plan:end 2003-01-27-00:00:00-+0000
+  plan:start 2003-01-20-09:00:00-+0000
   plan:scheduled
-  scheduling asap
 }
 supplement task t1 {
-  priority 500
 }
 supplement task t7 {
-  priority 500
 }
 supplement task t12 {
-  priority 500
 }
 supplement task t10 {
-  priority 500
 }
 supplement task t9 {
-  priority 500
 }
 supplement task m1 {
-  priority 500
 }
 supplement task t6 {
-  priority 500
 }
 supplement task t3 {
-  priority 500
 }
 supplement task t4 {
-  priority 500
 }
 supplement task t5 {
-  priority 500
 }
 supplement task t11 {
-  priority 500
 }
 supplement task m2 {
-  priority 500
 }
 supplement task t2 {
-  priority 500
 }
 supplement task t8 {
-  priority 500
 }
 supplement resource tux1 {
   plan:booking t3

@@ -60,23 +60,21 @@ resource r6 "Resource 6" {
 projectids test
 task t2 "Task 2" {
   projectid test
-  plan:start 2005-11-18-09:00:00-+0000
+  priority 500
   plan:end 2005-11-28-14:00:00-+0000
+  plan:start 2005-11-18-09:00:00-+0000
   plan:scheduled
-  scheduling asap
 }
 task t1 "Task 1" {
   projectid test
-  plan:start 2005-11-18-09:00:00-+0000
+  priority 500
   plan:end 2005-12-15-18:00:00-+0000
+  plan:start 2005-11-18-09:00:00-+0000
   plan:scheduled
-  scheduling asap
 }
 supplement task t2 {
-  priority 500
 }
 supplement task t1 {
-  priority 500
 }
 supplement resource r10 {
   plan:booking t2

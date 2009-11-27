@@ -37,33 +37,30 @@ resource g2 "Group 2" {
 projectids simple
 task t1 "Task1" {
   projectid simple
-  plan:start 2000-01-03-09:00:00-+0000
+  priority 500
   plan:end 2000-01-10-18:00:00-+0000
+  plan:start 2000-01-03-09:00:00-+0000
   plan:scheduled
-  scheduling asap
 }
 task t2 "Task2" {
   projectid simple
-  plan:start 2000-01-05-09:00:00-+0000
+  priority 400
   plan:end 2000-01-06-18:00:00-+0000
+  plan:start 2000-01-05-09:00:00-+0000
   plan:scheduled
-  scheduling asap
 }
 task t3 "Task3" {
   projectid simple
-  plan:start 2000-01-11-09:00:00-+0000
+  priority 300
   plan:end 2000-01-12-14:00:00-+0000
+  plan:start 2000-01-11-09:00:00-+0000
   plan:scheduled
-  scheduling asap
 }
 supplement task t1 {
-  priority 500
 }
 supplement task t2 {
-  priority 400
 }
 supplement task t3 {
-  priority 300
 }
 supplement resource r1 {
   plan:booking t3

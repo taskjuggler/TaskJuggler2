@@ -72,263 +72,223 @@ resource rl7 "R7" {
 projectids test
 task d "Duration Tasks" {
   projectid test
+  priority 500
   task t0 "180 min" {
-    plan:start 2003-06-20-00:00:00-+0000
     plan:end 2003-06-20-03:00:00-+0000
+    plan:start 2003-06-20-00:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task t1 "4 Hours" {
-    plan:start 2003-06-20-00:00:00-+0000
     plan:end 2003-06-20-04:00:00-+0000
+    plan:start 2003-06-20-00:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task t2 "12 Hours" {
-    plan:start 2003-06-20-00:00:00-+0000
     plan:end 2003-06-20-12:00:00-+0000
+    plan:start 2003-06-20-00:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task t3 "1.5 Days" {
-    plan:start 2003-06-20-00:00:00-+0000
     plan:end 2003-06-21-12:00:00-+0000
+    plan:start 2003-06-20-00:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task t4 "5 Days" {
-    plan:start 2003-06-20-00:00:00-+0000
     plan:end 2003-06-25-00:00:00-+0000
+    plan:start 2003-06-20-00:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task t5 "1 Week" {
-    plan:start 2003-06-20-00:00:00-+0000
     plan:end 2003-06-27-00:00:00-+0000
+    plan:start 2003-06-20-00:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task t6 "2.5 Weeks" {
-    plan:start 2003-06-20-00:00:00-+0000
     plan:end 2003-07-07-12:00:00-+0000
+    plan:start 2003-06-20-00:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task t7 "1 Month" {
-    plan:start 2003-06-20-00:00:00-+0000
     plan:end 2003-07-20-10:00:00-+0000
+    plan:start 2003-06-20-00:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
-  scheduling asap
 }
 task da "Duration Tasks with Allocation" {
   projectid test
+  priority 500
   task t0 "180 min" {
-    plan:start 2003-06-20-00:00:00-+0000
     plan:end 2003-06-20-03:00:00-+0000
+    plan:start 2003-06-20-00:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task t1 "4 Hours" {
-    plan:start 2003-06-20-00:00:00-+0000
     plan:end 2003-06-20-04:00:00-+0000
+    plan:start 2003-06-20-00:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task t2 "12 Hours" {
-    plan:start 2003-06-20-09:00:00-+0000
     plan:end 2003-06-20-12:00:00-+0000
+    plan:start 2003-06-20-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task t3 "1.5 Days" {
-    plan:start 2003-06-20-09:00:00-+0000
     plan:end 2003-06-21-12:00:00-+0000
+    plan:start 2003-06-20-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task t4 "5 Days" {
-    plan:start 2003-06-20-09:00:00-+0000
     plan:end 2003-06-25-00:00:00-+0000
+    plan:start 2003-06-20-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task t5 "1 Week" {
-    plan:start 2003-06-20-09:00:00-+0000
     plan:end 2003-06-27-00:00:00-+0000
+    plan:start 2003-06-20-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task t6 "2.5 Weeks" {
-    plan:start 2003-06-20-09:00:00-+0000
     plan:end 2003-07-07-12:00:00-+0000
+    plan:start 2003-06-20-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task t7 "1 Month" {
-    plan:start 2003-06-20-09:00:00-+0000
     plan:end 2003-07-20-10:00:00-+0000
+    plan:start 2003-06-20-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
-  scheduling asap
 }
 task l "Length Tasks" {
   projectid test
+  priority 500
   task t0 "180 min" {
-    plan:start 2003-06-20-00:00:00-+0000
     plan:end 2003-06-20-12:00:00-+0000
+    plan:start 2003-06-20-00:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task t1 "4 Hours" {
-    plan:start 2003-06-20-00:00:00-+0000
     plan:end 2003-06-20-14:00:00-+0000
+    plan:start 2003-06-20-00:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task t2 "12 Hours" {
-    plan:start 2003-06-20-00:00:00-+0000
     plan:end 2003-06-23-14:00:00-+0000
+    plan:start 2003-06-20-00:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task t3 "1.5 Days" {
-    plan:start 2003-06-20-00:00:00-+0000
     plan:end 2003-06-23-14:00:00-+0000
+    plan:start 2003-06-20-00:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task t4 "5 Days" {
-    plan:start 2003-06-20-00:00:00-+0000
     plan:end 2003-06-26-18:00:00-+0000
+    plan:start 2003-06-20-00:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task t5 "1 Week" {
-    plan:start 2003-06-20-00:00:00-+0000
     plan:end 2003-06-26-18:00:00-+0000
+    plan:start 2003-06-20-00:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task t6 "2.5 Weeks" {
-    plan:start 2003-06-20-00:00:00-+0000
     plan:end 2003-07-08-14:00:00-+0000
+    plan:start 2003-06-20-00:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task t7 "1 Month" {
-    plan:start 2003-06-20-00:00:00-+0000
     plan:end 2003-07-21-16:00:00-+0000
+    plan:start 2003-06-20-00:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
-  scheduling asap
 }
 task la "Length Tasks with allocation" {
   projectid test
+  priority 500
   task t0 "180 min" {
-    plan:start 2003-06-20-09:00:00-+0000
     plan:end 2003-06-20-12:00:00-+0000
+    plan:start 2003-06-20-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task t1 "4 Hours" {
-    plan:start 2003-06-20-09:00:00-+0000
     plan:end 2003-06-20-14:00:00-+0000
+    plan:start 2003-06-20-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task t2 "12 Hours" {
-    plan:start 2003-06-20-09:00:00-+0000
     plan:end 2003-06-23-14:00:00-+0000
+    plan:start 2003-06-20-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task t3 "1.5 Days" {
-    plan:start 2003-06-20-09:00:00-+0000
     plan:end 2003-06-23-14:00:00-+0000
+    plan:start 2003-06-20-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task t4 "5 Days" {
-    plan:start 2003-06-20-09:00:00-+0000
     plan:end 2003-06-26-18:00:00-+0000
+    plan:start 2003-06-20-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task t5 "1 Week" {
-    plan:start 2003-06-20-09:00:00-+0000
     plan:end 2003-06-26-18:00:00-+0000
+    plan:start 2003-06-20-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task t6 "2.5 Weeks" {
-    plan:start 2003-06-20-09:00:00-+0000
     plan:end 2003-07-08-14:00:00-+0000
+    plan:start 2003-06-20-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task t7 "1 Month" {
-    plan:start 2003-06-20-09:00:00-+0000
     plan:end 2003-07-21-16:00:00-+0000
+    plan:start 2003-06-20-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
-  scheduling asap
 }
 task e "Effort Tasks" {
   projectid test
+  priority 500
   task t0 "180 min" {
-    plan:start 2003-06-20-09:00:00-+0000
     plan:end 2003-06-20-12:00:00-+0000
+    plan:start 2003-06-20-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task t1 "4 Hours" {
-    plan:start 2003-06-20-09:00:00-+0000
     plan:end 2003-06-20-14:00:00-+0000
+    plan:start 2003-06-20-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task t2 "12 Hours" {
-    plan:start 2003-06-20-09:00:00-+0000
     plan:end 2003-06-23-14:00:00-+0000
+    plan:start 2003-06-20-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task t3 "1.5 Days" {
-    plan:start 2003-06-20-09:00:00-+0000
     plan:end 2003-06-23-14:00:00-+0000
+    plan:start 2003-06-20-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task t4 "5 Days" {
-    plan:start 2003-06-20-09:00:00-+0000
     plan:end 2003-06-26-18:00:00-+0000
+    plan:start 2003-06-20-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task t5 "1 Week" {
-    plan:start 2003-06-20-09:00:00-+0000
     plan:end 2003-06-26-18:00:00-+0000
+    plan:start 2003-06-20-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task t6 "2.5 Weeks" {
-    plan:start 2003-06-20-09:00:00-+0000
     plan:end 2003-07-08-14:00:00-+0000
+    plan:start 2003-06-20-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task t7 "1 Month" {
-    plan:start 2003-06-20-09:00:00-+0000
     plan:end 2003-07-21-16:00:00-+0000
+    plan:start 2003-06-20-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
-  scheduling asap
 }
 supplement task d {
   supplement task t0 {
@@ -347,7 +307,6 @@ supplement task d {
   }
   supplement task t7 {
   }
-  priority 500
 }
 supplement task da {
   supplement task t0 {
@@ -366,7 +325,6 @@ supplement task da {
   }
   supplement task t7 {
   }
-  priority 500
 }
 supplement task l {
   supplement task t0 {
@@ -385,7 +343,6 @@ supplement task l {
   }
   supplement task t7 {
   }
-  priority 500
 }
 supplement task la {
   supplement task t0 {
@@ -404,7 +361,6 @@ supplement task la {
   }
   supplement task t7 {
   }
-  priority 500
 }
 supplement task e {
   supplement task t0 {
@@ -423,7 +379,6 @@ supplement task e {
   }
   supplement task t7 {
   }
-  priority 500
 }
 supplement resource rd2 {
   plan:booking da.t2

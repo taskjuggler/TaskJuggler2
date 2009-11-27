@@ -30,25 +30,22 @@ resource tux3 "Tux3" {
 projectids prj
 task prj "Project" {
   projectid prj
+  priority 500
   task t1 "T1" {
-    plan:start 2005-11-21-09:00:00-+0000
     plan:end 2005-12-26-18:00:00-+0000
+    plan:start 2005-11-21-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task t2 "T2" {
-    plan:start 2005-11-21-09:00:00-+0000
     plan:end 2006-01-16-18:00:00-+0000
+    plan:start 2005-11-21-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task t3 "T3" {
-    plan:start 2005-12-26-09:00:00-+0000
     plan:end 2006-01-20-18:00:00-+0000
+    plan:start 2005-12-26-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
-  scheduling asap
 }
 supplement task prj {
   supplement task t1 {
@@ -65,7 +62,6 @@ supplement task prj {
     plan:maxend 2006-01-20-18:00:00-+0000
     plan:minend 2006-01-20-18:00:00-+0000
   }
-  priority 500
 }
 supplement resource tux1 {
   plan:booking prj.t1

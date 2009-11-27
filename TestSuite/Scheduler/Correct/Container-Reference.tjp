@@ -24,44 +24,39 @@ project prj "Project" "1.0" 2009-01-01-00:00:00-+0000 - 2009-01-31-00:00:00-+000
 projectids prj
 task S "start" {
   projectid prj
+  priority 500
   plan:start 2009-01-01-00:00:00-+0000
   plan:scheduled
   milestone 
-  scheduling asap
 }
 task C0 "C0" {
   projectid prj
   depends S
   precedes E
+  priority 500
   task C1 "C1" {
     task T1 "T1" {
-      plan:start 2009-01-10-00:00:00-+0000
       plan:end 2009-01-16-18:00:00-+0000
+      plan:start 2009-01-10-00:00:00-+0000
       plan:scheduled
-      scheduling asap
     }
-    scheduling alap
   }
   task C2 "C2" {
     task T2 "T2" {
       plan:start 2009-01-13-09:00:00-+0000
       plan:end 2009-01-20-00:00:00-+0000
       plan:scheduled
-      scheduling alap
     }
-    scheduling alap
   }
-  scheduling alap
 }
 task E "end" {
   projectid prj
+  priority 500
   plan:start 2009-01-30-00:00:00-+0000
   plan:scheduled
   milestone 
-  scheduling alap
 }
 supplement task S {
-  priority 500
 }
 supplement task C0 {
   supplement task C1 {
@@ -72,8 +67,6 @@ supplement task C0 {
     supplement task T2 {
     }
   }
-  priority 500
 }
 supplement task E {
-  priority 500
 }

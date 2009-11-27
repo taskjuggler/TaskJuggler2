@@ -48,193 +48,164 @@ resource tux9 "Tux9" {
 projectids prj
 task container3 "Container3" {
   projectid prj
+  priority 500
   task c9 "|D x-> -" {
-    plan:start 2003-01-13-09:00:00-+0000
     plan:end 2003-01-17-18:00:00-+0000
+    plan:start 2003-01-13-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task c11 "|D --> |" {
-    plan:start 2003-01-13-00:00:00-+0000
     plan:end 2003-01-18-00:00:00-+0000
+    plan:start 2003-01-13-00:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task c14 "|D <-- |" {
     plan:start 2003-01-13-00:00:00-+0000
     plan:end 2003-01-18-00:00:00-+0000
     plan:scheduled
-    scheduling alap
   }
   task c19 "-D x-> -" {
-    plan:start 2003-01-13-09:00:00-+0000
     plan:end 2003-01-17-18:00:00-+0000
+    plan:start 2003-01-13-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task c21 "-D --> |" {
     plan:start 2003-01-11-00:00:00-+0000
     plan:end 2003-01-18-00:00:00-+0000
     plan:scheduled
-    scheduling alap
   }
   task c24 "-D <-x |" {
     plan:start 2003-01-13-09:00:00-+0000
     plan:end 2003-01-17-18:00:00-+0000
     plan:scheduled
-    scheduling alap
   }
   task c28 "-D <-- |" {
     plan:start 2003-01-11-00:00:00-+0000
     plan:end 2003-01-18-00:00:00-+0000
     plan:scheduled
-    scheduling alap
   }
-  scheduling asap
 }
 task container4 "Container4" {
   projectid prj
+  priority 500
   task c10 "|D x-> -D" {
-    plan:start 2003-01-13-09:00:00-+0000
     plan:end 2003-01-17-18:00:00-+0000
+    plan:start 2003-01-13-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task c12 "|D --> -D" {
-    plan:start 2003-01-13-00:00:00-+0000
     plan:end 2003-01-20-00:00:00-+0000
+    plan:start 2003-01-13-00:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task c13 "|D --> |D" {
-    plan:start 2003-01-13-00:00:00-+0000
     plan:end 2003-01-18-00:00:00-+0000
+    plan:start 2003-01-13-00:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task c15 "|D <-- -D" {
     plan:start 2003-01-13-00:00:00-+0000
     plan:end 2003-01-18-00:00:00-+0000
     plan:scheduled
-    scheduling alap
   }
   task c20 "-D x-> -D" {
-    plan:start 2003-01-13-09:00:00-+0000
     plan:end 2003-01-17-18:00:00-+0000
+    plan:start 2003-01-13-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task c22 "-D --> -D" {
-    plan:start 2003-01-11-00:00:00-+0000
     plan:end 2003-01-20-00:00:00-+0000
+    plan:start 2003-01-11-00:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task c23 "-D --> |D" {
-    plan:start 2003-01-11-00:00:00-+0000
     plan:end 2003-01-18-00:00:00-+0000
+    plan:start 2003-01-11-00:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task c25 "-D <-x -D" {
     plan:start 2003-01-13-09:00:00-+0000
     plan:end 2003-01-17-18:00:00-+0000
     plan:scheduled
-    scheduling alap
   }
   task c26 "-D <-x |D" {
     plan:start 2003-01-13-09:00:00-+0000
     plan:end 2003-01-17-18:00:00-+0000
     plan:scheduled
-    scheduling alap
   }
   task c29 "-D <-- -D" {
     plan:start 2003-01-11-00:00:00-+0000
     plan:end 2003-01-20-00:00:00-+0000
     plan:scheduled
-    scheduling alap
   }
   task c30 "-D <-- |D" {
     plan:start 2003-01-11-00:00:00-+0000
     plan:end 2003-01-18-00:00:00-+0000
     plan:scheduled
-    scheduling alap
   }
-  scheduling alap
 }
 task container1 "Container1" {
   projectid prj
+  priority 500
   task c1 "| x-> -" {
-    plan:start 2003-01-13-09:00:00-+0000
     plan:end 2003-01-17-18:00:00-+0000
+    plan:start 2003-01-13-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task c3 "| --> |" {
     plan:start 2003-01-13-00:00:00-+0000
     plan:end 2003-01-18-00:00:00-+0000
     plan:scheduled
-    scheduling alap
   }
   task c6 "| <-- |" {
     plan:start 2003-01-13-00:00:00-+0000
     plan:end 2003-01-18-00:00:00-+0000
     plan:scheduled
-    scheduling alap
   }
   task c16 "- <-x |" {
     plan:start 2003-01-13-09:00:00-+0000
     plan:end 2003-01-17-18:00:00-+0000
     plan:scheduled
-    scheduling alap
   }
-  scheduling asap
 }
 task container2 "Container2" {
   projectid prj
+  priority 500
   task c2 "| x-> -D" {
-    plan:start 2003-01-13-09:00:00-+0000
     plan:end 2003-01-17-18:00:00-+0000
+    plan:start 2003-01-13-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task c4 "| --> -D" {
-    plan:start 2003-01-13-00:00:00-+0000
     plan:end 2003-01-20-00:00:00-+0000
+    plan:start 2003-01-13-00:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task c5 "| --> |D" {
-    plan:start 2003-01-13-00:00:00-+0000
     plan:end 2003-01-18-00:00:00-+0000
+    plan:start 2003-01-13-00:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task c7 "| <-- -D" {
     plan:start 2003-01-13-00:00:00-+0000
     plan:end 2003-01-20-00:00:00-+0000
     plan:scheduled
-    scheduling alap
   }
   task c8 "| <-- |D" {
     plan:start 2003-01-13-00:00:00-+0000
     plan:end 2003-01-18-00:00:00-+0000
     plan:scheduled
-    scheduling alap
   }
   task c17 "- <-x -D" {
     plan:start 2003-01-13-09:00:00-+0000
     plan:end 2003-01-17-18:00:00-+0000
     plan:scheduled
-    scheduling alap
   }
   task c18 "- <-x |D" {
     plan:start 2003-01-13-09:00:00-+0000
     plan:end 2003-01-17-18:00:00-+0000
     plan:scheduled
-    scheduling alap
   }
-  scheduling alap
 }
 supplement task container3 {
   supplement task c9 {
@@ -251,7 +222,6 @@ supplement task container3 {
   }
   supplement task c28 {
   }
-  priority 500
 }
 supplement task container4 {
   supplement task c10 {
@@ -276,7 +246,6 @@ supplement task container4 {
   }
   supplement task c30 {
   }
-  priority 500
 }
 supplement task container1 {
   supplement task c1 {
@@ -287,7 +256,6 @@ supplement task container1 {
   }
   supplement task c16 {
   }
-  priority 500
 }
 supplement task container2 {
   supplement task c2 {
@@ -304,7 +272,6 @@ supplement task container2 {
   }
   supplement task c18 {
   }
-  priority 500
 }
 supplement resource tux1 {
   plan:booking container1.c1

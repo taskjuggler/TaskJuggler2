@@ -36,68 +36,64 @@ resource tuxies2 "3 Tux Individiuals" {
 projectids simple
 task t1 "Task1" {
   projectid simple
+  priority 500
   task s1 "sub1" {
-    plan:start 2000-01-03-09:00:00-+0000
     plan:end 2000-01-07-18:00:00-+0000
+    plan:start 2000-01-03-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task s2 "sub2" {
-    plan:start 2000-01-03-09:00:00-+0000
     plan:end 2000-01-07-18:00:00-+0000
+    plan:start 2000-01-03-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task s3 "sub3" {
-    plan:start 2000-01-03-09:00:00-+0000
     plan:end 2000-01-07-18:00:00-+0000
+    plan:start 2000-01-03-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task s4 "sub4" {
-    plan:start 2000-01-03-09:00:00-+0000
     plan:end 2000-01-07-18:00:00-+0000
+    plan:start 2000-01-03-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
-  scheduling asap
 }
 task t2 "Task2" {
   projectid simple
   depends t1
+  priority 500
   task s1 "sub1" {
-    plan:start 2000-01-10-16:00:00-+0000
+    priority 600
     plan:end 2000-01-14-18:00:00-+0000
+    plan:start 2000-01-10-16:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task s2 "sub2" {
-    plan:start 2000-01-10-14:00:00-+0000
+    priority 601
     plan:end 2000-01-14-16:00:00-+0000
+    plan:start 2000-01-10-14:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task s3 "sub3" {
-    plan:start 2000-01-10-11:00:00-+0000
+    priority 602
     plan:end 2000-01-14-14:00:00-+0000
+    plan:start 2000-01-10-11:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task s4 "sub4" {
-    plan:start 2000-01-10-09:00:00-+0000
+    priority 603
     plan:end 2000-01-14-11:00:00-+0000
+    plan:start 2000-01-10-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
-  scheduling asap
 }
 task t3 "Task3" {
   projectid simple
   depends t2
-  plan:start 2000-01-17-09:00:00-+0000
+  priority 500
   plan:end 2000-01-17-15:00:00-+0000
+  plan:start 2000-01-17-09:00:00-+0000
   plan:scheduled
-  scheduling asap
 }
 supplement task t1 {
   supplement task s1 {
@@ -108,35 +104,28 @@ supplement task t1 {
   }
   supplement task s4 {
   }
-  priority 500
 }
 supplement task t2 {
   supplement task s1 {
     plan:maxend 2000-01-14-18:00:00-+0000
     plan:minend 2000-01-14-18:00:00-+0000
-    priority 600
   }
   supplement task s2 {
     plan:maxend 2000-01-14-16:00:00-+0000
     plan:minend 2000-01-14-16:00:00-+0000
-    priority 601
   }
   supplement task s3 {
     plan:maxend 2000-01-14-14:00:00-+0000
     plan:minend 2000-01-14-14:00:00-+0000
-    priority 602
   }
   supplement task s4 {
     plan:maxend 2000-01-14-11:00:00-+0000
     plan:minend 2000-01-14-11:00:00-+0000
-    priority 603
   }
-  priority 500
 }
 supplement task t3 {
   plan:maxend 2000-01-17-15:00:00-+0000
   plan:minend 2000-01-17-15:00:00-+0000
-  priority 500
 }
 supplement resource tuxies1 {
   plan:booking t3

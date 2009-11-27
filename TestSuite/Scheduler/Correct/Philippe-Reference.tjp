@@ -30,181 +30,158 @@ resource pmm "PMM" {
 projectids arc
 task start "Start" {
   projectid arc
+  priority 500
   plan:start 2002-07-15-00:00:00-+0000
   plan:scheduled
   milestone 
-  scheduling asap
 }
 task ctm "Mise sous Control-M" {
   projectid arc
   depends start
+  priority 500
   task jobsup "Job superviseur" {
-    plan:start 2002-07-24-09:00:00-+0000
     plan:end 2002-07-29-18:00:00-+0000
+    plan:start 2002-07-24-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task modchaine "Module chaines" {
-    plan:start 2002-07-15-09:00:00-+0000
     plan:end 2002-07-18-18:00:00-+0000
+    plan:start 2002-07-15-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task defchaine "Definition des chaines" {
     depends ctm.modchaine
-    plan:start 2002-07-24-09:00:00-+0000
     plan:end 2002-07-25-11:00:00-+0000
+    plan:start 2002-07-24-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task lancechaine "Lanceur de chaines" {
     depends ctm.modchaine, ctm.defchaine
-    plan:start 2002-07-31-11:00:00-+0000
     plan:end 2002-08-02-10:00:00-+0000
+    plan:start 2002-07-31-11:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task dlibm "Download de l IBM" {
-    plan:start 2002-07-31-09:00:00-+0000
     plan:end 2002-08-01-18:00:00-+0000
+    plan:start 2002-07-31-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task testchaine "Tests de l enchainement" {
     depends ctm.dlibm, ctm.lancechaine, ctm.defchaine, ctm.modchaine, ctm.jobsup
-    plan:start 2002-08-02-17:00:00-+0000
     plan:end 2002-08-08-17:00:00-+0000
+    plan:start 2002-08-02-17:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
-  scheduling asap
 }
 task amelioration "Amelioration" {
   projectid arc
   depends start
+  priority 500
   task gesttable "Module de gestion des tables" {
-    plan:start 2002-07-19-09:00:00-+0000
     plan:end 2002-07-23-18:00:00-+0000
+    plan:start 2002-07-19-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task supuniv "Suppression du code Universe" {
-    plan:start 2002-07-29-16:00:00-+0000
     plan:end 2002-07-30-18:00:00-+0000
+    plan:start 2002-07-29-16:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task supdyn "Suppression du code Dynatext" {
-    plan:start 2002-07-30-09:00:00-+0000
     plan:end 2002-07-31-11:00:00-+0000
+    plan:start 2002-07-30-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task modpre "Modification de la preconversion" {
     depends amelioration.supuniv, amelioration.gesttable, amelioration.supdyn
-    plan:start 2002-08-02-09:00:00-+0000
     plan:end 2002-08-02-18:00:00-+0000
+    plan:start 2002-08-02-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task nomrex "Creation du nom du REX" {
     depends amelioration.gesttable
-    plan:start 2002-08-02-10:00:00-+0000
     plan:end 2002-08-02-17:00:00-+0000
+    plan:start 2002-08-02-10:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task errpre "Gestion des erreurs dans la preconversion" {
-    plan:start 2002-07-15-09:00:00-+0000
     plan:end 2002-07-23-18:00:00-+0000
+    plan:start 2002-07-15-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task errshell "Gestion des erreur dans les shells" {
-    plan:start 2002-07-25-11:00:00-+0000
     plan:end 2002-07-29-16:00:00-+0000
+    plan:start 2002-07-25-11:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task testmod "Test des modifications" {
     depends amelioration.gesttable, amelioration.supuniv, amelioration.supdyn, amelioration.modpre, amelioration.nomrex, amelioration.errpre, amelioration.errshell
-    plan:start 2002-08-05-09:00:00-+0000
     plan:end 2002-08-08-18:00:00-+0000
+    plan:start 2002-08-05-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
-  scheduling asap
 }
 task validation "Validation des modifs" {
   projectid arc
+  priority 500
   task netvar "Nettoyage des variable d env." {
     depends ctm, amelioration
-    plan:start 2002-09-05-17:00:00-+0000
     plan:end 2002-09-06-17:00:00-+0000
+    plan:start 2002-09-05-17:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task integerr "Integration gestion err" {
     depends ctm, amelioration
-    plan:start 2002-08-09-09:00:00-+0000
     plan:end 2002-08-26-18:00:00-+0000
+    plan:start 2002-08-09-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task integctm "Integration Control-M" {
     depends ctm, amelioration
-    plan:start 2002-08-09-09:00:00-+0000
     plan:end 2002-08-14-18:00:00-+0000
+    plan:start 2002-08-09-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task planrec "Redaction plan de recette" {
     depends validation.integctm, validation.integerr
-    plan:start 2002-08-27-09:00:00-+0000
     plan:end 2002-08-29-18:00:00-+0000
+    plan:start 2002-08-27-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task val "Validation" {
     depends validation.planrec
-    plan:start 2002-09-02-09:00:00-+0000
     plan:end 2002-09-04-18:00:00-+0000
+    plan:start 2002-09-02-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task majdd "Mise a jour doc conception" {
     depends validation.integctm, validation.integerr
-    plan:start 2002-08-30-09:00:00-+0000
     plan:end 2002-09-02-17:00:00-+0000
+    plan:start 2002-08-30-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task docexp "Redaction doc exploitation" {
     depends validation.integctm, validation.integerr, validation.majdd
-    plan:start 2002-09-02-17:00:00-+0000
     plan:end 2002-09-05-17:00:00-+0000
+    plan:start 2002-09-02-17:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
   task docinst "Redaction doc installation" {
     depends validation.integctm, validation.integerr, validation.majdd
-    plan:start 2002-09-05-09:00:00-+0000
     plan:end 2002-09-09-18:00:00-+0000
+    plan:start 2002-09-05-09:00:00-+0000
     plan:scheduled
-    scheduling asap
   }
-  scheduling asap
 }
 task fini "Fini" {
   projectid arc
   depends validation, ctm, amelioration
+  priority 500
   plan:start 2002-09-09-18:00:00-+0000
   plan:scheduled
   milestone 
-  scheduling asap
 }
 supplement task start {
-  priority 500
 }
 supplement task ctm {
   supplement task jobsup {
@@ -225,7 +202,6 @@ supplement task ctm {
   supplement task testchaine {
     plan:complete 40
   }
-  priority 500
 }
 supplement task amelioration {
   supplement task gesttable {
@@ -252,7 +228,6 @@ supplement task amelioration {
   supplement task testmod {
     plan:complete 25
   }
-  priority 500
 }
 supplement task validation {
   supplement task netvar {
@@ -272,10 +247,8 @@ supplement task validation {
   }
   supplement task docinst {
   }
-  priority 500
 }
 supplement task fini {
-  priority 500
 }
 supplement resource Ekow {
   plan:booking amelioration.errpre
