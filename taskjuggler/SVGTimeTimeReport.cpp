@@ -19,7 +19,6 @@
 #include <qptrdict.h>
 #include <qfile.h>
 #include <klocale.h>
-#include <libkcal/icalformat.h>
 
 #include "tjlib-internal.h"
 #include "Project.h"

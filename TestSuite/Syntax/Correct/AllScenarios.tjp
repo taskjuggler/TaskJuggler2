@@ -73,10 +73,6 @@ htmlweeklycalendar "htmlweeklycalendar.html" {
     scenarios *
 }
 
-icalreport "icalreport.ics" {
-    scenario sc1
-}
-
 xmlreport "xmlreport.xml.gz" {
     scenarios *
 }
