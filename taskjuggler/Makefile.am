@@ -52,6 +52,9 @@ INCLUDES = $(ICAL_INCLUDES) $(all_includes)
 
 KDE_OPTIONS = qtonly
 
+# let automoc handle all of the meta source files (moc)
+METASOURCES = AUTO
+
 messages:
 	$(XGETTEXT) -ki18n -kI18N_NOOP --output=../i18n/taskjuggler/taskjuggler.pot *.cpp
 
