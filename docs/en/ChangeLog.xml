@@ -1421,6 +1421,8 @@ characters are used.</para></listitem>
 
 <listitem><para>Export reports can now contain more attributes as specified by resourceattributes.</para></listitem>
 
+<listitem><para>Fixed sorting by index.</para></listitem>
+
 </itemizedlist></para>
 </sect2>
 </sect1>

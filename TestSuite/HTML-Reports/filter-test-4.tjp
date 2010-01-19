@@ -28,6 +28,7 @@ task t1 "Task 1" {
 
 htmltaskreport "." {
 	headline "ismilestone (Should be 5 tasks)"
+  columns no, name, index, start, end
 	sorttasks indexup
 	hidetask ~ismilestone()
 }

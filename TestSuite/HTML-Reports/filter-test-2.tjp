@@ -28,6 +28,7 @@ task t1 "Task 1" {
 
 htmltaskreport "." {
 	headline "treelevel <= 2 (Should be 3 tasks)"
+  columns no, name, index, start, end
 	sorttasks indexup
 	hidetask ~(treelevel() <= 2)
 }
