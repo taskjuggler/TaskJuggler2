@@ -73,8 +73,10 @@ task t1 "Task 1" {
   plan:scheduled
 }
 supplement task t2 {
+  plan:effort 20d
 }
 supplement task t1 {
+  plan:effort 20d
 }
 supplement resource r10 {
   plan:booking t2

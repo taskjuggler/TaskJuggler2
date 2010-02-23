@@ -71,10 +71,12 @@ supplement task t4 {
   plan:minend 2000-01-27-00:00:00-+0000
 }
 supplement task t1 {
+  plan:effort 10d
   plan:maxend 2000-01-26-18:00:00-+0000
   plan:minend 2000-01-26-18:00:00-+0000
 }
 supplement task t2 {
+  plan:effort 10d
   plan:maxend 2000-01-26-18:00:00-+0000
   plan:minend 2000-01-26-18:00:00-+0000
 }

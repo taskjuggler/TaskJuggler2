@@ -41,6 +41,7 @@ task spec "Make Spec" {
   plan:scheduled
 }
 supplement task spec {
+  plan:effort 20d
   plan:maxend 2004-12-21-12:00:00-+0000
   plan:minend 2004-12-21-12:00:00-+0000
 }

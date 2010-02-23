@@ -51,10 +51,12 @@ task t2 "Task2" {
   plan:scheduled
 }
 supplement task t1 {
+  plan:effort 5d
   plan:maxend 2000-01-31-17:00:00-+0000
   plan:minend 2000-01-31-17:00:00-+0000
 }
 supplement task t2 {
+  plan:effort 5d
   plan:maxend 2000-02-01-17:00:00-+0000
   plan:minend 2000-02-01-17:00:00-+0000
 }

@@ -364,20 +364,28 @@ supplement task la {
 }
 supplement task e {
   supplement task t0 {
+    plan:effort 0.375d
   }
   supplement task t1 {
+    plan:effort 0.5d
   }
   supplement task t2 {
+    plan:effort 1.5d
   }
   supplement task t3 {
+    plan:effort 1.5d
   }
   supplement task t4 {
+    plan:effort 5d
   }
   supplement task t5 {
+    plan:effort 4.99999d
   }
   supplement task t6 {
+    plan:effort 12.5d
   }
   supplement task t7 {
+    plan:effort 21.7262d
   }
 }
 supplement resource rd2 {

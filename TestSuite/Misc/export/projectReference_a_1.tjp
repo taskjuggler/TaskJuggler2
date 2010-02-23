@@ -89,6 +89,7 @@ task t2 "Task2" {
   plan:scheduled
 }
 supplement task t1 {
+  plan:effort 10d
 }
 supplement task t3 {
 }
@@ -97,12 +98,14 @@ supplement task t4 {
     UserText "Hello, world!"
   }
   supplement task t2 {
+    plan:effort 10d
     UserRef "http://www.taskjuggler.org" { label "TaskJuggler" }
   }
 }
 supplement task t5 {
 }
 supplement task t2 {
+  plan:effort 10d
 }
 supplement resource r3 {
   plan:booking t3

@@ -170,6 +170,12 @@ supplement task t4 {
   }
 }
 supplement task t3 {
+  s1:effort 1d
+  s2:effort 1d
+  s4:effort 1d
+  s5:effort 2d
+  s6:effort 2d
+  s7:effort 2d
 }
 supplement task t7 {
   supplement task t8 {

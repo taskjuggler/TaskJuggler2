@@ -354,28 +354,40 @@ supplement task c7 {
 supplement task c12 {
 }
 supplement task c1 {
+  plan:effort 5d
 }
 supplement task c2 {
+  plan:effort 5d
 }
 supplement task c9 {
+  plan:effort 5d
 }
 supplement task c10 {
+  plan:effort 5d
 }
 supplement task c16 {
+  plan:effort 5d
 }
 supplement task c17 {
+  plan:effort 5d
 }
 supplement task c18 {
+  plan:effort 5d
 }
 supplement task c19 {
+  plan:effort 5d
 }
 supplement task c20 {
+  plan:effort 5d
 }
 supplement task c24 {
+  plan:effort 5d
 }
 supplement task c25 {
+  plan:effort 5d
 }
 supplement task c26 {
+  plan:effort 5d
 }
 supplement task m2 {
 }

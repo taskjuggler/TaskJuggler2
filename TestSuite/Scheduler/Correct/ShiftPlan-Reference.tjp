@@ -91,14 +91,17 @@ task t3 "Network Support" {
 supplement task start {
 }
 supplement task t2 {
+  plan:effort 43.4523d
   plan:maxend 2002-07-23-15:30:00-+0000
   plan:minend 2002-07-23-15:30:00-+0000
 }
 supplement task t1 {
+  plan:effort 12d
   plan:maxend 2002-07-29-11:00:00-+0000
   plan:minend 2002-07-29-11:00:00-+0000
 }
 supplement task t3 {
+  plan:effort 34.9999d
   plan:maxend 2002-07-30-16:30:00-+0000
   plan:minend 2002-07-30-16:30:00-+0000
 }
