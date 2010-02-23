@@ -187,87 +187,109 @@ supplement task ctm {
   supplement task jobsup {
     plan:complete 90
     plan:effort 4d
+    allocate pmm, Ekow
   }
   supplement task modchaine {
     plan:complete 60
     plan:effort 4d
+    allocate pmm, Ekow
   }
   supplement task defchaine {
     plan:complete 90
     plan:effort 1.25d
+    allocate pmm, Ekow
   }
   supplement task lancechaine {
     plan:complete 40
     plan:effort 1.875d
+    allocate pmm, Ekow
   }
   supplement task dlibm {
     plan:complete 50
     plan:effort 2d
+    allocate pmm, Ekow
   }
   supplement task testchaine {
     plan:complete 40
     plan:effort 4d
+    allocate pmm, Ekow
   }
 }
 supplement task amelioration {
   supplement task gesttable {
     plan:complete 100
     plan:effort 3d
+    allocate Ekow, pmm
   }
   supplement task supuniv {
     plan:complete 100
     plan:effort 1.25d
+    allocate Ekow, pmm
   }
   supplement task supdyn {
     plan:complete 100
     plan:effort 1.25d
+    allocate Ekow, pmm
   }
   supplement task modpre {
     plan:complete 100
     plan:effort 1d
+    allocate Ekow, pmm
   }
   supplement task nomrex {
     plan:complete 100
     plan:effort 0.75d
+    allocate Ekow, pmm
   }
   supplement task errpre {
     plan:complete 20
     plan:effort 7d
+    allocate Ekow, pmm
   }
   supplement task errshell {
     plan:complete 100
     plan:effort 2.5d
+    allocate Ekow, pmm
   }
   supplement task testmod {
     plan:complete 25
     plan:effort 4d
+    allocate Ekow, pmm
   }
 }
 supplement task validation {
   supplement task netvar {
     plan:effort 1d
+    allocate pmm, Ekow
   }
   supplement task integerr {
     plan:effort 2d
+    allocate pmm, Ekow
   }
   supplement task integctm {
     plan:effort 4d
+    allocate pmm, Ekow
   }
   supplement task planrec {
     plan:effort 3d
+    allocate pmm, Ekow
   }
   supplement task val {
     plan:effort 3d
+    allocate pmm, Ekow
   }
   supplement task majdd {
     plan:complete 10
     plan:effort 1.875d
+    allocate pmm, Ekow
   }
   supplement task docexp {
     plan:effort 3d
+    allocate pmm, Ekow
   }
   supplement task docinst {
     plan:effort 3d
+    allocate pmm, Ekow
   }
 }
 supplement task fini {

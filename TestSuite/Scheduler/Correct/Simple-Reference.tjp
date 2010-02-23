@@ -81,6 +81,7 @@ supplement task t4 {
 }
 supplement task t3 {
   plan:effort 1d
+  allocate tux
 }
 supplement task t7 {
   supplement task t8 {

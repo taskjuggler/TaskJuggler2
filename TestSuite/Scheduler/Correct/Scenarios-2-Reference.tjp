@@ -176,6 +176,7 @@ supplement task t3 {
   s5:effort 2d
   s6:effort 2d
   s7:effort 2d
+  allocate tux
 }
 supplement task t7 {
   supplement task t8 {

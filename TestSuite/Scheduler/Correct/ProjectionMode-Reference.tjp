@@ -51,17 +51,20 @@ supplement task prj {
   supplement task t1 {
     plan:complete 100
     plan:effort 10d
+    allocate tux1
     plan:maxend 2005-12-19-18:00:00-+0000
     plan:minend 2005-12-19-18:00:00-+0000
   }
   supplement task t2 {
     plan:complete 20
     plan:effort 20d
+    allocate tux2
     plan:maxend 2006-01-16-18:00:00-+0000
     plan:minend 2006-01-16-18:00:00-+0000
   }
   supplement task t3 {
     plan:effort 20d
+    allocate tux3
     plan:maxend 2005-12-16-18:00:00-+0000
     plan:minend 2005-12-16-18:00:00-+0000
   }

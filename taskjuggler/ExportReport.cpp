@@ -18,8 +18,10 @@
 #include "tjlib-internal.h"
 #include "Project.h"
 #include "Scenario.h"
+#include "Task.h"
 #include "Resource.h"
 #include "BookingList.h"
+#include "Allocation.h"
 #include "ExpressionTree.h"
 #include "Operation.h"
 #include "CustomAttributeDefinition.h"
@@ -882,6 +884,7 @@ ExportReport::generateTaskSupplement(TaskList& filteredTaskList,
                 }
             case TA_EFFORT:
                 {
+                    bool hasEffort = false;
                     for (QValueListIterator<int> it = scenarios.begin();
                          it != scenarios.end(); ++it)
                     {
@@ -892,6 +895,30 @@ ExportReport::generateTaskSupplement(TaskList& filteredTaskList,
                                 << "effort "
                                 << task->getEffort(*it) << "d"
                                 << endl;
+                            hasEffort = true;
+                        }
+                    }
+                    if (hasEffort)
+                    {
+                        for (QPtrListIterator<Allocation> ali =
+                             task->getAllocationIterator();
+                             *ali != 0; ++ali)
+                        {
+                            s << QString().fill(' ', indent + 2)
+                              << "allocate ";
+                            bool first = true;
+                            for (QPtrListIterator<Resource> ri =
+                                 (*ali)->getCandidatesIterator();
+                                 *ri != 0; ++ri)
+                            {
+                                if (first)
+                                    first = false;
+                                else
+                                    s << ", ";
+
+                                s << (*ri)->getId();
+                            }
+                            s << endl;
                         }
                     }
                     break;

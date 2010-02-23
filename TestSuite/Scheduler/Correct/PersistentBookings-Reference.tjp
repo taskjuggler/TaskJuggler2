@@ -74,9 +74,11 @@ task t1 "Task 1" {
 }
 supplement task t2 {
   plan:effort 20d
+  allocate group1, group2, group3
 }
 supplement task t1 {
   plan:effort 20d
+  allocate r1, r2, r3, r4, r5, r6
 }
 supplement resource r10 {
   plan:booking t2

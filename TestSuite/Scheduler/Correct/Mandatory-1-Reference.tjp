@@ -60,9 +60,12 @@ supplement task t1 {
 }
 supplement task t2 {
   plan:effort 2d
+  allocate r4
 }
 supplement task t3 {
   plan:effort 6d
+  allocate g2
+  allocate g1
 }
 supplement resource r1 {
   plan:booking t3

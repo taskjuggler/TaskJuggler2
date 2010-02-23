@@ -168,9 +168,11 @@ supplement task t6 {
 }
 supplement task t3 {
   plan:effort 5d
+  allocate tux1
 }
 supplement task t4 {
   plan:effort 5d
+  allocate tux2
 }
 supplement task t5 {
 }

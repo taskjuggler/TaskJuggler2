@@ -355,39 +355,51 @@ supplement task c12 {
 }
 supplement task c1 {
   plan:effort 5d
+  allocate tux1
 }
 supplement task c2 {
   plan:effort 5d
+  allocate tux2
 }
 supplement task c9 {
   plan:effort 5d
+  allocate tux3
 }
 supplement task c10 {
   plan:effort 5d
+  allocate tux4
 }
 supplement task c16 {
   plan:effort 5d
+  allocate tux5
 }
 supplement task c17 {
   plan:effort 5d
+  allocate tux6
 }
 supplement task c18 {
   plan:effort 5d
+  allocate tux7
 }
 supplement task c19 {
   plan:effort 5d
+  allocate tux8
 }
 supplement task c20 {
   plan:effort 5d
+  allocate tux9
 }
 supplement task c24 {
   plan:effort 5d
+  allocate tux10
 }
 supplement task c25 {
   plan:effort 5d
+  allocate tux11
 }
 supplement task c26 {
   plan:effort 5d
+  allocate tux12
 }
 supplement task m2 {
 }
