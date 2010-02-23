@@ -28,7 +28,7 @@
 
 static QMap<QString, int> TaskAttributeDict;
 static QMap<QString, int> ResourceAttributeDict;
-typedef enum TADs { TA_FLAGS = 0, TA_NOTE, TA_PRIORITY, TA_MINSTART,
+typedef enum TADs { TA_FLAGS = 0, TA_EFFORT, TA_NOTE, TA_PRIORITY, TA_MINSTART,
     TA_MAXSTART, TA_MINEND, TA_MAXEND, TA_COMPLETE, TA_RESPONSIBLE,
     TA_DEPENDS };
 typedef enum RADs { RA_FLAGS = 0, RA_SHIFT, RA_WORKINGHOURS };
@@ -47,6 +47,7 @@ ExportReport::ExportReport(Project* p, const QString& f,
     {
         TaskAttributeDict[KW("complete")] = TA_COMPLETE;
         TaskAttributeDict[KW("depends")] = TA_DEPENDS;
+        TaskAttributeDict[KW("effort")] = TA_EFFORT;
         TaskAttributeDict[KW("flags")] = TA_FLAGS;
         TaskAttributeDict[KW("maxend")] = TA_MAXEND;
         TaskAttributeDict[KW("maxstart")] = TA_MAXSTART;
@@ -874,6 +875,22 @@ ExportReport::generateTaskSupplement(TaskList& filteredTaskList,
                                 << project->getScenarioId(*it) << ":"
                                 << "maxend "
                                 << time2tjp(task->getMaxEnd(*it) + 1)
+                                << endl;
+                        }
+                    }
+                    break;
+                }
+            case TA_EFFORT:
+                {
+                    for (QValueListIterator<int> it = scenarios.begin();
+                         it != scenarios.end(); ++it)
+                    {
+                        if (task->getEffort(*it) > 0.0)
+                        {
+                            s << QString().fill(' ', indent + 2)
+                                << project->getScenarioId(*it) << ":"
+                                << "effort "
+                                << task->getEffort(*it) << "d"
                                 << endl;
                         }
                     }
