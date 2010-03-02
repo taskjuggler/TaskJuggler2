@@ -984,7 +984,6 @@ ExportReport::generateResourceAttributesList(TaskList& filteredTaskList,
                             << " {" << endl;
                         if (!(*rli)->getFlagList().empty())
                         {
-                            s << "  purge flags" << endl;
                             s << "  flags ";
                             QStringList fl = (*rli)->getFlagList();
                             bool first = true;
