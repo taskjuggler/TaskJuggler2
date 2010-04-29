@@ -593,6 +593,9 @@ ExportReport::generateTask(TaskList& filteredTaskList, const Task* task,
     }
     if (taskHasNoSubTasks)
     {
+        if (task->isMilestone())
+            s << QString().fill(' ', indent + 2) << "milestone " << endl;
+
         for (QValueListIterator<int> it = scenarios.begin();
              it != scenarios.end(); ++it)
         {
@@ -628,9 +631,6 @@ ExportReport::generateTask(TaskList& filteredTaskList, const Task* task,
                     << "scheduled" << endl;
         }
     }
-
-    if (task->isMilestone())
-        s << QString().fill(' ', indent + 2) << "milestone " << endl;
 
     s << QString().fill(' ', indent) << "}" << endl;
 

@@ -57,9 +57,9 @@ task m1 "Milestone1" {
   projectid prj
   depends t1
   priority 500
+  milestone 
   plan:start 2003-01-10-18:00:00-+0000
   plan:scheduled
-  milestone 
 }
 task c21 "-D --> |" {
   projectid prj
@@ -304,9 +304,9 @@ task m2 "Milestone2" {
   projectid prj
   precedes t2
   priority 500
+  milestone 
   plan:start 2003-01-20-09:00:00-+0000
   plan:scheduled
-  milestone 
 }
 task t2 "<-|" {
   projectid prj

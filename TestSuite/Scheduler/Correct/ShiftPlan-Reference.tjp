@@ -60,9 +60,9 @@ projectids simple
 task start "Start of plan" {
   projectid simple
   priority 500
+  milestone 
   plan:start 2002-06-01-00:00:00-+0000
   plan:scheduled
-  milestone 
 }
 task t2 "Printer Support" {
   projectid simple

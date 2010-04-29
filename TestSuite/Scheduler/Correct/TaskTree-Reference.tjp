@@ -41,9 +41,9 @@ task m1 "Milestone1" {
   projectid simple
   depends t1
   priority 500
+  milestone 
   plan:start 2000-01-14-18:00:00-+0000
   plan:scheduled
-  milestone 
 }
 task t3 "Task3" {
   projectid simple

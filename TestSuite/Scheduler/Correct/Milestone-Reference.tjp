@@ -57,99 +57,99 @@ task m8 "-D M -" {
   projectid prj
   depends t1
   priority 500
+  milestone 
   plan:start 2003-01-10-18:00:00-+0000
   plan:scheduled
-  milestone 
 }
 task m10_asap "-D M -D (ASAP)" {
   projectid prj
   depends t1
   precedes t2
   priority 500
+  milestone 
   plan:start 2003-01-10-18:00:00-+0000
   plan:scheduled
-  milestone 
 }
 task m1 "|  M -" {
   projectid prj
   priority 500
+  milestone 
   plan:start 2003-01-13-00:00:00-+0000
   plan:scheduled
-  milestone 
 }
 task m2 "|  M -D" {
   projectid prj
   precedes t2
   priority 500
+  milestone 
   plan:start 2003-01-13-00:00:00-+0000
   plan:scheduled
-  milestone 
 }
 task m3 "|D M -" {
   projectid prj
   depends t1
   priority 500
+  milestone 
   plan:start 2003-01-13-00:00:00-+0000
   plan:scheduled
-  milestone 
 }
 task m4 "|D M -D" {
   projectid prj
   depends t1
   precedes t2
   priority 500
+  milestone 
   plan:start 2003-01-13-00:00:00-+0000
   plan:scheduled
-  milestone 
 }
 task m5 "- M |" {
   projectid prj
   priority 500
+  milestone 
   plan:start 2003-01-18-00:00:00-+0000
   plan:scheduled
-  milestone 
 }
 task m7 "- M |D" {
   projectid prj
   precedes t2
   priority 500
+  milestone 
   plan:start 2003-01-18-00:00:00-+0000
   plan:scheduled
-  milestone 
 }
 task m9 "-D M |" {
   projectid prj
   depends t1
   priority 500
+  milestone 
   plan:start 2003-01-18-00:00:00-+0000
   plan:scheduled
-  milestone 
 }
 task m11 "-D M |D" {
   projectid prj
   depends t1
   precedes t2
   priority 500
+  milestone 
   plan:start 2003-01-18-00:00:00-+0000
   plan:scheduled
-  milestone 
 }
 task m6 "- M -D" {
   projectid prj
   precedes t2
   priority 500
+  milestone 
   plan:start 2003-01-20-09:00:00-+0000
   plan:scheduled
-  milestone 
 }
 task m10_alap "-D M -D (ALAP)" {
   projectid prj
   depends t1
   precedes t2
   priority 500
+  milestone 
   plan:start 2003-01-20-09:00:00-+0000
   plan:scheduled
-  milestone 
 }
 task t2 "<-|" {
   projectid prj

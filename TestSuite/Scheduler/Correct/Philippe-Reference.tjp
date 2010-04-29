@@ -31,9 +31,9 @@ projectids arc
 task start "Start" {
   projectid arc
   priority 500
+  milestone 
   plan:start 2002-07-15-00:00:00-+0000
   plan:scheduled
-  milestone 
 }
 task ctm "Mise sous Control-M" {
   projectid arc
@@ -177,9 +177,9 @@ task fini "Fini" {
   projectid arc
   depends validation, ctm, amelioration
   priority 500
+  milestone 
   plan:start 2002-09-09-18:00:00-+0000
   plan:scheduled
-  milestone 
 }
 supplement task start {
 }

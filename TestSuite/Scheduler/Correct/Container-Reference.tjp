@@ -25,9 +25,9 @@ projectids prj
 task S "start" {
   projectid prj
   priority 500
+  milestone 
   plan:start 2009-01-01-00:00:00-+0000
   plan:scheduled
-  milestone 
 }
 task C0 "C0" {
   projectid prj
@@ -52,9 +52,9 @@ task C0 "C0" {
 task E "end" {
   projectid prj
   priority 500
+  milestone 
   plan:start 2009-01-30-00:00:00-+0000
   plan:scheduled
-  milestone 
 }
 supplement task S {
 }

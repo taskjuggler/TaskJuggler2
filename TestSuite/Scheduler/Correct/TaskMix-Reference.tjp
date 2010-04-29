@@ -83,9 +83,9 @@ task m1 "Milestone1" {
   projectid simple
   depends t1
   priority 500
+  milestone 
   plan:start 2003-01-10-18:00:00-+0000
   plan:scheduled
-  milestone 
 }
 task t6 "M1<-M2" {
   projectid simple
@@ -133,9 +133,9 @@ task m2 "Milestone2" {
   projectid simple
   precedes t2
   priority 500
+  milestone 
   plan:start 2003-01-20-09:00:00-+0000
   plan:scheduled
-  milestone 
 }
 task t2 "<-|" {
   projectid simple
