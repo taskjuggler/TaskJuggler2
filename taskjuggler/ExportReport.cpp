@@ -960,6 +960,25 @@ ExportReport::generateResourceAttributesList(TaskList& filteredTaskList,
 {
     for (ResourceListIterator rli(filteredResourceList); *rli != 0; ++rli)
     {
+        if (!(*rli)->getFlagList().empty())
+        {
+            s << "supplement resource " << (*rli)->getId()
+                << " {" << endl;
+            s << "  flags ";
+            QStringList fl = (*rli)->getFlagList();
+            bool first = true;
+            for (QStringList::Iterator jt = fl.begin();
+                 jt != fl.end(); ++jt)
+            {
+                if (!first)
+                    s << ", ";
+                else
+                    first = false;
+                s << *jt;
+            }
+            s << endl << "}" << endl;
+        }
+
         bool first = true;
         for (QValueListIterator<int> sit = scenarios.begin();
              sit != scenarios.end(); ++sit)
@@ -982,22 +1001,6 @@ ExportReport::generateResourceAttributesList(TaskList& filteredTaskList,
                     {
                         s << "supplement resource " << (*rli)->getId()
                             << " {" << endl;
-                        if (!(*rli)->getFlagList().empty())
-                        {
-                            s << "  flags ";
-                            QStringList fl = (*rli)->getFlagList();
-                            bool first = true;
-                            for (QStringList::Iterator jt = fl.begin();
-                                 jt != fl.end(); ++jt)
-                            {
-                                if (!first)
-                                    s << ", ";
-                                else
-                                    first = false;
-                                s << *jt;
-                            }
-                            s << endl;
-                        }
                         first = false;
                     }
                     /* Trim the booking interval so that it does not extend
