@@ -1909,7 +1909,7 @@ should be shown at a maximum.</para></descr>
   </seealso>
   <example>&example_persistent;</example>
  </property>
- <property name="priority" id="priority" inheritable="No">
+ <property name="priority" id="priority" inheritable="Yes">
   <descr><para>Specifies a priority between 1 and 1000. A task with
 higher priority is more likely to get the requested resources. Don't
 confuse the priority of a tasks with the importance or urgency of a

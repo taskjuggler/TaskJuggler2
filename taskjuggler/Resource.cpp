@@ -556,20 +556,26 @@ Resource::bookSlot(uint idx, SbBooking* nb, int overtime)
 
     SbBooking* b;
     // Try to merge the booking with the booking in the previous slot.
-    b = scoreboard[idx - 1];
-    if (idx > 0 && SB_IS_ALLOCATED(b) && b->getTask() == nb->getTask())
+    if (idx > 0)
     {
-        scoreboard[idx] = b;
-        delete nb;
-        return true;
+        b = scoreboard[idx - 1];
+        if (SB_IS_ALLOCATED(b) && b->getTask() == nb->getTask())
+        {
+            scoreboard[idx] = b;
+            delete nb;
+            return true;
+        }
     }
     // Try to merge the booking with the booking in the following slot.
-    b = scoreboard[idx + 1];
-    if (idx < sbSize - 1 && SB_IS_ALLOCATED(b) && b->getTask() == nb->getTask())
+    if (idx < sbSize)
     {
-        scoreboard[idx] = b;
-        delete nb;
-        return true;
+        b = scoreboard[idx + 1];
+        if (SB_IS_ALLOCATED(b) && b->getTask() == nb->getTask())
+        {
+            scoreboard[idx] = b;
+            delete nb;
+            return true;
+        }
     }
     scoreboard[idx] = nb;
     return true;
