@@ -33,7 +33,7 @@ static QMap<QString, int> ResourceAttributeDict;
 typedef enum TADs { TA_FLAGS = 0, TA_EFFORT, TA_NOTE, TA_PRIORITY, TA_MINSTART,
     TA_MAXSTART, TA_MINEND, TA_MAXEND, TA_COMPLETE, TA_RESPONSIBLE,
     TA_DEPENDS };
-typedef enum RADs { RA_FLAGS = 0, RA_SHIFT, RA_WORKINGHOURS };
+typedef enum RADs { RA_FLAGS = 0, RA_SHIFT, RA_WORKINGHOURS, RA_EFFICIENCY };
 
 ExportReport::ExportReport(Project* p, const QString& f,
                            const QString& df, int dl) :
@@ -62,6 +62,7 @@ ExportReport::ExportReport(Project* p, const QString& f,
     if (ResourceAttributeDict.empty())
     {
         ResourceAttributeDict[KW("flags")] = RA_FLAGS;
+        ResourceAttributeDict[KW("efficiency")] = RA_EFFICIENCY;
         ResourceAttributeDict[KW("shift")] = RA_SHIFT;
         ResourceAttributeDict[KW("workinghours")] = RA_WORKINGHOURS;
     }
@@ -976,6 +977,11 @@ ExportReport::generateResourceAttributesList(TaskList& filteredTaskList,
                     first = false;
                 s << *jt;
             }
+            s << endl;
+
+            if ((*rli)->getEfficiency() != 1.0)
+                s << "  efficiency " << (*rli)->getEfficiency() << endl;
+
             s << endl << "}" << endl;
         }
 
