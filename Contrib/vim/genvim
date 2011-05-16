@@ -2,7 +2,7 @@
 
 grep '.*KW(".*").*' ../../taskjuggler/*.cpp ../../taskjuggler/*.h |\
 tr ' ' '\n' | grep '.*KW(".*").*' |\
-sed 's%.*KW("\(.*\)").*%syn keyword tjspkeyword \1%g' | sort -u > \
+sed 's%.*KW("\(.*\)").*%syn keyword tjpkeyword \1%g' | sort -u > \
 center
 
 cat head.vim center tail.vim > tjp.vim
